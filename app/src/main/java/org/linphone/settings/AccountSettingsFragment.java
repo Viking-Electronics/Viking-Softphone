@@ -720,7 +720,8 @@ public class AccountSettingsFragment extends Fragment {
 
             mReplacePlusBy00.setChecked(mProxyConfig.getDialEscapePlus());
 
-            mPeerVerification.setChecked(core.isVerifyingCertificates());
+            //TODO: Commented out with sdk update
+//            mPeerVerification.setChecked(core.isVerifyingCertificates());
 
             mPush.setChecked(mProxyConfig.isPushNotificationAllowed());
 

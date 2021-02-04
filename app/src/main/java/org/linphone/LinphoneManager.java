@@ -1810,6 +1810,11 @@ public class LinphoneManager implements CoreListener, SensorEventListener, Accou
 
     }
 
+    @Override
+    public void onChatRoomEphemeralMessageDeleted(Core lc, ChatRoom cr) {
+
+    }
+
     private void updateMissedChatCount() {
         for (ChatRoom cr : LinphoneManager.getLc().getChatRooms()) {
             updateUnreadCountForChatRoom(cr, cr.getUnreadMessagesCount());

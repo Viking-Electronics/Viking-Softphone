@@ -1466,6 +1466,21 @@ public class ChatMessagesFragment extends Fragment
         return onCommitContentInternal(inputContentInfo, flags);
     }
 
+    @Override
+    public void onEphemeralMessageTimerStarted(ChatRoom cr, EventLog eventLog) {
+
+    }
+
+    @Override
+    public void onEphemeralEvent(ChatRoom cr, EventLog eventLog) {
+
+    }
+
+    @Override
+    public void onEphemeralMessageDeleted(ChatRoom cr, EventLog eventLog) {
+
+    }
+
     private boolean onCommitContentInternal(InputContentInfoCompat inputContentInfo, int flags) {
         if ((flags & InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
             try {

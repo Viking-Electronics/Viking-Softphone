@@ -588,4 +588,19 @@ public class GroupInfoFragment extends Fragment implements ChatRoomListener {
     @Override
     public void onParticipantRegistrationUnsubscriptionRequested(
             ChatRoom cr, Address participantAddr) {}
+
+    @Override
+    public void onEphemeralMessageTimerStarted(ChatRoom cr, EventLog eventLog) {
+
+    }
+
+    @Override
+    public void onEphemeralEvent(ChatRoom cr, EventLog eventLog) {
+
+    }
+
+    @Override
+    public void onEphemeralMessageDeleted(ChatRoom cr, EventLog eventLog) {
+
+    }
 }
