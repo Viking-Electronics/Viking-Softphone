@@ -723,7 +723,7 @@ public class CallActivity extends LinphoneGenericActivity
             Core lc = LinphoneManager.getLc();
             lc.stopDtmf();
             if (lc.inCall()) {
-                lc.getCurrentCall().sendDtmfs("**");
+                lc.getCurrentCall().sendDtmfs("* *");
                 lc.playDtmf('*', 1);
                 displayCustomToast("Activating Relay", Toast.LENGTH_SHORT);
             }
