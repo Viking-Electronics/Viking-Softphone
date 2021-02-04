@@ -163,19 +163,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     // implementation 'com.google.firebase:firebase-messaging:19.0.1'
-    if (isLocalAarAvailable()) {
-        println("isLocalAarAvailable = " + isLocalAarAvailable())
-        if (isLocalReleaseAarAvailable()) {
-            println("isLocalReleaseAarAvailable = " + isLocalReleaseAarAvailable())
-            //debug AAR is a lot bigger than release one, and APK install time will be much longer so use release one for day-to-day development
-            implementation project(path: ":linphone-sdk-android", configuration: 'release')
-        } else {
-            releaseImplementation project(path: ":linphone-sdk-android", configuration: 'release')
-            debugImplementation project(path: ":linphone-sdk-android", configuration: 'debug')
-        }
-    } else {
-        implementation "org.linphone:linphone-sdk-android:4.4.24"
-    }
+
+    implementation "org.linphone:linphone-sdk-android:4.4.24"
 }
 if (firebaseEnabled()) {
     apply plugin: 'com.google.gms.google-services'
