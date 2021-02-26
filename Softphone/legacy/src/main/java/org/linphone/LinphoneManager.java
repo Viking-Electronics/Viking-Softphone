@@ -359,46 +359,43 @@ public class LinphoneManager implements CoreListener, SensorEventListener, Accou
                     @Override
                     public void OnProgress(final int current, final int max) {
                         mHandler.post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        OpenH264DownloadHelper ohcodec =
-                                                LinphoneManager.getInstance()
-                                                        .getOpenH264DownloadHelper();
-                                        if (progress == null) {
-                                            progress =
-                                                    new ProgressDialog(
-                                                            (Context) ohcodec.getUserData(ctxt));
-                                            progress.setCanceledOnTouchOutside(false);
-                                            progress.setCancelable(false);
-                                            progress.setProgressStyle(
-                                                    ProgressDialog.STYLE_HORIZONTAL);
-                                        } else if (current <= max) {
-                                            progress.setMessage(
-                                                    getString(
-                                                            R.string
-                                                                    .assistant_openh264_downloading));
-                                            progress.setMax(max);
-                                            progress.setProgress(current);
-                                            progress.show();
-                                        } else {
-                                            progress.dismiss();
-                                            progress = null;
-                                            if (Build.VERSION.SDK_INT
-                                                    >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                                                LinphoneManager.getLc()
-                                                        .reloadMsPlugins(
-                                                                AssistantActivity.instance()
-                                                                        .getApplicationInfo()
-                                                                        .nativeLibraryDir);
-                                                AssistantActivity.instance().endDownloadCodec();
-                                            } else {
-                                                // We need to restart due to bad android linker
-                                                AssistantActivity.instance().restartApplication();
-                                            }
-                                        }
+                            () -> {
+                                OpenH264DownloadHelper ohcodec =
+                                        LinphoneManager.getInstance()
+                                                .getOpenH264DownloadHelper();
+                                if (progress == null) {
+                                    progress =
+                                            new ProgressDialog(
+                                                    (Context) ohcodec.getUserData(ctxt));
+                                    progress.setCanceledOnTouchOutside(false);
+                                    progress.setCancelable(false);
+                                    progress.setProgressStyle(
+                                            ProgressDialog.STYLE_HORIZONTAL);
+                                } else if (current <= max) {
+                                    progress.setMessage(
+                                            getString(
+                                                    R.string
+                                                            .assistant_openh264_downloading));
+                                    progress.setMax(max);
+                                    progress.setProgress(current);
+                                    progress.show();
+                                } else {
+                                    progress.dismiss();
+                                    progress = null;
+                                    if (Build.VERSION.SDK_INT
+                                            >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                                        LinphoneManager.getLc()
+                                                .reloadMsPlugins(
+                                                        AssistantActivity.instance()
+                                                                .getApplicationInfo()
+                                                                .nativeLibraryDir);
+                                        AssistantActivity.instance().endDownloadCodec();
+                                    } else {
+                                        // We need to restart due to bad android linker
+                                        AssistantActivity.instance().restartApplication();
                                     }
-                                });
+                                }
+                            });
                     }
 
                     @Override

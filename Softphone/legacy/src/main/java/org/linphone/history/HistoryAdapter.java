@@ -130,17 +130,13 @@ public class HistoryAdapter extends SelectableAdapter<HistoryViewHolder> {
         }
 
         holder.detail.setVisibility(isEditable() ? View.INVISIBLE : View.VISIBLE);
-        holder.detail.setOnClickListener(
-                !isEditable()
-                        ? new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (LinphoneActivity.isInstantiated()) {
-                                    LinphoneActivity.instance().displayHistoryDetail(sipUri, log);
-                                }
+        holder.detail.setOnClickListener(!isEditable()
+            ? v -> {
+                            if (LinphoneActivity.isInstantiated()) {
+                                LinphoneActivity.instance().displayHistoryDetail(sipUri, log);
                             }
                         }
-                        : null);
+                    : null);
     }
 
     @Override

@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -97,44 +97,35 @@ public class DialerFragment extends Fragment {
                         && LinphoneManager.getLc().getCallsNb() > 0));
 
         mAddContactListener =
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text = mAddress.getText().toString();
-                        if(text.contains("@")){
-                            String[] address = text.split("@");
-                            LinphoneActivity.instance().addContact(address[0],text);
-                        }
-                        else{
-                            Address idAddress = LinphoneManager.getLc().getDefaultProxyConfig().getIdentityAddress();
-                            int port = idAddress.getPort();
-                            String domain = idAddress.getDomain();
-                            LinphoneActivity.instance().addContact(text, text+'@'+domain+':'+port);
-                        }
-                    }
-                };
+            v -> {
+                String text = mAddress.getText().toString();
+                if(text.contains("@")){
+                    String[] address = text.split("@");
+                    LinphoneActivity.instance().addContact(address[0],text);
+                }
+                else{
+                    Address idAddress = LinphoneManager.getLc().getDefaultProxyConfig().getIdentityAddress();
+                    int port = idAddress.getPort();
+                    String domain = idAddress.getDomain();
+                    LinphoneActivity.instance().addContact(text, text+'@'+domain+':'+port);
+                }
+            };
         mCancelListener =
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        LinphoneActivity.instance()
-                                .resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
-                    }
-                };
+            v -> LinphoneActivity.instance()
+                    .resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
         mTransferListener =
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Core lc = LinphoneManager.getLc();
-                        if (lc.getCurrentCall() == null) {
-                            return;
-                        }
-                        lc.transferCall(lc.getCurrentCall(), mAddress.getText().toString());
-                        sIsCallTransferOngoing = false;
-                        LinphoneActivity.instance()
-                                .resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
-                    }
-                };
+            v -> {
+                Core lc = LinphoneManager.getLc();
+                if (lc.getCurrentCall() == null) {
+                    return;
+                }
+                lc.getCurrentCall().transfer(mAddress.getText().toString());
+                sIsCallTransferOngoing = false;
+                LinphoneActivity activity = LinphoneActivity.instance();
+
+                activity.callFromDialer = true;
+                activity.resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
+            };
 
         resetLayout();
 
@@ -163,10 +154,16 @@ public class DialerFragment extends Fragment {
         super.onResume();
         sInstance = this;
 
+        LinphoneActivity activity;
+
         if (LinphoneActivity.isInstantiated()) {
-            LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
-            LinphoneActivity.instance().updateDialerFragment();
-            LinphoneActivity.instance().showStatusBar();
+            activity = LinphoneActivity.instance();
+
+            activity.selectMenu(FragmentsAvailable.DIALER);
+            activity.updateDialerFragment();
+            activity.showStatusBar();
+        } else {
+            return;
         }
 
         boolean isOrientationLandscape =
@@ -180,13 +177,13 @@ public class DialerFragment extends Fragment {
 
         resetLayout();
 
-        String addressWaitingToBeCalled = LinphoneActivity.instance().addressWaitingToBeCalled;
+        String addressWaitingToBeCalled = activity.addressWaitingToBeCalled;
         if (addressWaitingToBeCalled != null) {
             mAddress.setText(addressWaitingToBeCalled);
-            if (!LinphoneActivity.instance().isCallTransfer() && getResources().getBoolean(R.bool.automatically_start_intercepted_outgoing_gsm_call)) {
+            if (!activity.isCallTransfer() && getResources().getBoolean(R.bool.automatically_start_intercepted_outgoing_gsm_call)) {
                 newOutgoingCall(addressWaitingToBeCalled);
             }
-            LinphoneActivity.instance().addressWaitingToBeCalled = null;
+            activity.addressWaitingToBeCalled = null;
         }
     }
 

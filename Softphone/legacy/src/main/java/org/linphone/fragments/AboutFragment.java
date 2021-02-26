@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -63,10 +63,10 @@ public class AboutFragment extends Fragment implements OnClickListener {
                                 + getString(R.string.linphone_sdk_branch)
                                 + ")"));
         // We can't access a library's BuildConfig, so we have to set it as a resource
-        aboutVersion.setText(
-                String.format(
-                        getString(R.string.about_version),
-                        BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")"));
+//        aboutVersion.setText(
+//                String.format(
+//                        getString(R.string.about_version),
+//                        BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")"));
 
         TextView privacyPolicy = view.findViewById(R.id.privacy_policy_link);
         privacyPolicy.setOnClickListener(
@@ -94,14 +94,14 @@ public class AboutFragment extends Fragment implements OnClickListener {
                     }
                 });
 
-        mSendLogButton = view.findViewById(R.id.send_log);
-        mSendLogButton.setOnClickListener(this);
-        mSendLogButton.setVisibility(LinphonePreferences.instance().isDebugEnabled() ? View.VISIBLE : View.GONE);
-
-        mResetLogButton = view.findViewById(R.id.reset_log);
-        mResetLogButton.setOnClickListener(this);
-        mResetLogButton.setVisibility(
-                LinphonePreferences.instance().isDebugEnabled() ? View.VISIBLE : View.GONE);
+//        mSendLogButton = view.findViewById(R.id.send_log);
+//        mSendLogButton.setOnClickListener(this);
+//        mSendLogButton.setVisibility(LinphonePreferences.instance().isDebugEnabled() ? View.VISIBLE : View.GONE);
+//
+//        mResetLogButton = view.findViewById(R.id.reset_log);
+//        mResetLogButton.setOnClickListener(this);
+//        mResetLogButton.setVisibility(
+//                LinphonePreferences.instance().isDebugEnabled() ? View.VISIBLE : View.GONE);
 
         mListener =
                 new CoreListenerStub() {

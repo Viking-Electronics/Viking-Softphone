@@ -48,6 +48,12 @@ import org.linphone.core.VideoActivationPolicy;
 import org.linphone.core.tools.Log;
 import org.linphone.utils.LinphoneUtils;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
+@Singleton
 public class LinphonePreferences {
     private static final int LINPHONE_CORE_RANDOM_PORT = -1;
     private static LinphonePreferences sInstance;
@@ -58,6 +64,13 @@ public class LinphonePreferences {
     private TunnelConfig mTunnelConfig = null;
 
     private LinphonePreferences() {}
+
+    //Yarr, this be dangerous
+    @Inject
+    LinphonePreferences(@ApplicationContext Context context) {
+        mContext = context;
+        mBasePath = context.getFilesDir().getAbsolutePath();
+    }
 
     public static synchronized LinphonePreferences instance() {
         if (sInstance == null) {

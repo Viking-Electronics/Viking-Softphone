@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -73,8 +73,10 @@ public class ContactDetailsFragment extends Fragment
                 public void onClick(View v) {
                     if (LinphoneActivity.isInstantiated()) {
                         String tag = (String) v.getTag();
-                        LinphoneActivity.instance()
-                                .setAddresGoToDialerAndCall(tag, mContact.getFullName());
+                        LinphoneActivity activity = LinphoneActivity.instance();
+
+                        activity.callFromDialer = true;
+                        activity.setAddresGoToDialerAndCall(tag, mContact.getFullName());
                     }
                 }
             };
@@ -272,22 +274,19 @@ public class ContactDetailsFragment extends Fragment
                 v.findViewById(R.id.inviteFriend).setTag(noa.getNormalizedPhone());
                 v.findViewById(R.id.inviteFriend)
                         .setOnClickListener(
-                                new OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        String number = (String) v.getTag();
-                                        Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
-                                        smsIntent.putExtra("address", number);
-                                        smsIntent.setData(Uri.parse("smsto:" + number));
-                                        String text =
-                                                getString(R.string.invite_friend_text)
-                                                        .replace(
-                                                                "%s",
-                                                                getString(R.string.download_link));
-                                        smsIntent.putExtra("sms_body", text);
-                                        startActivity(smsIntent);
-                                    }
-                                });
+                            v1 -> {
+                                String number = (String) v1.getTag();
+                                Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
+                                smsIntent.putExtra("address", number);
+                                smsIntent.setData(Uri.parse("smsto:" + number));
+                                String text =
+                                        getString(R.string.invite_friend_text)
+                                                .replace(
+                                                        "%s",
+                                                        getString(R.string.download_link));
+                                smsIntent.putExtra("sms_body", text);
+                                startActivity(smsIntent);
+                            });
             }
 
             String contactAddress = mContact.getContactFromPresenceModelForUriOrTel(noa.getValue());

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/devicesFragment">
+
+    <fragment
+        android:id="@+id/devicesFragment"
+        android:name="com.vikingelectronics.softphone.devices.DevicesFragment"
+        android:label="Devices"
+        tools:layout="@layout/fragment_devices"/>
+
+    <fragment
+        android:id="@+id/activityFragment"
+        android:name="com.vikingelectronics.softphone.activity.LegacyHistoryFragment"
+        android:label="Activity"
+        tools:layout="@layout/history"/>
+
+    <fragment
+        android:id="@+id/schedulesFragment"
+        android:name="com.vikingelectronics.softphone.schedules.LegacyScheduleFragment"
+        android:label="Schedules"
+        tools:layout="@layout/schedule"/>
+
+    <include
+        android:id="@+id/accounts_graph"
+        app:graph="@navigation/accounts_graph"/>
+
+    <include
+        android:id="@+id/settings_graph"
+        app:graph="@navigation/settings_graph"/>
+
+    <fragment
+        android:id="@+id/recordingsFragment"
+        android:name="org.linphone.recording.RecordingsFragment"
+        android:label="@string/recordings"
+        tools:layout="@layout/fragment_recordings"/>
+
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="org.linphone.fragments.AboutFragment"
+        android:label="@string/info"
+        tools:layout="@layout/about"/>
+
+</navigation>

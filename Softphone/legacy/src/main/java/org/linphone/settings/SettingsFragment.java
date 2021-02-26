@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +26,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 
 import org.linphone.fragments.FragmentsAvailable;
 import org.linphone.settings.widget.BasicSetting;
@@ -44,6 +47,7 @@ public class SettingsFragment extends Fragment {
     private BasicSetting mTunnel, mAudio, mVideo, mCall, mChat, mNetwork, mAdvanced;
     private LinearLayout mAccounts;
     private TextView mAccountsHeader;
+    private NavController navController;
 
     @Nullable
     @Override
@@ -66,6 +70,7 @@ public class SettingsFragment extends Fragment {
         }
 
         updateValues();
+        navController = Navigation.findNavController(mRootView);
     }
 
     protected void loadSettings() {
@@ -92,8 +97,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance()
-                                .displaySubSettings(new TunnelSettingsFragment());
+                        navController.navigate(R.id.tunnelSettingsFragment);
                     }
                 });
 
@@ -101,7 +105,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance().displaySubSettings(new AudioSettingsFragment());
+                        navController.navigate(R.id.audioSettingsFragment);
                     }
                 });
 
@@ -109,7 +113,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance().displaySubSettings(new VideoSettingsFragment());
+                        navController.navigate(R.id.videoSettingsFragment);
                     }
                 });
 
@@ -117,24 +121,23 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance().displaySubSettings(new CallSettingsFragment());
+                        navController.navigate(R.id.callSettingsFragment);
                     }
                 });
 
-        mChat.setListener(
-                new SettingListenerBase() {
-                    @Override
-                    public void onClicked() {
-                        LinphoneActivity.instance().displaySubSettings(new ChatSettingsFragment());
-                    }
-                });
+//        mChat.setListener(
+//                new SettingListenerBase() {
+//                    @Override
+//                    public void onClicked() {
+//                        LinphoneActivity.instance().displaySubSettings(new ChatSettingsFragment());
+//                    }
+//                });
 
         mNetwork.setListener(
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance()
-                                .displaySubSettings(new NetworkSettingsFragment());
+                        navController.navigate(R.id.networkSettingsFragment);
                     }
                 });
 
@@ -142,8 +145,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        LinphoneActivity.instance()
-                                .displaySubSettings(new AdvancedSettingsFragment());
+                        navController.navigate(R.id.advancedSettingsFragment);
                     }
                 });
     }

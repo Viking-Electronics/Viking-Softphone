@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <style name="main_account_font" parent="@android:style/TextAppearance.Medium">-->
+<!--        <item name="android:textColor">?attr/lighToolbarTextColor</item>-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--        <item name="android:textSize">18sp</item>-->
+<!--    </style>-->
+
+<!--    <style name="sip_uri_small_font" parent="@android:style/TextAppearance.Medium">-->
+<!--        <item name="android:textColor">?attr/accentColor</item>-->
+<!--        <item name="android:textSize">13sp</item>-->
+<!--    </style>-->
+</resources>

@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -110,6 +110,9 @@ public class CallActivity extends LinphoneGenericActivity
     private static final int PERMISSIONS_ENABLED_MIC = 204;
     private static final int PERMISSIONS_EXTERNAL_STORAGE = 205;
 
+    public static final String IS_OUTBOUND_CALL = "call is outbound";
+
+
     private static CallActivity sInstance;
     private static long sTimeRemind = 0;
     private Handler mControlsHandler = new Handler();
@@ -167,6 +170,8 @@ public class CallActivity extends LinphoneGenericActivity
 
     private boolean mOldIsSpeakerEnabled = false;
 
+    private boolean isOutboundCall = false;
+
     public static CallActivity instance() {
         return sInstance;
     }
@@ -175,7 +180,6 @@ public class CallActivity extends LinphoneGenericActivity
         return sInstance != null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -326,7 +330,7 @@ public class CallActivity extends LinphoneGenericActivity
             }
 
             callFragment.setArguments(getIntent().getExtras());
-            getFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
         }
     }
 
@@ -400,6 +404,11 @@ public class CallActivity extends LinphoneGenericActivity
 
         mDialer = findViewById(R.id.dialer);
         mDialer.setOnClickListener(this);
+        if (isOutboundCall) {
+            mDialer.setImageResource(R.drawable.footer_dialer);
+        } else {
+            mDialer.setImageResource(R.drawable.unlock_button_foreground);
+        }
 
         mNumpad = findViewById(R.id.numpad);
         mNumpad.getBackground().setAlpha(240);
@@ -525,25 +534,19 @@ public class CallActivity extends LinphoneGenericActivity
 //                break;
             case PERMISSIONS_ENABLED_MIC:
                 LinphoneUtils.dispatchOnUIThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                                    toggleMicro();
-                                }
-                            }
-                        });
+                    () -> {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            toggleMicro();
+                        }
+                    });
                 break;
             case PERMISSIONS_EXTERNAL_STORAGE:
                 LinphoneUtils.dispatchOnUIThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                                    toggleCallRecording(!mIsRecording);
-                                }
-                            }
-                        });
+                    () -> {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            toggleCallRecording(!mIsRecording);
+                        }
+                    });
         }
     }
 
@@ -554,16 +557,13 @@ public class CallActivity extends LinphoneGenericActivity
         mSideMenuContent = findViewById(R.id.side_menu_content);
 
         mMenu.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (mSideMenu.isDrawerVisible(Gravity.LEFT)) {
-                            mSideMenu.closeDrawer(mSideMenuContent);
-                        } else {
-                            mSideMenu.openDrawer(mSideMenuContent);
-                        }
-                    }
-                });
+            view -> {
+                if (mSideMenu.isDrawerVisible(Gravity.LEFT)) {
+                    mSideMenu.closeDrawer(mSideMenuContent);
+                } else {
+                    mSideMenu.openDrawer(mSideMenuContent);
+                }
+            });
 
         Core lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
         if (lc != null) {
@@ -717,17 +717,23 @@ public class CallActivity extends LinphoneGenericActivity
         } else if (id == R.id.pause) {
             pauseOrResumeCall(LinphoneManager.getLc().getCurrentCall());
         } else if (id == R.id.hang_up) {
+            LinphoneActivity.instance().callFromDialer = false;
             hangUp();
         } else if (id == R.id.dialer) {
             if (!LinphoneService.isReady()) return;
-            Core lc = LinphoneManager.getLc();
-            lc.stopDtmf();
-            if (lc.inCall()) {
-                lc.getCurrentCall().sendDtmfs("* *");
-                lc.playDtmf('*', 1);
-                displayCustomToast("Activating Relay", Toast.LENGTH_SHORT);
+
+            if (isOutboundCall) {
+                hideOrDisplayNumpad();
+            } else {
+                Core lc = LinphoneManager.getLc();
+                lc.stopDtmf();
+                if (lc.inCall()) {
+                    lc.getCurrentCall().sendDtmfs("* *");
+                    lc.playDtmf('*', 1);
+                    displayCustomToast("Activating Relay", Toast.LENGTH_SHORT);
+                }
             }
-//            hideOrDisplayNumpad();
+
         } else if (id == R.id.chat) {
             goToChatList();
         } else if (id == R.id.conference) {
@@ -907,7 +913,7 @@ public class CallActivity extends LinphoneGenericActivity
 
     private void replaceFragmentVideoByAudio() {
         mAudioCallFragment = new CallAudioFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, mAudioCallFragment);
         try {
             transaction.commitAllowingStateLoss();
@@ -920,7 +926,7 @@ public class CallActivity extends LinphoneGenericActivity
         //		Hiding controls to let displayVideoCallControlsIfHidden add them plus the callback
         mVideoCallFragment = new CallVideoFragment();
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        androidx.fragment.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, mVideoCallFragment);
         try {
             transaction.commitAllowingStateLoss();
@@ -1026,19 +1032,17 @@ public class CallActivity extends LinphoneGenericActivity
         if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall()) && mControlsHandler != null) {
             mControlsHandler.postDelayed(
                     mControls =
-                            new Runnable() {
-                                public void run() {
-                                    hideNumpad();
-                                    mVideo.setEnabled(true);
-                                    mTransfer.setVisibility(View.INVISIBLE);
-                                    mAddCall.setVisibility(View.INVISIBLE);
-                                    mConference.setVisibility(View.INVISIBLE);
-                                    mRecordCall.setVisibility(View.INVISIBLE);
-                                    displayVideoCall(false);
-                                    mNumpad.setVisibility(View.GONE);
-                                    mOptions.setSelected(false);
-                                }
-                            },
+                        () -> {
+                            hideNumpad();
+                            mVideo.setEnabled(true);
+                            mTransfer.setVisibility(View.INVISIBLE);
+                            mAddCall.setVisibility(View.INVISIBLE);
+                            mConference.setVisibility(View.INVISIBLE);
+                            mRecordCall.setVisibility(View.INVISIBLE);
+                            displayVideoCall(false);
+                            mNumpad.setVisibility(View.GONE);
+                            mOptions.setSelected(false);
+                        },
                     SECONDS_BEFORE_HIDING_CONTROLS);
         }
     }
@@ -1257,6 +1261,8 @@ public class CallActivity extends LinphoneGenericActivity
                 removeCallbacks();
             }
         }
+
+        isOutboundCall = getIntent().getBooleanExtra(IS_OUTBOUND_CALL, false);
     }
 
     private void handleViewIntent() {

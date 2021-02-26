@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="state"
+            type="com.vikingelectronics.softphone.accounts.add.AccountAddBindableState" />
+
+        <variable
+            name="viewModel"
+            type="com.vikingelectronics.softphone.accounts.add.AccountAddViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/standard_text_font"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/use_sip_account"
+                android:textAllCaps="true"
+                app:layout_constraintBottom_toBottomOf="@+id/qr_button"
+                app:layout_constraintEnd_toStartOf="@+id/qr_button"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/qr_button" />
+
+            <ImageButton
+                android:id="@+id/qr_button"
+                style="@style/button_font"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/assistant_button"
+                android:scaleType="centerCrop"
+                android:src="@drawable/qr_icon"
+                android:text="QR"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/usernameLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:errorTextColor="@color/red_color"
+                app:hintEnabled="true"
+                app:errorEnabled="@{state.usernameError}"
+                app:errorText='@{"This field is required"}'
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qr_button">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/usernameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/username"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.usernameUpdated(text)}"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView5"-->
+            <!--            style="@style/assistant_input_field_header_font"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginStart="24dp"-->
+            <!--            android:layout_marginTop="24dp"-->
+            <!--            android:layout_marginEnd="24dp"-->
+            <!--            android:text="@string/username"-->
+            <!--            android:textAllCaps="true"-->
+            <!--            app:layout_constraintEnd_toEndOf="parent"-->
+            <!--            app:layout_constraintStart_toStartOf="parent"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/qr_button" />-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/assistant_username"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:background="@drawable/resizable_textfield"-->
+            <!--            android:hint="@string/username"-->
+            <!--            android:inputType="text|textNoSuggestions"-->
+            <!--            android:maxLines="1"-->
+            <!--            android:textColor="@color/black_color"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/textView8"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/useridLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:hintEnabled="true"
+                app:layout_constraintEnd_toEndOf="@id/usernameLayout"
+                app:layout_constraintStart_toStartOf="@id/usernameLayout"
+                app:layout_constraintTop_toBottomOf="@id/usernameLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/useridEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/user_id_optional"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.userIdUpdated(text)}"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView8"-->
+            <!--            style="@style/assistant_input_field_header_font"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:paddingTop="15dp"-->
+            <!--            android:text="@string/user_id_optional"-->
+            <!--            android:textAllCaps="true"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/assistant_userid"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/assistant_username" />-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/assistant_userid"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:background="@drawable/resizable_textfield"-->
+            <!--            android:hint="@string/user_id_optional"-->
+            <!--            android:inputType="text|textNoSuggestions"-->
+            <!--            android:maxLines="1"-->
+            <!--            android:textColor="@color/black_color"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/textView9"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/textView8" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:hintEnabled="true"
+                app:layout_constraintEnd_toEndOf="@+id/useridLayout"
+                app:layout_constraintStart_toStartOf="@+id/useridLayout"
+                app:layout_constraintTop_toBottomOf="@+id/useridLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.passwordUpdated(text)}"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView9"-->
+            <!--            style="@style/assistant_input_field_header_font"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:paddingTop="15dp"-->
+            <!--            android:text="@string/password"-->
+            <!--            android:textAllCaps="true"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/assistant_password"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/assistant_userid" />-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/assistant_password"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:background="@drawable/resizable_textfield"-->
+            <!--            android:hint="@string/password"-->
+            <!--            android:inputType="textPassword"-->
+            <!--            android:maxLines="1"-->
+            <!--            android:textColor="@color/black_color"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/textView10"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/textView9" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/domainLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:hintEnabled="true"
+                app:layout_constraintEnd_toEndOf="@+id/passwordLayout"
+                app:layout_constraintStart_toStartOf="@+id/passwordLayout"
+                app:layout_constraintTop_toBottomOf="@+id/passwordLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/domainEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/domain"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.domainUpdated(text)}"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView10"-->
+            <!--            style="@style/assistant_input_field_header_font"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:paddingTop="15dp"-->
+            <!--            android:text="@string/domain"-->
+            <!--            android:textAllCaps="true"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/assistant_domain"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/assistant_password" />-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/assistant_domain"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:background="@drawable/resizable_textfield"-->
+            <!--            android:hint="@string/domain"-->
+            <!--            android:inputType="textUri"-->
+            <!--            android:maxLines="1"-->
+            <!--            android:textColor="@color/black_color"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/assistant_display_name"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/textView10" />-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/displayNameLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:hintEnabled="true"
+                app:layout_constraintEnd_toEndOf="@+id/domainLayout"
+                app:layout_constraintStart_toStartOf="@+id/domainLayout"
+                app:layout_constraintTop_toBottomOf="@+id/domainLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/displayNameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/display_name_optional"
+                    android:onTextChanged="@{(text, start, before, count) -> viewModel.displayNameUpdated(text)}"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/textView11"-->
+            <!--            style="@style/assistant_input_field_header_font"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:paddingTop="15dp"-->
+            <!--            android:text="@string/domain_name_optional"-->
+            <!--            android:textAllCaps="true"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView5"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/assistant_domain"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/assistant_domain" />-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/assistant_display_name"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:background="@drawable/resizable_textfield"-->
+            <!--            android:hint="@string/domain_name_optional"-->
+            <!--            android:inputType="textPersonName"-->
+            <!--            android:maxLines="1"-->
+            <!--            android:textColor="@color/black_color"-->
+            <!--            app:layout_constraintEnd_toEndOf="@+id/textView12"-->
+            <!--            app:layout_constraintStart_toStartOf="@+id/textView12"-->
+            <!--            app:layout_constraintTop_toBottomOf="@+id/textView11" />-->
+
+            <TextView
+                android:id="@+id/transportTextView"
+                style="@style/assistant_input_field_header_font"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:paddingTop="15dp"
+                android:text="@string/transport"
+                android:textAllCaps="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/displayNameLayout" />
+
+            <RadioGroup
+                android:id="@+id/transportRadioGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/transportTextView"
+                app:layout_constraintStart_toStartOf="@+id/transportTextView"
+                app:layout_constraintTop_toBottomOf="@+id/transportTextView">
+
+                <RadioButton
+                    android:id="@+id/transport_udp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="55dp"
+                    android:layout_marginTop="5dp"
+                    android:checked="true"
+                    android:text="@string/pref_transport_udp"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintStart_toStartOf="@+id/transportTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/transportTextView" />
+<!--                app:onCheckedChanged="@{(checked) -> viewModel.transportUpdated()}"-->
+
+                <RadioButton
+                    android:id="@+id/transport_tcp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/pref_transport_tcp"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintStart_toEndOf="@+id/transport_udp"
+                    app:layout_constraintTop_toBottomOf="@+id/transportTextView" />
+
+                <RadioButton
+                    android:id="@+id/transport_tls"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/pref_transport_tls"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintStart_toEndOf="@+id/transport_tcp"
+                    app:layout_constraintTop_toBottomOf="@+id/transportTextView" />
+
+            </RadioGroup>
+
+
+            <Button
+                android:id="@+id/assistant_apply"
+                style="@style/button_font"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/assistant_button"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/login"
+                android:textColor="@drawable/assistant_button_text_color"
+                android:onClick="@{() -> viewModel.loginClicked()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/transportRadioGroup" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</layout>

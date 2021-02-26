@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,6 +29,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import org.linphone.contacts.ContactsManager;
 import org.linphone.contacts.ContactsUpdatedListener;
+import org.linphone.core.Address;
 import org.linphone.fragments.FragmentsAvailable;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
@@ -147,12 +149,12 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnItem
     @Override
     public void onResume() {
         super.onResume();
-        ContactsManager.getInstance().addContactsListener(this);
-
-        if (LinphoneActivity.isInstantiated()) {
-            LinphoneActivity.instance().selectMenu(FragmentsAvailable.HISTORY_LIST);
-            LinphoneActivity.instance().displayMissedCalls(0);
-        }
+//        ContactsManager.getInstance().addContactsListener(this);
+//
+//        if (LinphoneActivity.isInstantiated()) {
+//            LinphoneActivity.instance().selectMenu(FragmentsAvailable.HISTORY_LIST);
+//            LinphoneActivity.instance().displayMissedCalls(0);
+//        }
 
         mLogs = Arrays.asList(LinphoneManager.getLc().getCallLogs());
         hideHistoryListAndDisplayMessageIfEmpty();
@@ -229,18 +231,16 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnItem
         if (mHistoryAdapter.isEditable()) {
             mHistoryAdapter.toggleSelection(position);
         } else {
-//            if (LinphoneActivity.isInstantiated()) {
-//                CallLog log = mLogs.get(position);
-//                Address address;
-//                if (log.getDir() == Call.Dir.Incoming) {
-//                    address = log.getFromAddress();
-//                } else {
-//                    address = log.getToAddress();
-//                }
-//                LinphoneActivity.instance()
-//                        .setAddresGoToDialerAndCall(
-//                                address.asStringUriOnly(), address.getDisplayName());
-//            }
+            if (LinphoneActivity.isInstantiated()) {
+                CallLog log = mLogs.get(position);
+                Address address;
+                if (log.getDir() == Call.Dir.Incoming) {
+                    address = log.getFromAddress();
+                } else {
+                    address = log.getToAddress();
+                }
+                LinphoneActivity.instance().displayHistoryDetail(address.asStringUriOnly(), log);
+            }
         }
     }
 

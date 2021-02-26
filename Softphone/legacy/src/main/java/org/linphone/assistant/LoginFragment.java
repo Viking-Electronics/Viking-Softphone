@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -34,6 +33,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -149,20 +150,22 @@ public class LoginFragment extends Fragment implements OnClickListener, TextWatc
                 }
             }
 
+
+
 //            if (mDomain.getText().toString().compareTo(getString(R.string.default_domain)) == 0) {
 //                AssistantActivity.instance()
 //                        .displayLoginLinphone(
 //                                mLogin.getText().toString(), mPassword.getText().toString());
 //            } else {
-                AssistantActivity.instance()
-                        .genericLogIn(
-                                mLogin.getText().toString(),
-                                mUserid.getText().toString(),
-                                mPassword.getText().toString(),
-                                mDisplayName.getText().toString(),
-                                null,
-                                mDomain.getText().toString(),
-                                transport);
+//                AssistantActivity.instance()
+//                        .genericLogIn(
+//                                mLogin.getText().toString(),
+//                                mUserid.getText().toString(),
+//                                mPassword.getText().toString(),
+//                                mDisplayName.getText().toString(),
+//                                null,
+//                                mDomain.getText().toString(),
+//                                transport);
             //}
 
         }

@@ -1,2 +1,2 @@
-include(":legacy")
 include(":app")
+include(":legacy")

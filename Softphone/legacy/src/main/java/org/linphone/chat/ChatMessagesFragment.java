@@ -23,7 +23,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;

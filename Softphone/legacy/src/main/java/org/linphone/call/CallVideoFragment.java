@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.*;
@@ -55,7 +55,7 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
     private int mPreviewX, mPreviewY;
 
     @SuppressLint("ClickableViewAccessibility")
-    @SuppressWarnings("deprecation")
+//    @SuppressWarnings("deprecation")
     // Warning useless because value is ignored and automatically set by new APIs.
     @Override
     public View onCreateView(
@@ -75,19 +75,17 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
 //        LinphoneManager.getLc().setNativePreviewWindowId(mCaptureView);
 
         mVideoView.setOnTouchListener(
-                new OnTouchListener() {
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (mScaleDetector != null) {
-                            mScaleDetector.onTouchEvent(event);
-                        }
+            (v, event) -> {
+                if (mScaleDetector != null) {
+                    mScaleDetector.onTouchEvent(event);
+                }
 
-                        mGestureDetector.onTouchEvent(event);
-                        if (mInCallActivity != null) {
-                            mInCallActivity.displayVideoCallControlsIfHidden();
-                        }
-                        return true;
-                    }
-                });
+                mGestureDetector.onTouchEvent(event);
+                if (mInCallActivity != null) {
+                    mInCallActivity.displayVideoCallControlsIfHidden();
+                }
+                return true;
+            });
 
 //        mCaptureView.setOnTouchListener(
 //                new OnTouchListener() {

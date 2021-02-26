@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Viking Softphone</string>
+    <string name="devices">Devices</string>
+    <string name="activity">Activity</string>
+    <string name="schedules">Schedules</string>
+    <string name="settings">Settings</string>
+    <string name="recordings">Recordings</string>
+    <string name="info">Info</string>
+    <string name="account">Account</string>
+    <string name="use_sip_account">Use SIP Account</string>
+    <string name="username">Username</string>
+    <string name="user_id_optional">User-id (optional)</string>
+    <string name="password">Password</string>
+    <string name="domain">Domain</string>
+    <string name="display_name_optional">Display name (optional)</string>
+    <string name="transport">Transport</string>
+    <string name="pref_transport_udp">UDP</string>
+    <string name="pref_transport_tcp">TCP</string>
+    <string name="pref_transport_tls">TLS</string>
+    <string name="login">Login</string>
 </resources>

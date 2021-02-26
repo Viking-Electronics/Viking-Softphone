@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_graph"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="org.linphone.settings.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_tunnelSettingsFragment"
+            app:destination="@id/tunnelSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_audioSettingsFragment"
+            app:destination="@id/audioSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_videoSettingsFragment"
+            app:destination="@id/videoSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_callSettingsFragment"
+            app:destination="@id/callSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_networkSettingsFragment"
+            app:destination="@id/networkSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_advancedSettingsFragment"
+            app:destination="@id/advancedSettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tunnelSettingsFragment"
+        android:label="Tunnel Settings"
+        android:name="org.linphone.settings.TunnelSettingsFragment"
+        tools:layout="@layout/settings_tunnel"/>
+
+    <fragment
+        android:id="@+id/audioSettingsFragment"
+        android:label="Audio Settings"
+        android:name="org.linphone.settings.AudioSettingsFragment"
+        tools:layout="@layout/settings_audio"/>
+
+    <fragment
+        android:id="@+id/videoSettingsFragment"
+        android:label="Video Settings"
+        android:name="org.linphone.settings.VideoSettingsFragment"
+        tools:layout="@layout/settings_video"/>
+
+    <fragment
+        android:id="@+id/callSettingsFragment"
+        android:label="Call Settings"
+        android:name="org.linphone.settings.CallSettingsFragment"
+        tools:layout="@layout/settings_call"/>
+
+    <fragment
+        android:id="@+id/networkSettingsFragment"
+        android:label="Network Settings"
+        android:name="org.linphone.settings.NetworkSettingsFragment"
+        tools:layout="@layout/settings_network"/>
+
+    <fragment
+        android:id="@+id/advancedSettingsFragment"
+        android:label="Advanced Settings"
+        android:name="org.linphone.settings.AdvancedSettingsFragment"
+        tools:layout="@layout/settings_advanced"/>
+
+</navigation>
