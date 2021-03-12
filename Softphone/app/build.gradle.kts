@@ -1,3 +1,7 @@
+import com.google.protobuf.gradle.builtins
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
 import java.net.URI
 
 plugins {
@@ -6,11 +10,17 @@ plugins {
     id("com.google.firebase.appdistribution")
     id("com.google.firebase.crashlytics")
     id("com.google.gms.google-services")
+    id("com.google.protobuf") version "0.8.12"
 
     id("dagger.hilt.android.plugin")
 
+
+
     kotlin("android")
     kotlin("kapt")
+    id("kotlin-parcelize")
+
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 repositories {
@@ -58,18 +68,18 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-beta01"
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
         useIR = true
-        freeCompilerArgs += "-Xallow-jvm-ir-dependencies"
     }
     kapt {
         correctErrorTypes = true
@@ -77,6 +87,24 @@ android {
     packagingOptions {
         exclude("META-INF/*")
     }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.14.0"
+    }
+
+//    generateProtoTasks {
+//        all().forEach { task ->
+//            task.builtins {
+//
+//                java {
+//                    this.toolchain.implementation = "lite"
+//                    option = "lite"
+//                }
+//            }
+//        }
+//    }
 }
 
 dependencies {
@@ -94,10 +122,11 @@ dependencies {
     implementation("androidx.compose.material:material:1.0.0-beta01")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
 
+    implementation("androidx.datastore:datastore-core:1.0.0-alpha08")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 
@@ -105,12 +134,16 @@ dependencies {
     implementation("com.github.etiennelenhart.eiffel:eiffel-test:5.0.0")
 
     implementation("com.google.android.material:material:1.3.0")
-
     implementation("com.google.dagger:hilt-android:2.31.2-alpha")
+    implementation("com.google.protobuf:protobuf-javalite:3.14.0")
 
-    implementation(platform("com.google.firebase:firebase-bom:26.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:26.6.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+    implementation("com.jakewharton.timber:timber:4.7.1")
 
     implementation("com.karumi:dexter:6.2.2")
 
@@ -118,13 +151,16 @@ dependencies {
 
     implementation("com.mikepenz:iconics-core:5.2.4")
 
+    implementation("dev.chrisbanes.accompanist:accompanist-coil:0.6.1")
+
     implementation("joda-time:joda-time:2.10")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.30")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.30")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.30")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
 
-    implementation("org.linphone:linphone-sdk-android-debug:4.4.24")
+    implementation("org.linphone:linphone-sdk-android-debug:4.4.33")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'
@@ -134,7 +170,7 @@ dependencies {
 //    testImplementation 'com.google.dagger:hilt-android-testing:<VERSION>'
 //    testAnnotationProcessor 'com.google.dagger:hilt-android-compiler:<VERSION>'
 
-    kapt("androidx.hilt:hilt-compiler:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.0.0-beta01")
     kapt("com.google.dagger:hilt-android-compiler:2.31.2-alpha")
 
 

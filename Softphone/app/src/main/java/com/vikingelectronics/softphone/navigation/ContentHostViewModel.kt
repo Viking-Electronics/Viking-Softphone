@@ -19,19 +19,19 @@ class ContentHostViewModel @Inject constructor(
 ): ViewModel(){
 
 
-    private val coreRegistrationListener = object : CoreListenerStub() {
-        override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState?, message: String?) {
-            super.onRegistrationStateChanged(lc, cfg, cstate, message)
-
-        }
-    }
+//    private val coreRegistrationListener = object : CoreListenerStub() {
+//        override fun onRegistrationStateChanged(lc: Core?, cfg: ProxyConfig?, cstate: RegistrationState?, message: String?) {
+//            super.onRegistrationStateChanged(lc, cfg, cstate, message)
+//
+//        }
+//    }
 
     init {
-        core.addListener(coreRegistrationListener)
+//        core.addListener(coreRegistrationListener)
     }
 
     override fun onCleared() {
-        core.removeListener(coreRegistrationListener)
+//        core.removeListener(coreRegistrationListener)
         super.onCleared()
     }
 

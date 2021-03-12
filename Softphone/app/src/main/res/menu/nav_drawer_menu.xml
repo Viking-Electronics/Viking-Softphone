@@ -3,17 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group
-        android:id="@+id/settingsGroup">
+        android:id="@+id/schedulesGroup">
         <item
-            android:id="@+id/settings_graph"
-            android:icon="@drawable/x35_icon"
-            android:title="@string/settings"/>
-    </group>
-
-    <group
-        android:id="@+id/recordingsGroup">
-        <item
-            android:id="@+id/recordingsFragment"
+            android:id="@+id/schedulesFragment"
             android:icon="@drawable/x35_icon"
             android:title="@string/recordings"/>
     </group>
@@ -26,9 +18,17 @@
             android:title="@string/info"/>
     </group>
 
-    <item
-        android:id="@+id/accounts_graph"
-        android:icon="@drawable/x35_icon"
-        android:title="@string/account"/>
+    <group
+        android:id="@+id/settingsGroup">
+        <item
+            android:id="@+id/settings_graph"
+            android:icon="@drawable/x35_icon"
+            android:title="@string/settings"/>
+    </group>
+
+<!--    <item-->
+<!--        android:id="@+id/accounts_graph"-->
+<!--        android:icon="@drawable/x35_icon"-->
+<!--        android:title="@string/account"/>-->
 
 </menu>

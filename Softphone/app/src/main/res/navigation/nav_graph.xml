@@ -3,19 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/devicesFragment">
+    app:startDestination="@id/deviceListFragment">
 
     <fragment
-        android:id="@+id/devicesFragment"
-        android:name="com.vikingelectronics.softphone.devices.DevicesFragment"
+        android:id="@+id/deviceListFragment"
+        android:name="com.vikingelectronics.softphone.devices.list.DeviceListFragment"
         android:label="Devices"
-        tools:layout="@layout/fragment_devices"/>
+        tools:layout="@layout/fragment_devices">
+
+        <action
+            android:id="@+id/action_devicesListFragment_to_deviceDetailFragment"
+            app:destination="@id/deviceDetailFragment" />
+
+    </fragment>
 
     <fragment
-        android:id="@+id/activityFragment"
-        android:name="com.vikingelectronics.softphone.activity.LegacyHistoryFragment"
+        android:id="@+id/deviceDetailFragment"
+        android:name="com.vikingelectronics.softphone.devices.detail.DeviceDetailFragment"
+        android:label="{deviceName}">
+
+        <argument
+            android:name="deviceName"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="device"
+            app:argType="com.vikingelectronics.softphone.devices.Device"/>
+
+        <action
+            android:id="@+id/action_devicesDetailFragment_to_ActivityDetailFragment"
+            app:destination="@+id/activityDetailFragment"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/activityListFragment"
+        android:name="com.vikingelectronics.softphone.activity.list.ActivityListFragment"
         android:label="Activity"
-        tools:layout="@layout/history"/>
+        tools:layout="@layout/history">
+
+        <action
+            android:id="@+id/action_activityListFragment_to_ActivityDetailFragment"
+            app:destination="@+id/activityDetailFragment"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/activityDetailFragment"
+        android:name="com.vikingelectronics.softphone.activity.detail.ActivityDetailFragment"
+        android:label="{activityTimestamp}">
+
+        <argument
+            android:name="activityTimestamp"
+            app:argType="string"
+            android:defaultValue=""/>
+
+        <argument
+            android:name="activityEntry"
+            app:argType="com.vikingelectronics.softphone.activity.ActivityEntry"/>
+    </fragment>
 
     <fragment
         android:id="@+id/schedulesFragment"
@@ -42,5 +88,7 @@
         android:name="org.linphone.fragments.AboutFragment"
         android:label="@string/info"
         tools:layout="@layout/about"/>
+
+
 
 </navigation>

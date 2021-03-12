@@ -1,6 +1,11 @@
 package com.vikingelectronics.softphone.dagger
 
 import android.content.Context
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,15 +45,11 @@ object ApplicationModule {
         config: Config
     ): Core = factory.createCoreWithConfig(config, context).apply {
         start()
+    }
 
-        //apparently linphone requires the client to explicitly call iterate or nothing will work
-        GlobalScope.launch(Dispatchers.Default) {
-            while (this@apply != null) {
-                delay(30)
-                withContext(Dispatchers.Main) {
-                    iterate()
-                }
-            }
-        }
+    @Singleton
+    @Provides
+    fun provideFirestore(): FirebaseFirestore = Firebase.firestore.apply {
+        firestoreSettings { isPersistenceEnabled = true }
     }
 }

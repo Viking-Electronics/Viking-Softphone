@@ -9,16 +9,19 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
 import org.linphone.core.Core
 import javax.inject.Inject
+import javax.inject.Singleton
 
 class PermissionsManager @Inject constructor(
-    @ActivityContext private val context: Context,
+    @ApplicationContext private val context: Context,
     private val core: Core
 ) {
 
-    fun requestPermissionsForQRReading(onSuccess: () -> Unit) {
-        val permissionListener =  object : PermissionListener {
+    private fun listener(onSuccess: () -> Unit): PermissionListener {
+        return object : PermissionListener {
             override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
                 core.restart()
                 onSuccess.invoke()
@@ -32,9 +35,19 @@ class PermissionsManager @Inject constructor(
                 TODO("Not yet implemented")
             }
         }
+    }
+
+    fun requestPermissionsForQRReading(onSuccess: () -> Unit) {
         Dexter.withContext(context)
             .withPermission(Manifest.permission.CAMERA)
-            .withListener(permissionListener)
+            .withListener(listener(onSuccess))
+            .check()
+    }
+
+    fun requestPermissionsForAudio(onSuccess: () -> Unit) {
+        Dexter.withContext(context)
+            .withPermission(Manifest.permission.RECORD_AUDIO)
+            .withListener(listener(onSuccess))
             .check()
     }
 }

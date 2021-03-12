@@ -3,18 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/devicesFragment"
+        android:id="@+id/deviceListFragment"
         android:icon="@drawable/x35_icon"
         android:title="@string/devices"/>
 
     <item
-        android:id="@+id/activityFragment"
+        android:id="@+id/activityListFragment"
         android:icon="@drawable/x35_icon"
         android:title="@string/activity"/>
 
     <item
-        android:id="@+id/schedulesFragment"
+        android:id="@+id/recordingsFragment"
         android:icon="@drawable/x35_icon"
-        android:title="@string/schedules"/>
+        android:title="@string/recordings"/>
 
 </menu>

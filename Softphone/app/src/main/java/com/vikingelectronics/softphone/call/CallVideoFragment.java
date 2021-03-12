@@ -32,8 +32,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.jetbrains.annotations.NotNull;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphoneService;
 import org.linphone.R;
@@ -74,20 +77,20 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
     // Warning useless because value is ignored and automatically set by new APIs.
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        @NotNull LayoutInflater inflater,
+        ViewGroup container,
+        Bundle savedInstanceState) {
         View view;
         if (core.hasCrappyOpengl()) {
             view = inflater.inflate(R.layout.video_no_opengl, container, false);
-        }
-        else {
+        } else {
             view = inflater.inflate(R.layout.video, container, false);
         }
 
         mVideoView = view.findViewById(R.id.videoSurface);
 //        mCaptureView = view.findViewById(R.id.videoCaptureSurface);
 
-        core.setNativeVideoWindowId(mVideoView);
-//        core.setNativePreviewWindowId(mCaptureView);
+
 
         mVideoView.setOnTouchListener(
             (v, event) -> {
@@ -129,6 +132,14 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
 //                    }
 //                });
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        core.setNativeVideoWindowId(mVideoView);
+        core.setNativePreviewWindowId(mVideoView);
     }
 
     @Override
@@ -219,13 +230,13 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
 
     @Override
     public void onPause() {
-        if (LinphonePreferences.instance().isOverlayEnabled() && core != null && core.getCurrentCall() != null) {
-            Call call = core.getCurrentCall();
-            if (call.getState() == Call.State.StreamsRunning) {
-                // Prevent overlay creation if video call is paused by remote
-//                LinphoneService.instance().createOverlay();
-            }
-        }
+//        if (LinphonePreferences.instance().isOverlayEnabled() && core != null && core.getCurrentCall() != null) {
+//            Call call = core.getCurrentCall();
+//            if (call.getState() == Call.State.StreamsRunning) {
+//                // Prevent overlay creation if video call is paused by remote
+////                LinphoneService.instance().createOverlay();
+//            }
+//        }
 
         super.onPause();
     }
