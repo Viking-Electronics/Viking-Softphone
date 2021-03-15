@@ -3,6 +3,7 @@ package com.vikingelectronics.softphone.networking
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -29,12 +30,11 @@ class ActivityRepositoryImpl @Inject constructor(
 
         sipAccount.devices.forEach { ref ->
             activityCollection.whereEqualTo("sourceDevice", ref)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
                 .documents
-                .forEach { doc ->
-                    doc.toObject<ActivityEntry>()?.let { emit(it) }
-                }
+                .iterateToObject<ActivityEntry> { emit(it) }
         }
 
     }

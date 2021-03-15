@@ -39,4 +39,8 @@ abstract class FirebaseRepository {
     suspend inline fun <reified T> List<DocumentReference>.iterateToObject(actor: (T) -> Unit) = this.forEach {
         it.getAwait().toObject<T>()?.let(actor)
     }
+
+    inline fun <reified T> List<DocumentSnapshot>.iterateToObject(actor: (T) -> Unit) = this.forEach {
+        it.toObject<T>()?.let(actor)
+    }
 }

@@ -43,13 +43,6 @@ class DeviceRepositoryImpl @Inject constructor(
             val updatedDevice = getAndAppendLatestDeviceActivity(device)
             emit(updatedDevice)
         }
-
-//        sipAccount?.devices?.forEach { doc ->
-//            doc.getAwait().toObject<Device>()?.let { device ->
-//                val updatedDevice = getAndAppendLatestDeviceActivity(device)
-//                emit(updatedDevice)
-//            }
-//        }
     }
 
     override fun getDeviceActivityList(device: Device): Flow<ActivityEntry> = flow {
@@ -59,12 +52,7 @@ class DeviceRepositoryImpl @Inject constructor(
             .getAwait()
             .documents
             .apply {
-                subList(1, size)
-                subList(1, size).forEach { activityRef ->
-                    activityRef.toObject<ActivityEntry>()?.let { entry ->
-                        emit(entry)
-                    }
-                }
+                subList(1, size).iterateToObject<ActivityEntry> { emit(it) }
             }
 
     }
