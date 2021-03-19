@@ -7,7 +7,7 @@
         <item
             android:id="@+id/schedulesFragment"
             android:icon="@drawable/x35_icon"
-            android:title="@string/recordings"/>
+            android:title="@string/schedules"/>
     </group>
 
     <group
@@ -25,10 +25,5 @@
             android:icon="@drawable/x35_icon"
             android:title="@string/settings"/>
     </group>
-
-<!--    <item-->
-<!--        android:id="@+id/accounts_graph"-->
-<!--        android:icon="@drawable/x35_icon"-->
-<!--        android:title="@string/account"/>-->
 
 </menu>

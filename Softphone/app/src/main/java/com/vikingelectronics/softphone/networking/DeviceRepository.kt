@@ -3,11 +3,12 @@ package com.vikingelectronics.softphone.networking
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.storage.FirebaseStorage
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.Device
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface DeviceRepository {
@@ -15,15 +16,16 @@ interface DeviceRepository {
     fun getDeviceActivityList(device: Device): Flow<ActivityEntry>
 }
 
-
+@ViewModelScoped
 class DeviceRepositoryImpl @Inject constructor(
-   override val db: FirebaseFirestore
+   override val db: FirebaseFirestore,
+   override val storage: FirebaseStorage
 ): FirebaseRepository(), DeviceRepository {
 
     private suspend fun getAndAppendLatestDeviceActivity(device: Device): Device {
         val deviceRef = devicesCollectionRef.document(device.id)
 
-        return activityCollection.whereEqualTo("sourceDevice", deviceRef)
+        return activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(1)
             .getAwait()
@@ -36,7 +38,7 @@ class DeviceRepositoryImpl @Inject constructor(
     }
 
     override fun getDevices(username: String): Flow<Device> = flow {
-        val user = getUser(username)
+        val user = getUser(username) ?: return@flow
         val sipAccount = getSipAccount(user)
 
         sipAccount?.devices?.iterateToObject<Device> { device ->
@@ -48,7 +50,7 @@ class DeviceRepositoryImpl @Inject constructor(
     override fun getDeviceActivityList(device: Device): Flow<ActivityEntry> = flow {
         val deviceDocRef = devicesCollectionRef.document(device.id)
 
-        activityCollection.whereEqualTo("sourceDevice", deviceDocRef)
+        activityCollectionRef.whereEqualTo("sourceDevice", deviceDocRef)
             .getAwait()
             .documents
             .apply {

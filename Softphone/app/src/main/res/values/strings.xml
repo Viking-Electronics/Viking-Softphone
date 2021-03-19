@@ -4,7 +4,8 @@
     <string name="activity">Activity</string>
     <string name="schedules">Schedules</string>
     <string name="settings">Settings</string>
-    <string name="recordings">Recordings</string>
+    <string name="records">Records</string>
+    <string name="record_details">Record Details</string>
     <string name="info">Info</string>
     <string name="account">Account</string>
     <string name="use_sip_account">Use SIP Account</string>

@@ -9,7 +9,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.networking.ActivityRepository
-import com.vikingelectronics.softphone.networking.ActivityRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -17,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityListViewModel @Inject constructor(
-    private val activityRepository: ActivityRepositoryImpl
+    private val repository: ActivityRepository
 ): ViewModel() {
 
 
@@ -32,18 +31,18 @@ class ActivityListViewModel @Inject constructor(
 
     fun getActivityEntries() {
         viewModelScope.launch {
-            activityRepository.getAllEntries().collect {
+            repository.getAllEntries().collect {
                 activityEntries += it
             }
         }
     }
 
     fun navigateToDetail(navController: NavController, activityEntry: ActivityEntry) {
-        val directions = ActivityListFragmentDirections.actionActivityListFragmentToActivityDetailFragment(activityEntry.timestamp.toDate().toString(), activityEntry)
+        val directions = ActivityListFragmentDirections.actionActivityListFragmentToActivityDetailFragment(activityEntry.sourceName, activityEntry)
         navController.navigate(directions)
     }
 
     fun generateActivityEntries() = viewModelScope.launch {
-        activityRepository.generateEntries()
+//        activityRepository.generateEntries()
     }
 }

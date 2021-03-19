@@ -80,6 +80,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
         useIR = true
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
     kapt {
         correctErrorTypes = true
@@ -120,6 +121,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.0.0-beta01")
     implementation("androidx.compose.foundation:foundation:1.0.0-beta01")
     implementation("androidx.compose.material:material:1.0.0-beta01")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta01")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
 
     implementation("androidx.datastore:datastore-core:1.0.0-alpha08")
@@ -150,6 +152,8 @@ dependencies {
     implementation("com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1")
 
     implementation("com.mikepenz:iconics-core:5.2.4")
+    implementation("com.mikepenz:iconics-compose:5.2.4")
+    implementation("com.mikepenz:google-material-typeface:4.0.0.1-kotlin@aar")
 
     implementation("dev.chrisbanes.accompanist:accompanist-coil:0.6.1")
 
@@ -159,6 +163,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.30")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
     implementation("org.linphone:linphone-sdk-android-debug:4.4.33")
 

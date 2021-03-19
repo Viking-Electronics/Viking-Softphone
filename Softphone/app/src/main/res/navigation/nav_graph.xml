@@ -51,10 +51,10 @@
     <fragment
         android:id="@+id/activityDetailFragment"
         android:name="com.vikingelectronics.softphone.activity.detail.ActivityDetailFragment"
-        android:label="{activityTimestamp}">
+        android:label="{sourceDeviceName}">
 
         <argument
-            android:name="activityTimestamp"
+            android:name="sourceDeviceName"
             app:argType="string"
             android:defaultValue=""/>
 
@@ -78,10 +78,28 @@
         app:graph="@navigation/settings_graph"/>
 
     <fragment
-        android:id="@+id/recordingsFragment"
-        android:name="org.linphone.recording.RecordingsFragment"
-        android:label="@string/recordings"
-        tools:layout="@layout/fragment_recordings"/>
+        android:id="@+id/recordsFragment"
+        android:name="com.vikingelectronics.softphone.records.list.RecordsFragment"
+        android:label="@string/records"
+        tools:layout="@layout/fragment_recordings">
+
+        <action
+            android:id="@+id/action_recordsFragment_to_recordsDetailFragment"
+            app:destination="@+id/recordDetailFragment"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/recordDetailFragment"
+        android:name="com.vikingelectronics.softphone.records.detail.RecordDetailFragment"
+        android:label="@string/record_details">
+
+        <argument
+            android:name="record"
+            app:argType="com.vikingelectronics.softphone.records.Record"/>
+
+    </fragment>
+
 
     <fragment
         android:id="@+id/infoFragment"

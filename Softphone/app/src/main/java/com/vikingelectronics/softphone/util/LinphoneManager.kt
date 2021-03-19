@@ -72,7 +72,7 @@ class LinphoneManager @Inject constructor(
     }
 
     fun callDevice(scope: CoroutineScope,
-                   device: Device) = scope.launch(Default){
+                   device: Device) = scope.launch(Main){
         val address = factory.createAddress(device.callAddress)
         val parameters = core.createCallParams(null)?.apply {
             enableVideo(true)

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.networking.DeviceRepository
 import com.vikingelectronics.softphone.networking.DeviceRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeviceDetailViewModel @Inject constructor(
-    private val repository: DeviceRepositoryImpl
+    private val repository: DeviceRepository
 ): ViewModel() {
 
 

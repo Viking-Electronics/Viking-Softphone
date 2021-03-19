@@ -47,38 +47,31 @@ fun ActivityDetailScreen(
 ) {
 
     val viewModel: ActivityDetailViewModel = viewModel()
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
+        
+        Text(
+            text = entry.timestamp.toDate().toString(),
+            style = MaterialTheme.typography.h5
+        )
+        
+        CoilImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            data = entry.snapshotUrl,
+            contentDescription = "Image from ${entry.description}, at ${entry.timestamp.toDate()}",
+            contentScale = ContentScale.Inside,
+        )
 
-        item {
-            CoilImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp),
-                data = entry.snapshotUrl,
-                contentDescription = "Image from ${entry.description}, at ${entry.timestamp.toDate()}",
-                contentScale = ContentScale.Inside,
-            )
-        }
-
-        items(viewModel.storageFileDLRefs) {
-            Text(text = it)
-        }
-
-
-//        LazyColumn(
-//            modifier = Modifier.fillMaxHeight()
-//        ) {
-//
-//            viewModel.storageFileDLRefs.forEach {
-//                item {
-//                    Text(text = it)
-//                }
-//            }
-////            items(viewModel.storageFileDLRefs) { ref ->
-////                Text(text = ref)
-////            }
-//        }
+        Text(
+            text = entry.description,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(top = 16.dp)
+        )
     }
 }

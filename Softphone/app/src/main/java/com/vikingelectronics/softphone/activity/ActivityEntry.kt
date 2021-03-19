@@ -41,7 +41,7 @@ fun ActivityEntryCard (
             CoilImage(
                 data = entry.snapshotUrl,
                 contentDescription = "Image from activity entry",
-                modifier = Modifier.size(80.dp)
+                modifier = Modifier.padding(start = 16.dp).size(80.dp)
             )
 
             Column(

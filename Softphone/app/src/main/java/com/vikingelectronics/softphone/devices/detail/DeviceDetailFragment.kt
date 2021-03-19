@@ -72,9 +72,7 @@ fun DeviceDetailScreen(
                 )
 
                 CoilImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(400.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     data = device.latestActivityEntry.snapshotUrl,
                     contentDescription = "Latest snapshot from ${device.name}",
                     contentScale = ContentScale.Inside,
@@ -104,7 +102,7 @@ fun DeviceDetailScreen(
             ActivityEntryCard(
                 entry = entry,
                 modifier = Modifier.clickable {
-                    val directions = DeviceDetailFragmentDirections.actionDevicesDetailFragmentToActivityDetailFragment(entry.timestamp.toDate().toString(), entry)
+                    val directions = DeviceDetailFragmentDirections.actionDevicesDetailFragmentToActivityDetailFragment(device.name, entry)
                     navController.navigate(directions)
                 }
             )

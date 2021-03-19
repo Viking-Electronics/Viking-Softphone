@@ -1,18 +1,15 @@
 package com.vikingelectronics.softphone.networking
 
-import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.vikingelectronics.softphone.activity.ActivityEntry
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,15 +18,16 @@ interface ActivityRepository {
 }
 
 class ActivityRepositoryImpl @Inject constructor(
-    override val db: FirebaseFirestore
+    override val db: FirebaseFirestore,
+    override val storage: FirebaseStorage
 ): FirebaseRepository(), ActivityRepository {
 
     override fun getAllEntries(): Flow<ActivityEntry> = flow {
-        val user = getUser("5514255221u1")
+        val user = getUser("5514255221u1") ?: return@flow
         val sipAccount = getSipAccount(user) ?: return@flow
 
         sipAccount.devices.forEach { ref ->
-            activityCollection.whereEqualTo("sourceDevice", ref)
+            activityCollectionRef.whereEqualTo("sourceDevice", ref)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
@@ -55,7 +53,7 @@ class ActivityRepositoryImpl @Inject constructor(
                 "timestamp" to FieldValue.serverTimestamp()
             )
 
-            activityCollection.add(entry).addOnSuccessListener {
+            activityCollectionRef.add(entry).addOnSuccessListener {
                 Timber.d("Entry added: ${it.id}")
             }
         }

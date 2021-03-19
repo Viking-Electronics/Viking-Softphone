@@ -47,8 +47,8 @@ fun DeviceCard(
     val viewModel: DeviceListViewModel = viewModel()
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 8.dp)
+//            .padding(horizontal = 16.dp)
+//            .padding(top = 8.dp, bottom = 8.dp)
             .fillMaxWidth(),
         backgroundColor = colorResource(id = R.color.light_grey_color),
         elevation = 4.dp
@@ -64,7 +64,6 @@ fun DeviceCard(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 CoilImage(
-                    modifier = Modifier.defaultMinSize(200.dp, 200.dp),
                     data = device.latestActivityEntry.snapshotUrl,
                     contentDescription = "Latest snapshot from ${device.name}",
                     contentScale = ContentScale.FillWidth,

@@ -42,7 +42,8 @@ fun DevicesListScreen(navController: NavController) {
     val viewModel: DeviceListViewModel = viewModel()
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(16.dp)
     ) {
         items(viewModel.devices) { device ->
             DeviceCard(
