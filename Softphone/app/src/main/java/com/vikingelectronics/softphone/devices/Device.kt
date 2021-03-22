@@ -32,9 +32,10 @@ data class Device(
     @DocumentId val id: String = "",
     val name: String = "",
     val callAddress: String = "",
-    val latestActivityEntry: ActivityEntry = ActivityEntry(),
     val allActivityEntries: List<ActivityEntry>? = null
 ): Parcelable {
+    @IgnoredOnParcel
+    lateinit var latestActivityEntry: ActivityEntry
     @IgnoredOnParcel
     val activityEntryRefs: List<DocumentReference> = listOf()
 }

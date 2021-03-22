@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.records.detail
+package com.vikingelectronics.softphone.captures.detail
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.records.Record
+import com.vikingelectronics.softphone.captures.Capture
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RecordDetailFragment: Fragment(R.layout.fragment_generic_compose) {
+class CaptureDetailFragment: Fragment(R.layout.fragment_generic_compose) {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)?.apply {
@@ -25,7 +25,7 @@ class RecordDetailFragment: Fragment(R.layout.fragment_generic_compose) {
 
 @Composable
 fun RecordDetailScreen(
-    record: Record
+    capture: Capture
 ) {
 
 }

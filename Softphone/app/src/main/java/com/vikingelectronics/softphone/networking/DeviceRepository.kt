@@ -22,19 +22,18 @@ class DeviceRepositoryImpl @Inject constructor(
    override val storage: FirebaseStorage
 ): FirebaseRepository(), DeviceRepository {
 
-    private suspend fun getAndAppendLatestDeviceActivity(device: Device): Device {
-        val deviceRef = devicesCollectionRef.document(device.id)
+    private suspend fun Device.getLatestDeviceActivity() {
+        val deviceRef = devicesCollectionRef.document(id)
 
-        return activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
+        activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(1)
             .getAwait()
             .documents[0]
             .toObject<ActivityEntry>()
-            ?.let {
-                device.copy(latestActivityEntry = it)
-            } ?: device
-
+            ?.let { entry ->
+                latestActivityEntry = entry
+            }
     }
 
     override fun getDevices(username: String): Flow<Device> = flow {
@@ -42,8 +41,8 @@ class DeviceRepositoryImpl @Inject constructor(
         val sipAccount = getSipAccount(user)
 
         sipAccount?.devices?.iterateToObject<Device> { device ->
-            val updatedDevice = getAndAppendLatestDeviceActivity(device)
-            emit(updatedDevice)
+            device.getLatestDeviceActivity()
+            emit(device)
         }
     }
 

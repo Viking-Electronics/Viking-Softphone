@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.records.list
+package com.vikingelectronics.softphone.captures.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,17 +17,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.records.RecordCard
+import com.vikingelectronics.softphone.captures.RecordCard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RecordsFragment: Fragment(R.layout.fragment_generic_compose) {
+class CapturesListFragment: Fragment(R.layout.fragment_generic_compose) {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)?.apply {
             findViewById<ComposeView>(R.id.composeView).setContent {
                 MaterialTheme {
-                    RecordsScreen(findNavController())
+                    CapturesListScreen(findNavController())
                 }
             }
         }
@@ -35,19 +35,19 @@ class RecordsFragment: Fragment(R.layout.fragment_generic_compose) {
 }
 
 @Composable
-fun RecordsScreen(
+fun CapturesListScreen(
     navController: NavController
 ) {
 
-    val viewModel: RecordsViewModel = viewModel()
+    val viewModel: CapturesListViewModel = viewModel()
 
     LazyColumn (
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
-        items(viewModel.externalRecords) {
-            RecordCard(record = it, navController)
+        items(viewModel.externalCaptures) {
+            RecordCard(capture = it, navController)
         }
 
     }

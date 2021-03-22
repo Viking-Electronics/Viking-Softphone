@@ -1,43 +1,35 @@
 package com.vikingelectronics.softphone.networking
 
 import android.content.Context
-import android.icu.text.SimpleDateFormat
-import android.text.format.DateFormat
 import android.text.format.DateUtils
 import android.text.format.Formatter
-import androidx.compose.runtime.mutableStateOf
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
-import com.vikingelectronics.softphone.records.Record
+import com.vikingelectronics.softphone.captures.Capture
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import kotlinx.datetime.*
-import timber.log.Timber
-import java.sql.Date
-import java.sql.Time
-import java.util.*
 import javax.inject.Inject
 import kotlin.Result
 
-interface RecordsRepository {
-    suspend fun getExternalRecords(): Flow<Record>
+interface CapturesRepository {
+    suspend fun getExternalCaptures(): Flow<Capture>
     suspend fun updateFavorite(storageReference: StorageReference, shouldBeFavorite: Boolean): Flow<Result<Boolean>>
 }
 
-class RecordsRepositoryImpl @Inject constructor(
+class CapturesRepositoryImpl @Inject constructor(
     override val db: FirebaseFirestore,
     override val storage: FirebaseStorage,
     @ApplicationContext val context: Context,
-): FirebaseRepository(), RecordsRepository {
+): FirebaseRepository(), CapturesRepository {
 
 
-    override suspend fun getExternalRecords(): Flow<Record> = flow {
+    override suspend fun getExternalCaptures(): Flow<Capture> = flow {
         initStorageRecord()
         storageRef?.listAll()
                 ?.await()
@@ -54,7 +46,7 @@ class RecordsRepositoryImpl @Inject constructor(
         return storageReference.updateMetadata(metadata).emitResult()
     }
 
-    private suspend fun generateRecordFromStorageRef(reference: StorageReference): Record {
+    private suspend fun generateRecordFromStorageRef(reference: StorageReference): Capture {
         val metadata = reference.metadata.await()
         val downloadUrl = reference.downloadUrl.await()
 
@@ -66,7 +58,7 @@ class RecordsRepositoryImpl @Inject constructor(
 
         val name = reference.name
 
-        return Record(name, downloadUrl, timestamp,  convertedSize).apply {
+        return Capture(name, downloadUrl, timestamp,  convertedSize).apply {
             storageReference = reference
             isFavorite = favorite
         }
@@ -82,7 +74,7 @@ class RecordsRepositoryImpl @Inject constructor(
         val time = metadata.creationTimeMillis
         val now: Long = Clock.System.now().toEpochMilliseconds()
 
-        return "Created ${DateUtils.getRelativeTimeSpanString(time, now, 1000L)}"
+        return "Captured ${DateUtils.getRelativeTimeSpanString(time, now, 1000L)}"
 //        Timber.d(newTime.toString())
 //        if (time > now || time <= 0) {
 //            return "Something went wrong with time conversion"

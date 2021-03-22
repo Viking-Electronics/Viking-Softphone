@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.records
+package com.vikingelectronics.softphone.captures
 
 import android.net.Uri
 import android.os.Parcelable
@@ -20,13 +20,13 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.StorageReference
 import com.mikepenz.iconics.compose.ExperimentalIconics
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.records.list.RecordsViewModel
+import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Record (
+data class Capture (
     val name: String,
     val imageUri: Uri,
     val timestamp: String,
@@ -43,11 +43,11 @@ data class Record (
 @OptIn(ExperimentalIconics::class)
 @Composable
 fun RecordCard (
-    record: Record,
+    capture: Capture,
     navController: NavController
 ) {
 
-    val viewModel: RecordsViewModel = viewModel()
+    val viewModel: CapturesListViewModel = viewModel()
     var menuExpanded by remember { mutableStateOf(false) }
 
     Card (
@@ -71,12 +71,12 @@ fun RecordCard (
                     modifier = Modifier.width(125.dp),
                 ) {
                     CoilImage(
-                        data = record.imageUri,
-                        contentDescription = "Record of activity from ${record.sourceRef}",
+                        data = capture.imageUri,
+                        contentDescription = "Record of activity from ${capture.sourceRef}",
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
                     )
-                    if (record.isFavorite) {
+                    if (capture.isFavorite) {
                         Icon (
                             imageVector = Icons.Filled.Favorite,
                             contentDescription = "Favorite icon",
@@ -91,13 +91,13 @@ fun RecordCard (
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
-                        text = record.timestamp
+                        text = capture.timestamp
                     )
                     Text(
-                        text = record.size
+                        text = capture.size
                     )
                     Text(
-                        text = record.sourceRef.toString()
+                        text = capture.sourceRef.toString()
                     )
                 }
             }
@@ -117,17 +117,17 @@ fun RecordCard (
 
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.favoriteRecord(record)
+                            viewModel.favoriteRecord(capture)
                             menuExpanded = false
                         }
                     ) {
-                        val text = if (record.isFavorite) "Unfavorite" else "Favorite"
+                        val text = if (capture.isFavorite) "Unfavorite" else "Favorite"
                         Text(text = text)
                     }
 
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.deleteRecord(record)
+                            viewModel.deleteRecord(capture)
                             menuExpanded = false
                         }
                     ) {
@@ -136,7 +136,7 @@ fun RecordCard (
 
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.downloadRecord(record)
+                            viewModel.downloadRecord(capture)
                             menuExpanded = false
                         }
                     ) {
@@ -150,7 +150,7 @@ fun RecordCard (
 
 @Composable
 fun deleteConfirmationDialog(
-    record: Record
+    capture: Capture
 ) {
 //    AlertDialog(onDismissRequest = { /*TODO*/ }) {
 //

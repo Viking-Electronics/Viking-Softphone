@@ -78,25 +78,25 @@
         app:graph="@navigation/settings_graph"/>
 
     <fragment
-        android:id="@+id/recordsFragment"
-        android:name="com.vikingelectronics.softphone.records.list.RecordsFragment"
-        android:label="@string/records"
+        android:id="@+id/capturesListFragment"
+        android:name="com.vikingelectronics.softphone.captures.list.CapturesListFragment"
+        android:label="@string/captures"
         tools:layout="@layout/fragment_recordings">
 
         <action
-            android:id="@+id/action_recordsFragment_to_recordsDetailFragment"
-            app:destination="@+id/recordDetailFragment"/>
+            android:id="@+id/action_capturesListFragment_to_captureDetailFragment"
+            app:destination="@+id/captureDetailFragment"/>
 
     </fragment>
 
     <fragment
-        android:id="@+id/recordDetailFragment"
-        android:name="com.vikingelectronics.softphone.records.detail.RecordDetailFragment"
-        android:label="@string/record_details">
+        android:id="@+id/captureDetailFragment"
+        android:name="com.vikingelectronics.softphone.captures.detail.CaptureDetailFragment"
+        android:label="@string/capture_details">
 
         <argument
-            android:name="record"
-            app:argType="com.vikingelectronics.softphone.records.Record"/>
+            android:name="capture"
+            app:argType="com.vikingelectronics.softphone.captures.Capture"/>
 
     </fragment>
 

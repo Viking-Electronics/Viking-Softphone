@@ -46,7 +46,7 @@ class ContentHostFragment: Fragment(R.layout.fragment_host) {
             setOf(
                 R.id.deviceListFragment,
                 R.id.activityListFragment,
-                R.id.recordsFragment
+                R.id.capturesListFragment
             ),
             drawerLayout
         )

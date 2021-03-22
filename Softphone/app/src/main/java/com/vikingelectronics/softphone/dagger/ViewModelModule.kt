@@ -18,5 +18,5 @@ abstract class ActivityBindings {
     abstract fun bindDeviceRepo(repo: DeviceRepositoryImpl): DeviceRepository
 
     @Binds
-    abstract fun bindRecordsRepo(repo: RecordsRepositoryImpl): RecordsRepository
+    abstract fun bindRecordsRepo(repo: CapturesRepositoryImpl): CapturesRepository
 }
