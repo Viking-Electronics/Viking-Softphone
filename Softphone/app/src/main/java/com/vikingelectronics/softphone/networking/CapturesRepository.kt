@@ -1,30 +1,30 @@
 package com.vikingelectronics.softphone.networking
 
 import android.content.Context
-import android.text.format.DateUtils
-import android.text.format.Formatter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
 import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import kotlinx.datetime.*
+import java.util.*
 import javax.inject.Inject
 import kotlin.Result
 
 interface CapturesRepository {
     suspend fun getExternalCaptures(): Flow<Capture>
     suspend fun updateFavorite(storageReference: StorageReference, shouldBeFavorite: Boolean): Flow<Result<Boolean>>
+    suspend fun downloadCapture(capture: Capture): Flow<LocalCaptureDataSource.DownloadState>
 }
 
 class CapturesRepositoryImpl @Inject constructor(
     override val db: FirebaseFirestore,
     override val storage: FirebaseStorage,
+    val localCaptureSource: LocalCaptureDataSource,
     @ApplicationContext val context: Context,
 ): FirebaseRepository(), CapturesRepository {
 
@@ -34,8 +34,7 @@ class CapturesRepositoryImpl @Inject constructor(
         storageRef?.listAll()
                 ?.await()
                 ?.items
-//                ?.sortBy { it.metadata.await().creationTimeMillis }
-                ?.forEach { emit(generateRecordFromStorageRef(it)) }
+                ?.forEach { emit(generateCaptureFromStorageRef(it)) }
     }
 
     override suspend fun updateFavorite(storageReference: StorageReference, shouldBeFavorite: Boolean): Flow<Result<Boolean>> {
@@ -46,22 +45,36 @@ class CapturesRepositoryImpl @Inject constructor(
         return storageReference.updateMetadata(metadata).emitResult()
     }
 
-    private suspend fun generateRecordFromStorageRef(reference: StorageReference): Capture {
+    override suspend fun downloadCapture(capture: Capture): Flow<LocalCaptureDataSource.DownloadState> = localCaptureSource.saveCapture(capture)
+
+    private suspend fun generateCaptureFromStorageRef(reference: StorageReference): Capture {
         val metadata = reference.metadata.await()
+
+        val name = reference.name
         val downloadUrl = reference.downloadUrl.await()
+        val id = metadata.getCustomMetadata(UUID_KEY) ?: generateAndSetUUID(reference)
+        val creationTimeMillis = metadata.creationTimeMillis
+        val size = metadata.sizeBytes
+        val type = metadata.contentType ?: ""
 
         val favorite = metadata.getCustomMetadata(FAVORITE_KEY).toBoolean()
 
-        val size = metadata.sizeBytes
-        val convertedSize = Formatter.formatFileSize(context, size)
-        val timestamp = convertTimestamp(metadata)
 
-        val name = reference.name
-
-        return Capture(name, downloadUrl, timestamp,  convertedSize).apply {
+        return Capture(name, id, downloadUrl, creationTimeMillis,  size, type).apply {
             storageReference = reference
             isFavorite = favorite
         }
+    }
+
+    private suspend fun generateAndSetUUID(reference: StorageReference): String {
+        val id = UUID.randomUUID().toString()
+        val metadata = storageMetadata {
+            setCustomMetadata(UUID_KEY, id)
+        }
+
+        reference.updateMetadata(metadata).await()
+
+        return id
     }
 
 
@@ -69,27 +82,11 @@ class CapturesRepositoryImpl @Inject constructor(
 
     }
 
-    private fun convertTimestamp(metadata: StorageMetadata): String {
-
-        val time = metadata.creationTimeMillis
-        val now: Long = Clock.System.now().toEpochMilliseconds()
-
-        return "Captured ${DateUtils.getRelativeTimeSpanString(time, now, 1000L)}"
-//        Timber.d(newTime.toString())
-//        if (time > now || time <= 0) {
-//            return "Something went wrong with time conversion"
-//        }
+//    private fun convertTimestamp(metadata: StorageMetadata): String {
 //
-//        // TODO: localize
-//        val diff = now - time
-//        return when {
-//            diff < MINUTE_MILLIS -> "just now"
-//            diff < 2 * MINUTE_MILLIS -> "a minute ago"
-//            diff < 50 * MINUTE_MILLIS -> "${diff / MINUTE_MILLIS} minutes ago"
-//            diff < 90 * MINUTE_MILLIS -> "an hour ago"
-//            diff < 24 * HOUR_MILLIS -> "${diff / HOUR_MILLIS} hours ago"
-//            diff < 48 * HOUR_MILLIS -> "yesterday"
-//            else -> "${diff / DAY_MILLIS} days ago"
-//        }
-    }
+//        val time = metadata.creationTimeMillis
+//        val now: Long = Clock.System.now().toEpochMilliseconds()
+//
+//        return "Captured ${DateUtils.getRelativeTimeSpanString(time, now, 1000L)}"
+//    }
 }

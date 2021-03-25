@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Needed to allow Linphone to install on tablets, since android.permission.CAMERA implies android.hardware.camera and android.hardware.camera.autofocus are required -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/>
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -38,7 +42,6 @@
         <receiver
             android:name=".call.IncomingCallReceiver"
             android:label="Sip call receiver"/>
-
 
     </application>
 

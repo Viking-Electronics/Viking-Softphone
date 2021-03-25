@@ -24,6 +24,7 @@ abstract class FirebaseRepository {
     internal val HOUR_MILLIS = 60 * MINUTE_MILLIS
     internal val DAY_MILLIS = 24 * HOUR_MILLIS
     internal val FAVORITE_KEY = "isFavorite"
+    internal val UUID_KEY = "uuid"
 
     internal abstract val db: FirebaseFirestore
     internal abstract val storage: FirebaseStorage

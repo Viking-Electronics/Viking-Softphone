@@ -50,4 +50,11 @@ class PermissionsManager @Inject constructor(
             .withListener(listener(onSuccess))
             .check()
     }
+
+    fun requestPermissionForStorage(onSuccess: () -> Unit) {
+        Dexter.withContext(context)
+            .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            .withListener(listener(onSuccess))
+            .check()
+    }
 }

@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
+import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CapturesListViewModel @Inject constructor (
-    private val repository: CapturesRepository
+    private val repository: CapturesRepository,
+    private val permissionsManager: PermissionsManager,
 ): ViewModel(){
 
 
@@ -53,7 +56,17 @@ class CapturesListViewModel @Inject constructor (
     }
 
     fun downloadRecord(capture: Capture) {
-
+        permissionsManager.requestPermissionForStorage {
+            viewModelScope.launch {
+                repository.downloadCapture(capture).collect { state ->
+                    when(state) {
+                        is LocalCaptureDataSource.DownloadState.Success -> {}
+                        is LocalCaptureDataSource.DownloadState.Downloading -> {}
+                        is LocalCaptureDataSource.DownloadState.Failure -> {}
+                    }
+                }
+            }
+        }
     }
 
 

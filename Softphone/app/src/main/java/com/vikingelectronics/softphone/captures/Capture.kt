@@ -1,7 +1,10 @@
 package com.vikingelectronics.softphone.captures
 
+import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
+import android.text.format.DateUtils
+import android.text.format.Formatter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -12,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,15 +26,18 @@ import com.mikepenz.iconics.compose.ExperimentalIconics
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
+import kotlinx.datetime.Clock
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Capture (
     val name: String,
+    val id: String,
     val imageUri: Uri,
-    val timestamp: String,
-    val size: String,
+    val creationTimeMillis: Long,
+    val sizeInBytes: Long,
+    val type: String,
 ): Parcelable {
     @IgnoredOnParcel
     var isFavorite: Boolean by mutableStateOf(false)
@@ -38,6 +45,14 @@ data class Capture (
     lateinit var storageReference: StorageReference
     @IgnoredOnParcel
     var sourceRef: DocumentReference? = null
+
+    fun sizeConverted(context: Context): String = Formatter.formatFileSize(context, sizeInBytes)
+
+    val timeConverted: String by lazy {
+        val now: Long = Clock.System.now().toEpochMilliseconds()
+
+         "Captured ${DateUtils.getRelativeTimeSpanString(creationTimeMillis, now, 1000L)}"
+    }
 }
 
 @OptIn(ExperimentalIconics::class)
@@ -91,10 +106,10 @@ fun RecordCard (
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
-                        text = capture.timestamp
+                        text = capture.timeConverted
                     )
                     Text(
-                        text = capture.size
+                        text = capture.sizeConverted(LocalContext.current)
                     )
                     Text(
                         text = capture.sourceRef.toString()
