@@ -112,16 +112,16 @@ dependencies {
 
     implementation(project(":legacy"))
 
-    implementation("androidx.appcompat:appcompat:1.3.0-beta01")
+    implementation("androidx.appcompat:appcompat:1.3.0-rc01")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.core:core-ktx:1.3.2")
 
-    implementation("androidx.activity:activity-compose:1.3.0-alpha04")
-    implementation("androidx.compose.ui:ui:1.0.0-beta02")
-    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta02")
-    implementation("androidx.compose.foundation:foundation:1.0.0-beta02")
-    implementation("androidx.compose.material:material:1.0.0-beta02")
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta02")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha05")
+    implementation("androidx.compose.ui:ui:1.0.0-beta03")
+    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta03")
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta03")
+    implementation("androidx.compose.material:material:1.0.0-beta03")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta03")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha03")
 
     implementation("androidx.datastore:datastore-core:1.0.0-alpha08")
@@ -165,7 +165,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android-debug:4.4.33")
+    implementation("org.linphone:linphone-sdk-android-debug:4.4.35")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'

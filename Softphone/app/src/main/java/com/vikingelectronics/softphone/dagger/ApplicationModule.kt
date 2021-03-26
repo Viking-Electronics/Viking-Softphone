@@ -57,5 +57,5 @@ object ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideStorage():FirebaseStorage = Firebase.storage
+    fun provideStorage(): FirebaseStorage = Firebase.storage
 }

@@ -46,7 +46,7 @@ fun CapturesListScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
-        items(viewModel.externalCaptures) {
+        items(viewModel.capturesList) {
             RecordCard(capture = it, navController)
         }
 

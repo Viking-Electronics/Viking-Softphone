@@ -1,7 +1,6 @@
 package com.vikingelectronics.softphone.captures.list
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,8 @@ import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,22 +22,47 @@ class CapturesListViewModel @Inject constructor (
     private val permissionsManager: PermissionsManager,
 ): ViewModel(){
 
-
-    var localCaptures: List<Capture> = mutableStateListOf<Capture>()
-        private set
-
-    var externalCaptures: List<Capture> by mutableStateOf(listOf())
+    var capturesList: List<Capture> by mutableStateOf(listOf())
         private set
 
     init {
-        fetchExternalRecords()
+//        fetchExternalCaptures()
+//        fetchStoredCaptures()
+        fetchCaptures()
     }
 
-    fun fetchExternalRecords() {
+    fun fetchExternalCaptures() {
         viewModelScope.launch {
-            repository.getExternalCaptures().collect {
-                externalCaptures += it
+            repository.getExternalCaptures(this).collect {
+                capturesList += it
             }
+        }
+    }
+
+    fun fetchStoredCaptures() {
+        viewModelScope.launch {
+            repository.getStoredCaptures().collect {  }
+        }
+    }
+
+    fun fetchCaptures() {
+        viewModelScope.launch {
+            val list = mutableListOf<Capture>()
+
+            val external = async {
+                repository.getExternalCaptures(this).collect {
+                    list.add(it)
+                }
+            }
+            val internal = async {
+                repository.getStoredCaptures().collect {
+                    list.add(it)
+                }
+            }
+            awaitAll(internal, external)
+
+            list.sortBy { it.creationTimeMillis }
+            capturesList += list
         }
     }
 

@@ -33,8 +33,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Capture (
     val name: String,
-    val id: String,
-    val imageUri: Uri,
+    val uri: Uri,
     val creationTimeMillis: Long,
     val sizeInBytes: Long,
     val type: String,
@@ -86,7 +85,7 @@ fun RecordCard (
                     modifier = Modifier.width(125.dp),
                 ) {
                     CoilImage(
-                        data = capture.imageUri,
+                        data = capture.uri,
                         contentDescription = "Record of activity from ${capture.sourceRef}",
                         alignment = Alignment.Center,
                         contentScale = ContentScale.Crop
