@@ -11,6 +11,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.StayCurrentPortrait
+import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,10 +76,8 @@ fun RecordCard (
 //                val directions =
             }
     ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Box (
+            modifier = Modifier.fillMaxSize(),
         ) {
 
             Row {
@@ -102,7 +102,9 @@ fun RecordCard (
                 }
 
                 Column (
-                    modifier = Modifier.padding(start = 8.dp).fillMaxHeight(),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
@@ -117,9 +119,19 @@ fun RecordCard (
                 }
             }
 
+            Icon(
+                imageVector = if (capture.isStoredLocally) Icons.Filled.StayCurrentPortrait  else Icons.Outlined.Cloud,
+                contentDescription = "Capture storage location",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 14.dp, end = 14.dp)
+                    .width(14.dp)
+                    .height(14.dp))
+
             IconButton(
                 onClick = { menuExpanded = true },
                 modifier = Modifier
+                    .align(Alignment.CenterEnd)
                     .padding(end = 8.dp)
                     .width(24.dp)
                     .height(24.dp)
@@ -149,13 +161,15 @@ fun RecordCard (
                         Text(text = "Delete")
                     }
 
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.downloadRecord(capture)
-                            menuExpanded = false
+                    if (!capture.isStoredLocally) {
+                        DropdownMenuItem(
+                            onClick = {
+                                viewModel.downloadRecord(capture)
+                                menuExpanded = false
+                            }
+                        ) {
+                            Text(text = "Download")
                         }
-                    ) {
-                        Text(text = "Download")
                     }
                 }
             }

@@ -121,6 +121,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.0.0-beta03")
     implementation("androidx.compose.foundation:foundation:1.0.0-beta03")
     implementation("androidx.compose.material:material:1.0.0-beta03")
+    //This aar is large, if compile and install times get too long we can pull the icons we need
+    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta03")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta03")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha03")
 

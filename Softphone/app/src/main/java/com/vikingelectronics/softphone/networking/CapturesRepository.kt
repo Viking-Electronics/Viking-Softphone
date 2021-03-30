@@ -81,7 +81,8 @@ class CapturesRepositoryImpl @Inject constructor(
         val metadata = holder.metadata
 
         val cloudStoreUri = holder.metadata.getCustomMetadata("5514255221u1")?.toUri()
-        val uri: Uri = if ( cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)  {
+        val isStoredLocally = !(cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)
+        val uri: Uri = if (cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)  {
             holder.storageReference.downloadUrl.await()
         } else cloudStoreUri
 
@@ -93,7 +94,7 @@ class CapturesRepositoryImpl @Inject constructor(
         val favorite = metadata.getCustomMetadata(FAVORITE_KEY).toBoolean()
 
 
-        return Capture(name, uri, creationTimeMillis, size, type).apply {
+        return Capture(name, uri, creationTimeMillis, size, type, isStoredLocally).apply {
             storageReference = holder.storageReference
             isFavorite = favorite
         }
