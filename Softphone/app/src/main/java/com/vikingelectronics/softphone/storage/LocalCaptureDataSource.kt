@@ -6,14 +6,13 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.google.firebase.storage.FirebaseStorage
 import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.extensions.timber
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -54,12 +53,10 @@ class LocalCaptureDataSource @Inject constructor(
     suspend fun saveCapture(capture: Capture): Flow<DownloadState> = callbackFlow {
 
         val newCaptureDetails = ContentValues().apply {
-//            put(ImageMedia.DOCUMENT_ID, capture.id)
             put(ImageMedia.DISPLAY_NAME, capture.name)
             put(ImageMedia.MIME_TYPE, capture.type)
             put(ImageMedia.IS_FAVORITE, capture.isFavorite)
             put(ImageMedia.SIZE, capture.sizeInBytes)
-            put(ImageMedia.DATE_ADDED, capture.creationTimeMillis)
             put(ImageMedia.IS_PENDING, 1)
         }
 
@@ -93,7 +90,7 @@ class LocalCaptureDataSource @Inject constructor(
         awaitClose()
     }
 
-    suspend fun fetchCapturesFromStorage(): Flow<Capture> = callbackFlow {
+    suspend fun fetchLocalCaptureTemplates(): Flow<LocalStorageCaptureTemplate> = callbackFlow {
         resolver.query(
             imagesCollection,
             imageQueryProjection,
@@ -103,27 +100,15 @@ class LocalCaptureDataSource @Inject constructor(
 
             val idColumn = cursor.getColumnIndex(ImageMedia._ID)
             val nameColumn = cursor.getColumnIndex(ImageMedia.DISPLAY_NAME)
-            val favoriteColumn = cursor.getColumnIndex(ImageMedia.IS_FAVORITE)
-            val sizeColumn = cursor.getColumnIndex(ImageMedia.SIZE)
-            val dateAddedColumn = cursor.getColumnIndex(ImageMedia.DATE_ADDED)
-            val mimeTypeColumn = cursor.getColumnIndex(ImageMedia.MIME_TYPE)
 
-//            cursor.moveToFirst()
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn).timber()
                 val name = cursor.getString(nameColumn)
-                val isFavorite = cursor.getInt(favoriteColumn)
-                val size = cursor.getLong(sizeColumn)
-                val date = cursor.getLong(dateAddedColumn)
-                val mime = cursor.getString(mimeTypeColumn)
 
                 val uri = ContentUris.withAppendedId(imagesCollection, id)
+                val template = LocalStorageCaptureTemplate(name, uri)
 
-                val cap = Capture(name, uri, date, size, mime).apply {
-                    this.isFavorite = isFavorite == 1
-                }
-
-                offer(cap)
+                offer(template)
             }
             close()
         }

@@ -19,12 +19,7 @@ import javax.inject.Inject
 
 abstract class FirebaseRepository {
 
-    internal val SECOND_MILLIS = 1000
-    internal val MINUTE_MILLIS = 60 * SECOND_MILLIS
-    internal val HOUR_MILLIS = 60 * MINUTE_MILLIS
-    internal val DAY_MILLIS = 24 * HOUR_MILLIS
     internal val FAVORITE_KEY = "isFavorite"
-    internal val UUID_KEY = "uuid"
 
     internal abstract val db: FirebaseFirestore
     internal abstract val storage: FirebaseStorage
@@ -34,12 +29,12 @@ abstract class FirebaseRepository {
     internal val devicesCollectionRef by lazy { db.collection("devices") }
     internal val activityCollectionRef by lazy { db.collection("activity") }
 
-    internal var storageRef: StorageReference? = null
+    lateinit var storageRef: StorageReference
         private set
 
 
     internal suspend fun initStorageRecord() {
-        if (storageRef != null) return
+        if (::storageRef.isInitialized) return
 
         val user = getUser("5514255221u1") ?: return
         val sipAccount = getSipAccount(user) ?: return

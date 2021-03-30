@@ -7,12 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,42 +27,24 @@ class CapturesListViewModel @Inject constructor (
         private set
 
     init {
-//        fetchExternalCaptures()
-//        fetchStoredCaptures()
         fetchCaptures()
     }
 
-    fun fetchExternalCaptures() {
-        viewModelScope.launch {
-            repository.getExternalCaptures(this).collect {
-                capturesList += it
-            }
-        }
-    }
 
-    fun fetchStoredCaptures() {
-        viewModelScope.launch {
-            repository.getStoredCaptures().collect {  }
-        }
-    }
-
+    //TODO: Clean this method up
     fun fetchCaptures() {
         viewModelScope.launch {
             val list = mutableListOf<Capture>()
-
-            val external = async {
-                repository.getExternalCaptures(this).collect {
-                    list.add(it)
-                }
+            val localUriStrings = mutableListOf<LocalStorageCaptureTemplate>()
+            repository.getStoredTemplates().flowOn(IO).collect {
+                localUriStrings.add(it)
             }
-            val internal = async {
-                repository.getStoredCaptures().collect {
-                    list.add(it)
-                }
-            }
-            awaitAll(internal, external)
 
-            list.sortBy { it.creationTimeMillis }
+            repository.getExternalCaptures(localUriStrings.map { it.uri }).flowOn(IO).collect {
+                list.add(it)
+            }
+
+            list.sortByDescending { it.creationTimeMillis }
             capturesList += list
         }
     }

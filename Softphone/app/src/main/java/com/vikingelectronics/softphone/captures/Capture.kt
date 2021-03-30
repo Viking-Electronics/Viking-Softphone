@@ -37,6 +37,7 @@ data class Capture (
     val creationTimeMillis: Long,
     val sizeInBytes: Long,
     val type: String,
+    val isStoredLocally: Boolean = false
 ): Parcelable {
     @IgnoredOnParcel
     var isFavorite: Boolean by mutableStateOf(false)
