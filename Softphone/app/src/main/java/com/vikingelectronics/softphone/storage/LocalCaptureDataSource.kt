@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 
@@ -26,7 +27,10 @@ class LocalCaptureDataSource @Inject constructor(
     sealed class DownloadState {
         class Success(val captureUri: Uri): DownloadState()
         class Downloading(val progress: Int): DownloadState()
-        class Failure(val error: Throwable): DownloadState()
+        sealed class Failure(open val error: Throwable): DownloadState() {
+            class DownloadFailure(override val error: Throwable): Failure(error)
+            class InsufficientSpace(override val error: Throwable): Failure(error)
+        }
     }
 
 
@@ -41,7 +45,6 @@ class LocalCaptureDataSource @Inject constructor(
         ImageMedia.DISPLAY_NAME,
         ImageMedia.MIME_TYPE,
         ImageMedia.IS_FAVORITE,
-        ImageMedia.DATE_ADDED,
         ImageMedia.SIZE,
         ImageMedia.DISPLAY_NAME
     )
@@ -63,11 +66,17 @@ class LocalCaptureDataSource @Inject constructor(
         val captureUri = resolver.insert(imagesCollection, newCaptureDetails) ?: return@callbackFlow
 
         capture.storageReference.getStream { _, stream ->
-            resolver.openOutputStream(captureUri)?.use { oStream ->
-                stream.use { iStream ->
-                    iStream.copyTo(oStream)
+            try {
+                resolver.openOutputStream(captureUri)?.use { oStream ->
+                    stream.use { iStream ->
+                        iStream.copyTo(oStream)
+                    }
+                    oStream.flush()
                 }
-                oStream.flush()
+            } catch (e: IOException) {
+                offer(DownloadState.Failure.InsufficientSpace(e))
+                resolver.delete(captureUri, null, null)
+                close()
             }
         }.addOnProgressListener {
             val percentage = (100f * it.bytesTransferred / it.totalByteCount).toInt().timber("Transferred percentage:")
@@ -82,7 +91,7 @@ class LocalCaptureDataSource @Inject constructor(
         }.addOnFailureListener {
             resolver.delete(captureUri, null, null)
         }.addOnCompleteListener {
-            val state = it.exception?.let { exception -> DownloadState.Failure(exception) } ?: DownloadState.Success(captureUri)
+            val state = it.exception?.let { exception -> DownloadState.Failure.DownloadFailure(exception) } ?: DownloadState.Success(captureUri)
             offer(state)
             channel.close()
         }
