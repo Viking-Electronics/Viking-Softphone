@@ -6,13 +6,16 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import com.google.firebase.storage.StorageReference
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.extensions.timber
+import com.vikingelectronics.softphone.extensions.toInt
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -26,7 +29,7 @@ class LocalCaptureDataSource @Inject constructor(
 
     sealed class DownloadState {
         class Success(val captureUri: Uri): DownloadState()
-        class Downloading(val progress: Int): DownloadState()
+        class Downloading(val progress: Float): DownloadState()
         sealed class Failure(open val error: Throwable): DownloadState() {
             class DownloadFailure(override val error: Throwable): Failure(error)
             class InsufficientSpace(override val error: Throwable): Failure(error)
@@ -58,7 +61,7 @@ class LocalCaptureDataSource @Inject constructor(
         val newCaptureDetails = ContentValues().apply {
             put(ImageMedia.DISPLAY_NAME, capture.name)
             put(ImageMedia.MIME_TYPE, capture.type)
-            put(ImageMedia.IS_FAVORITE, capture.isFavorite)
+            put(ImageMedia.IS_FAVORITE, capture.isFavorite.toInt())
             put(ImageMedia.SIZE, capture.sizeInBytes)
             put(ImageMedia.IS_PENDING, 1)
         }
@@ -79,21 +82,29 @@ class LocalCaptureDataSource @Inject constructor(
                 close()
             }
         }.addOnProgressListener {
-            val percentage = (100f * it.bytesTransferred / it.totalByteCount).toInt().timber("Transferred percentage:")
+
+            val percentage = it.bytesTransferred.toFloat() / it.totalByteCount.toFloat().timber("Transferred percentage:")
             offer(DownloadState.Downloading(percentage))
+
         }.addOnSuccessListener {
+
             Timber.d("Success")
             newCaptureDetails.apply {
                 clear()
                 put(ImageMedia.IS_PENDING, 0)
             }
             resolver.update(captureUri, newCaptureDetails, null, null)
+
         }.addOnFailureListener {
+
             resolver.delete(captureUri, null, null)
+
         }.addOnCompleteListener {
+
             val state = it.exception?.let { exception -> DownloadState.Failure.DownloadFailure(exception) } ?: DownloadState.Success(captureUri)
             offer(state)
             channel.close()
+
         }
 
         awaitClose()
@@ -123,5 +134,18 @@ class LocalCaptureDataSource @Inject constructor(
         }
 
         awaitClose()
+    }
+
+    fun updateFavoriteOfCapture(capture: Capture, shouldBeFavorited: Boolean): Boolean {
+        val favoriteCaptureDetails = ContentValues().apply {
+            put(ImageMedia.IS_FAVORITE, shouldBeFavorited.toInt())
+        }
+
+        return try {
+            resolver.update(capture.uri, favoriteCaptureDetails, null, null)
+            true
+        } catch (e: Throwable) {
+            false
+        }
     }
 }

@@ -21,6 +21,7 @@
     <color name="new_grey_color">#808080</color>
     <color name="grey_color">#808080</color>
     <color name="light_grey_color">#c4c4c4</color>
+    <color name="transparent_light_grey">#66c4c4c4</color>
     <color name="white_color">#ffffff</color>
     <color name="red_color">#c4161c</color>
     <color name="green_color">#1cc416</color>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
@@ -17,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.vikingelectronics.softphone.R
+import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.RecordCard
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +42,7 @@ fun CapturesListScreen(
 ) {
 
     val viewModel: CapturesListViewModel = viewModel()
+    val showDeleteDialog = remember { mutableStateOf(false) }
 
     LazyColumn (
         contentPadding = PaddingValues(16.dp),
@@ -52,4 +55,3 @@ fun CapturesListScreen(
 
     }
 }
-

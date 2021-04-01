@@ -14,6 +14,10 @@ import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.linphone.core.Core
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,11 +44,11 @@ class PermissionsManager @Inject constructor(
         }
     }
 
-    private fun multiListener(onSuccess: () -> Unit): MultiplePermissionsListener {
-        return object : MultiplePermissionsListener {
+    private suspend fun multiListener(scope: CoroutineScope, onSuccess: suspend () -> Unit): MultiplePermissionsListener {
+         return object : MultiplePermissionsListener {
             override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-                p0?.let {
-                    if (it.areAllPermissionsGranted()) onSuccess.invoke()
+                scope.launch {
+                    if (p0 != null && p0.areAllPermissionsGranted()) onSuccess.invoke()
                 }
             }
 
@@ -68,12 +72,12 @@ class PermissionsManager @Inject constructor(
             .check()
     }
 
-    fun requestPermissionForStorage(onSuccess: () -> Unit) {
+    suspend fun requestPermissionForStorage(scope: CoroutineScope, onSuccess: suspend () -> Unit) {
         val permissionsList = mutableListOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         if (Build.VERSION.SDK_INT <= 28) permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         Dexter.withContext(context)
             .withPermissions(permissionsList)
-            .withListener(multiListener(onSuccess))
+            .withListener(multiListener(scope, onSuccess))
             .check()
     }
 }

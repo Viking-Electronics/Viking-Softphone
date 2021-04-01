@@ -12,6 +12,7 @@ import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -20,7 +21,8 @@ import kotlin.Result
 interface CapturesRepository {
     suspend fun getExternalCaptures(storedCaptureUris: List<Uri>): Flow<Capture>
     suspend fun getStoredTemplates(): Flow<LocalStorageCaptureTemplate>
-    suspend fun updateFavorite(storageReference: StorageReference, shouldBeFavorite: Boolean): Flow<Result<Boolean>>
+    suspend fun updateFavorite(capture: Capture, shouldBeFavorite: Boolean): Flow<Result<Boolean>>
+    suspend fun deleteCapture(capture: Capture): Flow<Result<Boolean>>
     suspend fun downloadCapture(capture: Capture): Flow<LocalCaptureDataSource.DownloadState>
 }
 
@@ -56,12 +58,25 @@ class CapturesRepositoryImpl @Inject constructor(
 
     override suspend fun getStoredTemplates(): Flow<LocalStorageCaptureTemplate> = localCaptureSource.fetchLocalCaptureTemplates()
 
-    override suspend fun updateFavorite(storageReference: StorageReference, shouldBeFavorite: Boolean): Flow<Result<Boolean>> {
+    override suspend fun updateFavorite(capture: Capture, shouldBeFavorite: Boolean): Flow<Result<Boolean>> {
+        if (capture.isStoredLocally) localCaptureSource.updateFavoriteOfCapture(capture, shouldBeFavorite)
+
         val metadata = storageMetadata {
             setCustomMetadata(FAVORITE_KEY, shouldBeFavorite.toString())
         }
 
-        return storageReference.updateMetadata(metadata).emitResult()
+        return capture.storageReference.updateMetadata(metadata).emitResult()
+    }
+
+    override suspend fun deleteCapture(capture: Capture): Flow<Result<Boolean>> = callbackFlow {
+        capture.storageReference.delete().addOnSuccessListener {
+            offer(Result.success(true))
+        }.addOnFailureListener {
+            offer(Result.failure<Boolean>(it))
+        }.addOnCompleteListener {
+            close()
+        }
+        awaitClose()
     }
 
     //TODO: Get actual user
@@ -81,7 +96,7 @@ class CapturesRepositoryImpl @Inject constructor(
         val metadata = holder.metadata
 
         val cloudStoreUri = holder.metadata.getCustomMetadata("5514255221u1")?.toUri()
-        val isStoredLocally = !(cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)
+        val storedLocally = !(cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)
         val uri: Uri = if (cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)  {
             holder.storageReference.downloadUrl.await()
         } else cloudStoreUri
@@ -94,9 +109,10 @@ class CapturesRepositoryImpl @Inject constructor(
         val favorite = metadata.getCustomMetadata(FAVORITE_KEY).toBoolean()
 
 
-        return Capture(name, uri, creationTimeMillis, size, type, isStoredLocally).apply {
+        return Capture(name, uri, creationTimeMillis, size, type).apply {
             storageReference = holder.storageReference
             isFavorite = favorite
+            isStoredLocally = storedLocally
         }
     }
 

@@ -5,6 +5,9 @@ import android.net.Uri
 import android.os.Parcelable
 import android.text.format.DateUtils
 import android.text.format.Formatter
+import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -19,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -28,6 +32,8 @@ import com.mikepenz.iconics.compose.ExperimentalIconics
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -39,10 +45,14 @@ data class Capture (
     val creationTimeMillis: Long,
     val sizeInBytes: Long,
     val type: String,
-    val isStoredLocally: Boolean = false
 ): Parcelable {
     @IgnoredOnParcel
+    var isStoredLocally: Boolean by mutableStateOf(false)
+    @IgnoredOnParcel
     var isFavorite: Boolean by mutableStateOf(false)
+    @IgnoredOnParcel
+    var downloadProgress: Float by mutableStateOf(0f)
+
     @IgnoredOnParcel
     lateinit var storageReference: StorageReference
     @IgnoredOnParcel
@@ -50,6 +60,8 @@ data class Capture (
 
     fun sizeConverted(context: Context): String = Formatter.formatFileSize(context, sizeInBytes)
 
+
+    //TODO: convert to string res
     val timeConverted: String by lazy {
         val now: Long = Clock.System.now().toEpochMilliseconds()
 
@@ -57,22 +69,29 @@ data class Capture (
     }
 }
 
-@OptIn(ExperimentalIconics::class)
 @Composable
 fun RecordCard (
     capture: Capture,
-    navController: NavController
+    navController: NavController,
 ) {
 
     val viewModel: CapturesListViewModel = viewModel()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
+    var deleteDialogShowing by remember { mutableStateOf(false) }
+    var shouldShowDownloadProgress by remember { mutableStateOf(false) }
+    val animatedDownloadProgress = animateFloatAsState(
+        targetValue = capture.downloadProgress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    ).value
 
     Card (
         elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable {
+            .clickable(enabled = !shouldShowDownloadProgress) {
 //                val directions =
             }
     ) {
@@ -98,6 +117,21 @@ fun RecordCard (
                             tint = colorResource(id = R.color.red_color),
                             modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                         )
+                    }
+                    if (shouldShowDownloadProgress) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .height(125.dp)
+                                .width(125.dp)
+                                .background(colorResource(id = R.color.transparent_light_grey))
+                        ) {
+                            CircularProgressIndicator(
+                                progress = animatedDownloadProgress,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+
                     }
                 }
 
@@ -144,44 +178,91 @@ fun RecordCard (
 
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.favoriteRecord(capture)
+                            scope.launch {
+                                viewModel.favoriteCapture(capture).collect {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                }
+                            }
                             menuExpanded = false
                         }
                     ) {
-                        val text = if (capture.isFavorite) "Unfavorite" else "Favorite"
-                        Text(text = text)
+                        val stringRes = if (capture.isFavorite) R.string.unfavorite else R.string.favorite
+                        Text(text = stringResource(id = stringRes))
                     }
 
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.deleteRecord(capture)
+                            deleteDialogShowing = true
                             menuExpanded = false
                         }
                     ) {
-                        Text(text = "Delete")
+                        Text(text = stringResource(id = R.string.delete))
                     }
 
                     if (!capture.isStoredLocally) {
                         DropdownMenuItem(
                             onClick = {
-                                viewModel.downloadRecord(capture)
+                                shouldShowDownloadProgress = true
+                                scope.launch {
+                                    viewModel.downloadCapture(capture).collect {
+                                        shouldShowDownloadProgress = false
+                                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                                 menuExpanded = false
                             }
                         ) {
-                            Text(text = "Download")
+                            Text(text = stringResource(id = R.string.download))
                         }
                     }
                 }
             }
         }
     }
+
+    if (deleteDialogShowing) {
+        DeleteConfirmationDialog(
+            onConfirm = {
+                scope.launch {
+                    viewModel.deleteCapture(capture).collect {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            onDismiss = { deleteDialogShowing = false }
+        )
+    }
+
 }
 
 @Composable
-fun deleteConfirmationDialog(
-    capture: Capture
+fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
 ) {
-//    AlertDialog(onDismissRequest = { /*TODO*/ }) {
-//
-//    }
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        title = {
+            Text(text = stringResource(R.string.cap_delete_dialog_title))
+        },
+        text = {
+           Text(text = stringResource(R.string.cap_delete_dialog_text))
+        },
+        confirmButton = {
+            Button(onClick = {
+                onConfirm()
+                onDismiss()
+            }) {
+                Text(text = stringResource(R.string.yes))
+            }
+
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text(text = stringResource(R.string.no))
+            }
+        }
+    )
 }
