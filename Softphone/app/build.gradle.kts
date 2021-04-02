@@ -128,9 +128,11 @@ dependencies {
 
     implementation("androidx.datastore:datastore-core:1.0.0-alpha08")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 

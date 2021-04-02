@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -29,7 +30,7 @@ class DeviceListFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_generic_compose, container, false).apply {
             findViewById<ComposeView>(R.id.composeView).setContent {
                 MaterialTheme {
-                    DevicesListScreen(findNavController())
+//                    DevicesListScreen(findNavController())
                 }
             }
         }
@@ -38,8 +39,10 @@ class DeviceListFragment: Fragment() {
 
 
 @Composable
-fun DevicesListScreen(navController: NavController) {
-    val viewModel: DeviceListViewModel = viewModel()
+fun DevicesListScreen(
+    navController: NavController,
+) {
+    val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),

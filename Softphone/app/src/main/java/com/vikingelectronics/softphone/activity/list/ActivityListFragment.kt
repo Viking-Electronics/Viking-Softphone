@@ -22,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -49,7 +50,7 @@ class ActivityListFragment: Fragment(R.layout.fragment_generic_compose) {
 @Composable
 fun ActivityListScreen(navController: NavController) {
 
-    val viewModel: ActivityListViewModel = viewModel()
+    val viewModel: ActivityListViewModel = hiltNavGraphViewModel()
 
     LazyColumn {
 //        item {

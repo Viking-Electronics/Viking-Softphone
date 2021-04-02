@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -41,7 +42,7 @@ fun CapturesListScreen(
     navController: NavController
 ) {
 
-    val viewModel: CapturesListViewModel = viewModel()
+    val viewModel: CapturesListViewModel = hiltNavGraphViewModel()
     val showDeleteDialog = remember { mutableStateOf(false) }
 
     LazyColumn (
