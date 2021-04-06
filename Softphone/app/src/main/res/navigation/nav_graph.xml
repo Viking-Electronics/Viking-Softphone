@@ -7,25 +7,6 @@
 
 
     <fragment
-        android:id="@+id/deviceDetailFragment"
-        android:name="com.vikingelectronics.softphone.devices.detail.DeviceDetailFragment"
-        android:label="{deviceName}">
-
-        <argument
-            android:name="deviceName"
-            app:argType="string"
-            android:defaultValue=""/>
-        <argument
-            android:name="device"
-            app:argType="com.vikingelectronics.softphone.devices.Device"/>
-
-        <action
-            android:id="@+id/action_devicesDetailFragment_to_ActivityDetailFragment"
-            app:destination="@+id/activityDetailFragment"/>
-
-    </fragment>
-
-    <fragment
         android:id="@+id/activityListFragment"
         android:name="com.vikingelectronics.softphone.activity.list.ActivityListFragment"
         android:label="Activity"
