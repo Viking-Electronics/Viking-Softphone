@@ -3,11 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/deviceListFragment"
-        android:icon="@drawable/x35_icon"
-        android:title="@string/devices"/>
-
-    <item
         android:id="@+id/activityListFragment"
         android:icon="@drawable/x35_icon"
         android:title="@string/activity"/>
