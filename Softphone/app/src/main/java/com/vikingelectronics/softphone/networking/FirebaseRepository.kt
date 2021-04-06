@@ -33,6 +33,7 @@ abstract class FirebaseRepository {
         private set
 
 
+    //TODO: This will crash the app if anything happens to storage. This cannot go out into production.
     internal suspend fun initStorageRecord() {
         if (::storageRef.isInitialized) return
 

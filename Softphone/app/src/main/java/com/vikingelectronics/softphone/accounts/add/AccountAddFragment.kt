@@ -23,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewmodel.compose.viewModel
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.etiennelenhart.eiffel.viewmodel.delegate.eiffelViewModel
@@ -38,15 +37,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AccountAddFragment: Fragment(R.layout.fragment_account_add) {
 
-     val viewModel: AccountAddViewModel by viewModels()
+//     val viewModel: AccountAddViewModel by viewModels()
     private val binding: FragmentAccountAddBinding by viewBinding()
 
-     val bindableState by lazy { AccountAddBindableState(viewModel.state) }
+//     val bindableState by lazy { AccountAddBindableState(viewModel.state) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return FragmentAccountAddBinding.inflate(inflater, container, false).apply {
-            state = bindableState
-            viewModel = this@AccountAddFragment.viewModel
+//            state = bindableState
+//            viewModel = this@AccountAddFragment.viewModel
             lifecycleOwner = this@AccountAddFragment.viewLifecycleOwner
         }.root
     }

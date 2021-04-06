@@ -1,6 +1,7 @@
 package com.vikingelectronics.softphone.devices.list
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,12 @@ import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
 import androidx.navigation.findNavController
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.DeviceCard
+import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
+import com.vikingelectronics.softphone.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -52,11 +56,12 @@ fun DevicesListScreen(
             DeviceCard(
                 device = device,
                 modifier = Modifier.clickable {
-                    val action = DeviceListFragmentDirections.actionDevicesListFragmentToDeviceDetailFragment(device.name, device)
-                    navController.navigate(action)
+                    navController.setParcelableAndNavigate(Screen.Secondary.DeviceDetail, device)
                 }
             )
         }
     }
 }
+
+
 

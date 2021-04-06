@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -29,6 +28,8 @@ import androidx.navigation.findNavController
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
+import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
+import com.vikingelectronics.softphone.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,7 +77,9 @@ fun ActivityListScreen(navController: NavController) {
             items(activity) { item: ActivityEntry ->
                 ActivityEntryCard(
                     entry = item,
-                    modifier = Modifier.clickable { viewModel.navigateToDetail(navController, item) }
+                    modifier = Modifier.clickable {
+                        navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, item)
+                    }
                 )
             }
         }

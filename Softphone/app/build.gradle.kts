@@ -130,8 +130,8 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
+//    implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
+//    implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
@@ -140,7 +140,7 @@ dependencies {
     implementation("com.github.etiennelenhart.eiffel:eiffel-test:5.0.0")
 
     implementation("com.google.android.material:material:1.3.0")
-    implementation("com.google.dagger:hilt-android:2.31.2-alpha")
+    implementation("com.google.dagger:hilt-android:2.33-beta")
     implementation("com.google.protobuf:protobuf-javalite:3.14.0")
 
     implementation(platform("com.google.firebase:firebase-bom:26.6.0"))

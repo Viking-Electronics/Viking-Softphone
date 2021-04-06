@@ -16,6 +16,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentId
@@ -45,7 +46,7 @@ fun DeviceCard(
     device: Device,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: DeviceListViewModel = viewModel()
+    val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
     Card(
         modifier = modifier
 //            .padding(horizontal = 16.dp)

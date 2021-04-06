@@ -15,8 +15,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.fragment.navArgs
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.vikingelectronics.softphone.R
@@ -28,13 +28,13 @@ import dev.chrisbanes.accompanist.coil.CoilImageDefaults
 @AndroidEntryPoint
 class ActivityDetailFragment: Fragment(R.layout.fragment_generic_compose) {
 
-    private val args: ActivityDetailFragmentArgs by navArgs()
+//    private val args: ActivityDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)?.apply {
             findViewById<ComposeView>(R.id.composeView).setContent {
                 MaterialTheme {
-                    ActivityDetailScreen(entry = args.activityEntry)
+//                    ActivityDetailScreen(entry = args.activityEntry)
                 }
             }
         }
@@ -46,7 +46,7 @@ fun ActivityDetailScreen(
     entry: ActivityEntry
 ) {
 
-    val viewModel: ActivityDetailViewModel = viewModel()
+    val viewModel: ActivityDetailViewModel = hiltNavGraphViewModel()
 
     Column(
         modifier = Modifier

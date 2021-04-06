@@ -3,34 +3,38 @@ package com.vikingelectronics.softphone
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewParent
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.painterResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import by.kirich1409.viewbindingdelegate.viewBinding
+import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.softphone.activity.detail.ActivityDetailScreen
 import com.vikingelectronics.softphone.activity.list.ActivityListScreen
-import com.vikingelectronics.softphone.call.CallFragment
 import com.vikingelectronics.softphone.call.CallVideoFragment
 import com.vikingelectronics.softphone.call.IncomingCallReceiver
+import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.list.CapturesListScreen
-import com.vikingelectronics.softphone.databinding.ActivityMainBinding
-import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
+import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.devices.detail.DeviceDetailScreen
 import com.vikingelectronics.softphone.devices.list.DevicesListScreen
+import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
 import com.vikingelectronics.softphone.navigation.ContentHostFragment
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.linphone.core.Call
 import org.linphone.core.Core
 import org.linphone.core.CoreListenerStub
@@ -97,19 +101,51 @@ class MainActivity: AppCompatActivity(R.layout.activity_main) {
 
 @Composable
 fun MainActivityComposable() {
-    
+
+    val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+
     val bottomNavItems = listOf(
-        Screen.TopLevel.DeviceList,
-        Screen.TopLevel.ActivityList,
-        Screen.TopLevel.CaptureList
+        Screen.Primary.DeviceList,
+        Screen.Primary.ActivityList,
+        Screen.Primary.CaptureList
     )
+    val drawerNavItems = listOf(
+        Screen.Primary.Schedules,
+        Screen.Primary.Info,
+        Screen.Primary.Settings
+    )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+
+    var toolbarTitle by remember { mutableStateOf("") }
+    var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
+
     Scaffold (
+        scaffoldState = scaffoldState,
+        topBar = {
+             TopAppBar(
+                 title = { Text(text = toolbarTitle) },
+                 navigationIcon = {
+                     Icon(
+                         imageVector = Icons.Default.Menu,
+                         contentDescription = "Drawer menu icon",
+                         modifier = Modifier.clickable {
+                             scope.launch {
+                                 scaffoldState.drawerState.apply {
+                                     if (isOpen) close() else open()
+                                 }
+                             }
+                         }
+                     )
+                 },
+                 actions = toolbarActions
+             )
+        },
         bottomBar = {
             BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
-
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
                         icon = screen.icon,
@@ -117,16 +153,87 @@ fun MainActivityComposable() {
                         selected = screen.route == currentRoute,
                         onClick = { navController.navigate(screen.route) })
                 }
+            }
+        },
+        drawerContent = {
+            drawerNavItems.forEach { screen ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(start = 8.dp)
+                        .clickable {
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
+                            navController.navigate(screen.route)
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    screen.icon()
+                    Text(
+                        text = stringResource(id = screen.toolbarResourceId),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
 
+                Divider()
             }
         }
     ){
-        NavHost(navController = navController, startDestination = Screen.TopLevel.DeviceList.route) {
-            composable(Screen.TopLevel.DeviceList.route) { DevicesListScreen(navController = navController) }
+        NavHost(navController = navController, startDestination = Screen.Primary.DeviceList.route) {
+            composable(Screen.Primary.DeviceList.route) {
+                toolbarTitle = stringResource(id = Screen.Primary.DeviceList.toolbarResourceId)
+                DevicesListScreen(navController = navController)
+            }
 
-            composable(Screen.TopLevel.ActivityList.route) { ActivityListScreen(navController = navController) }
+            composable(Screen.Primary.ActivityList.route) {
+                toolbarTitle = stringResource(id = Screen.Primary.ActivityList.toolbarResourceId)
+                ActivityListScreen(navController = navController)
+            }
 
-            composable(Screen.TopLevel.CaptureList.route) { CapturesListScreen(navController = navController) }
+            composable(Screen.Primary.CaptureList.route) {
+                toolbarTitle = stringResource(id = Screen.Primary.CaptureList.toolbarResourceId)
+                CapturesListScreen(navController = navController)
+            }
+
+            composable(Screen.Primary.Schedules.route) {
+
+            }
+
+            composable(Screen.Primary.Info.route) {
+
+            }
+
+            composable(Screen.Primary.Settings.route) {
+
+            }
+
+            composable(
+                Screen.Secondary.DeviceDetail.route,
+                arguments = listOf(navArgument("device") { type = NavType.ParcelableType(Device::class.java) })
+            ) {
+                val device: Device = navController.getParcelableFromBackstack(Screen.Secondary.DeviceDetail) ?: return@composable
+                toolbarTitle = device.name
+                DeviceDetailScreen(device = device, navController = navController)
+            }
+
+            composable(
+                Screen.Secondary.ActivityDetail.route,
+                arguments = listOf(navArgument("activity") { type = NavType.ParcelableType(ActivityEntry::class.java) })
+            ) {
+                val activity: ActivityEntry = navController.getParcelableFromBackstack(Screen.Secondary.ActivityDetail) ?: return@composable
+                toolbarTitle = activity.sourceName
+                ActivityDetailScreen(entry = activity)
+            }
+
+            composable(
+                Screen.Secondary.CaptureDetail.route,
+                arguments = listOf(navArgument("device") { type = NavType.ParcelableType(Device::class.java) })
+            ) {
+                val capture: Capture = navController.getParcelableFromBackstack(Screen.Secondary.CaptureDetail) ?: return@composable
+
+            }
         }
     }
 }

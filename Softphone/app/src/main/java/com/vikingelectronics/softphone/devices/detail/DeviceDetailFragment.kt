@@ -20,26 +20,26 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
 import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
+import com.vikingelectronics.softphone.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @AndroidEntryPoint
 class DeviceDetailFragment: Fragment(R.layout.fragment_generic_compose) {
 
-    private val args: DeviceDetailFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)?.apply {
             findViewById<ComposeView>(R.id.composeView).setContent {
                 MaterialTheme {
-                    DeviceDetailScreen(args.device, findNavController())
+//                    DeviceDetailScreen(args.device, findNavController())
                 }
             }
         }
@@ -51,7 +51,7 @@ fun DeviceDetailScreen(
     device: Device,
     navController: NavController
 ) {
-    val viewModel: DeviceDetailViewModel = viewModel()
+    val viewModel: DeviceDetailViewModel = hiltNavGraphViewModel()
     viewModel.getActivityFeedForDevice(device)
     LazyColumn (
         modifier = Modifier
@@ -102,8 +102,7 @@ fun DeviceDetailScreen(
             ActivityEntryCard(
                 entry = entry,
                 modifier = Modifier.clickable {
-                    val directions = DeviceDetailFragmentDirections.actionDevicesDetailFragmentToActivityDetailFragment(device.name, entry)
-                    navController.navigate(directions)
+                    navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, entry)
                 }
             )
         }

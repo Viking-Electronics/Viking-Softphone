@@ -37,11 +37,6 @@ class ActivityListViewModel @Inject constructor(
         }
     }
 
-    fun navigateToDetail(navController: NavController, activityEntry: ActivityEntry) {
-        val directions = ActivityListFragmentDirections.actionActivityListFragmentToActivityDetailFragment(activityEntry.sourceName, activityEntry)
-        navController.navigate(directions)
-    }
-
     fun generateActivityEntries() = viewModelScope.launch {
 //        activityRepository.generateEntries()
     }

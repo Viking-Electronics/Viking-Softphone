@@ -43,7 +43,6 @@ fun CapturesListScreen(
 ) {
 
     val viewModel: CapturesListViewModel = hiltNavGraphViewModel()
-    val showDeleteDialog = remember { mutableStateOf(false) }
 
     LazyColumn (
         contentPadding = PaddingValues(16.dp),
@@ -53,6 +52,5 @@ fun CapturesListScreen(
         items(viewModel.capturesList) {
             RecordCard(capture = it, navController)
         }
-
     }
 }
