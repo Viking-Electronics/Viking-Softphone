@@ -4,15 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="state"
-            type="com.vikingelectronics.softphone.accounts.add.AccountAddBindableState" />
 
-        <variable
-            name="viewModel"
-            type="com.vikingelectronics.softphone.accounts.add.AccountAddViewModel" />
-    </data>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -60,7 +52,6 @@
                 android:layout_marginEnd="24dp"
                 app:errorTextColor="@color/red_color"
                 app:hintEnabled="true"
-                app:errorEnabled="@{state.usernameError}"
                 app:errorText='@{"This field is required"}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,8 +61,7 @@
                     android:id="@+id/usernameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="@string/username"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.usernameUpdated(text)}"/>
+                    android:hint="@string/username"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,8 +107,7 @@
                     android:id="@+id/useridEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/user_id_optional"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.userIdUpdated(text)}"/>
+                    android:hint="@string/user_id_optional"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -161,8 +150,7 @@
                     android:id="@+id/passwordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/password"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.passwordUpdated(text)}"/>
+                    android:hint="@string/password"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -205,8 +193,7 @@
                     android:id="@+id/domainEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/domain"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.domainUpdated(text)}"/>
+                    android:hint="@string/domain"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -249,8 +236,7 @@
                     android:id="@+id/displayNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/display_name_optional"
-                    android:onTextChanged="@{(text, start, before, count) -> viewModel.displayNameUpdated(text)}"/>
+                    android:hint="@string/display_name_optional"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -352,7 +338,6 @@
                 android:paddingRight="10dp"
                 android:text="@string/login"
                 android:textColor="@drawable/assistant_button_text_color"
-                android:onClick="@{() -> viewModel.loginClicked()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

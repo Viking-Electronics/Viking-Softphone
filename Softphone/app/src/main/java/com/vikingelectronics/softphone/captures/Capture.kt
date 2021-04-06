@@ -28,7 +28,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.StorageReference
-import com.mikepenz.iconics.compose.ExperimentalIconics
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
 import dev.chrisbanes.accompanist.coil.CoilImage

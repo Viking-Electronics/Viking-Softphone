@@ -22,7 +22,7 @@ import com.vikingelectronics.softphone.navigation.Screen
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun DeviceDetailScreen(
+fun DeviceDetail(
     device: Device,
     navController: NavController
 ) {

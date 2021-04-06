@@ -130,18 +130,10 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
-//    implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
-//    implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
-
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
-
-    implementation("com.github.etiennelenhart.eiffel:eiffel:5.0.0")
-    implementation("com.github.etiennelenhart.eiffel:eiffel-test:5.0.0")
 
     implementation("com.google.android.material:material:1.3.0")
     implementation("com.google.dagger:hilt-android:2.33-beta")
-    implementation("com.google.protobuf:protobuf-javalite:3.14.0")
 
     implementation(platform("com.google.firebase:firebase-bom:26.6.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -152,12 +144,6 @@ dependencies {
     implementation("com.jakewharton.timber:timber:4.7.1")
 
     implementation("com.karumi:dexter:6.2.2")
-
-    implementation("com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1")
-
-    implementation("com.mikepenz:iconics-core:5.2.4")
-    implementation("com.mikepenz:iconics-compose:5.2.4")
-    implementation("com.mikepenz:google-material-typeface:4.0.0.1-kotlin@aar")
 
     implementation("dev.chrisbanes.accompanist:accompanist-coil:0.6.1")
 

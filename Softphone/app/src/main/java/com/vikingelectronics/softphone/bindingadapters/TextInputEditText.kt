@@ -1,9 +1,7 @@
 package com.vikingelectronics.softphone.bindingadapters
 
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.BindingAdapter
-import com.etiennelenhart.eiffel.util.NonNullMediatorLiveData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.reflect.KFunction1

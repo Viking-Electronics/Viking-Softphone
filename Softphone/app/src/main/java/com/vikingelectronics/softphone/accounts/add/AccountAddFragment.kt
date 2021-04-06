@@ -4,51 +4,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.viewmodel.compose.viewModel
-import by.kirich1409.viewbindingdelegate.viewBinding
-import com.etiennelenhart.eiffel.viewmodel.delegate.eiffelViewModel
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.accounts.add.AccountAddViewModel_Factory.create
-import com.vikingelectronics.softphone.databinding.FragmentAccountAddBinding
 import com.vikingelectronics.softphone.ui.RadioButtonWithLabel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountAddFragment: Fragment(R.layout.fragment_account_add) {
 
 //     val viewModel: AccountAddViewModel by viewModels()
-    private val binding: FragmentAccountAddBinding by viewBinding()
 
 //     val bindableState by lazy { AccountAddBindableState(viewModel.state) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return FragmentAccountAddBinding.inflate(inflater, container, false).apply {
-//            state = bindableState
-//            viewModel = this@AccountAddFragment.viewModel
-            lifecycleOwner = this@AccountAddFragment.viewLifecycleOwner
-        }.root
-    }
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        return FragmentAccountAddBinding.inflate(inflater, container, false).apply {
+////            state = bindableState
+////            viewModel = this@AccountAddFragment.viewModel
+//            lifecycleOwner = this@AccountAddFragment.viewLifecycleOwner
+//        }.root
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,7 +41,7 @@ class AccountAddFragment: Fragment(R.layout.fragment_account_add) {
 //        setupUI()
     }
 
-    private fun setupUI() = with(binding) {
+//    private fun setupUI() = with(binding) {
 //        usernameEditText.doOnTextChanged { text, _, _, _ -> viewModel.usernameUpdated(text)}
 //        useridEditText.doOnTextChanged { text, _, _, _ -> viewModel.userIdUpdated(text)}
 //        passwordEditText.doOnTextChanged { text, _, _, _ -> viewModel.passwordUpdated(text)}
@@ -65,12 +50,12 @@ class AccountAddFragment: Fragment(R.layout.fragment_account_add) {
 //        transportUdp.setOnCheckedChangeListener { _, isChecked -> if (isChecked) viewModel.transportUpdated(AccountAddState.TransportType.UDP) }
 //        transportTcp.setOnCheckedChangeListener { _, isChecked -> if (isChecked) viewModel.transportUpdated(AccountAddState.TransportType.TCP) }
 //        transportTls.setOnCheckedChangeListener { _, isChecked -> if (isChecked) viewModel.transportUpdated(AccountAddState.TransportType.TLS) }
-    }
+//    }
 }
 
 @Composable
 fun AccountAddScreen() {
-    val accountAddViewModel: AccountAddViewModel = viewModel()
+//    val accountAddViewModel: AccountAddViewModel = hiltNavGraphViewModel()
     AccountAddHoist(
 //        accountAddViewModel.username,
 //        accountAddViewModel::usernameUpdated

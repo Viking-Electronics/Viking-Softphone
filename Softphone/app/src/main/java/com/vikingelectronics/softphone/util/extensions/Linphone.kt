@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.util
+package com.vikingelectronics.softphone.util.extensions
 
 import org.linphone.core.Address
 import org.linphone.core.Core

@@ -11,16 +11,12 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
-import dagger.hilt.android.qualifiers.ActivityContext
+import com.vikingelectronics.softphone.util.extensions.restart
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.linphone.core.Core
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class PermissionsManager @Inject constructor(
     @ApplicationContext private val context: Context,

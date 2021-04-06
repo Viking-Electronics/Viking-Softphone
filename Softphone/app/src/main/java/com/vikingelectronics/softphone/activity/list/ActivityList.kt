@@ -23,7 +23,7 @@ import com.vikingelectronics.softphone.navigation.Screen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ActivityListScreen(navController: NavController) {
+fun ActivityList(navController: NavController) {
 
     val viewModel: ActivityListViewModel = hiltNavGraphViewModel()
 

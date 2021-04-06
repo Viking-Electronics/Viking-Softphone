@@ -14,7 +14,7 @@ import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
 import com.vikingelectronics.softphone.navigation.Screen
 
 @Composable
-fun DevicesListScreen(
+fun DevicesList(
     navController: NavController,
 ) {
     val viewModel: DeviceListViewModel = hiltNavGraphViewModel()

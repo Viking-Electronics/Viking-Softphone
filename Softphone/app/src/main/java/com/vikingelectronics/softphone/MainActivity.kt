@@ -20,17 +20,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.activity.detail.ActivityDetailScreen
-import com.vikingelectronics.softphone.activity.list.ActivityListScreen
+import com.vikingelectronics.softphone.activity.detail.ActivityDetail
+import com.vikingelectronics.softphone.activity.list.ActivityList
 import com.vikingelectronics.softphone.call.CallVideoFragment
 import com.vikingelectronics.softphone.call.IncomingCallReceiver
 import com.vikingelectronics.softphone.captures.Capture
-import com.vikingelectronics.softphone.captures.list.CapturesListScreen
+import com.vikingelectronics.softphone.captures.list.CapturesList
 import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.devices.detail.DeviceDetailScreen
-import com.vikingelectronics.softphone.devices.list.DevicesListScreen
+import com.vikingelectronics.softphone.devices.detail.DeviceDetail
+import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
-import com.vikingelectronics.softphone.navigation.ContentHostFragment
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,12 +40,10 @@ import org.linphone.core.CoreListenerStub
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity: AppCompatActivity(R.layout.activity_main) {
+class MainActivity: AppCompatActivity() {
 
     @Inject lateinit var core: Core
     @Inject lateinit var linphoneManager: LinphoneManager
-
-//    private val binding: ActivityMainBinding by viewBinding()
 
     private lateinit var callReceiver: IncomingCallReceiver
 
@@ -62,14 +59,14 @@ class MainActivity: AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private val fragmentStateAdapter = object : FragmentStateAdapter(this) {
-        override fun getItemCount(): Int = 2
-
-        override fun createFragment(position: Int): Fragment = when(position) {
-            0 -> ContentHostFragment()
-            else -> CallVideoFragment()
-        }
-    }
+//    private val fragmentStateAdapter = object : FragmentStateAdapter(this) {
+//        override fun getItemCount(): Int = 2
+//
+//        override fun createFragment(position: Int): Fragment = when(position) {
+//            0 -> ContentHostFragment()
+//            else -> CallVideoFragment()
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,15 +78,8 @@ class MainActivity: AppCompatActivity(R.layout.activity_main) {
         }
 
         core.addListener(coreListener)
-//        setupPager()
     }
 
-//    private fun setupPager() = with(binding.mainPager) {
-//        isUserInputEnabled = false
-//        adapter = fragmentStateAdapter
-////        offscreenPageLimit = 0
-//        orientation = ViewPager2.ORIENTATION_HORIZONTAL
-//    }
 
     private fun setupIntentFilter() {
         val filter = IntentFilter().apply {
@@ -184,17 +174,17 @@ fun MainActivityComposable() {
         NavHost(navController = navController, startDestination = Screen.Primary.DeviceList.route) {
             composable(Screen.Primary.DeviceList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.DeviceList.toolbarResourceId)
-                DevicesListScreen(navController = navController)
+                DevicesList(navController = navController)
             }
 
             composable(Screen.Primary.ActivityList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.ActivityList.toolbarResourceId)
-                ActivityListScreen(navController = navController)
+                ActivityList(navController = navController)
             }
 
             composable(Screen.Primary.CaptureList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.CaptureList.toolbarResourceId)
-                CapturesListScreen(navController = navController)
+                CapturesList(navController = navController)
             }
 
             composable(Screen.Primary.Schedules.route) {
@@ -215,7 +205,7 @@ fun MainActivityComposable() {
             ) {
                 val device: Device = navController.getParcelableFromBackstack(Screen.Secondary.DeviceDetail) ?: return@composable
                 toolbarTitle = device.name
-                DeviceDetailScreen(device = device, navController = navController)
+                DeviceDetail(device = device, navController = navController)
             }
 
             composable(
@@ -224,7 +214,7 @@ fun MainActivityComposable() {
             ) {
                 val activity: ActivityEntry = navController.getParcelableFromBackstack(Screen.Secondary.ActivityDetail) ?: return@composable
                 toolbarTitle = activity.sourceName
-                ActivityDetailScreen(entry = activity)
+                ActivityDetail(entry = activity)
             }
 
             composable(

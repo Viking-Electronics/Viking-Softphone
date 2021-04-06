@@ -13,7 +13,7 @@ import com.vikingelectronics.softphone.activity.ActivityEntry
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun ActivityDetailScreen(
+fun ActivityDetail(
     entry: ActivityEntry
 ) {
 
