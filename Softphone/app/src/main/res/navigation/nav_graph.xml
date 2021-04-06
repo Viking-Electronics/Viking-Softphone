@@ -7,18 +7,6 @@
 
 
     <fragment
-        android:id="@+id/activityListFragment"
-        android:name="com.vikingelectronics.softphone.activity.list.ActivityListFragment"
-        android:label="Activity"
-        tools:layout="@layout/history">
-
-        <action
-            android:id="@+id/action_activityListFragment_to_ActivityDetailFragment"
-            app:destination="@+id/activityDetailFragment"/>
-
-    </fragment>
-
-    <fragment
         android:id="@+id/activityDetailFragment"
         android:name="com.vikingelectronics.softphone.activity.detail.ActivityDetailFragment"
         android:label="{sourceDeviceName}">
