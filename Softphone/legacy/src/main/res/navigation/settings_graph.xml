@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="org.linphone.settings.SettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.SettingsFragment"
         android:label="@string/settings"
         tools:layout="@layout/settings">
         <action
@@ -33,37 +33,37 @@
     <fragment
         android:id="@+id/tunnelSettingsFragment"
         android:label="Tunnel Settings"
-        android:name="org.linphone.settings.TunnelSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.TunnelSettingsFragment"
         tools:layout="@layout/settings_tunnel"/>
 
     <fragment
         android:id="@+id/audioSettingsFragment"
         android:label="Audio Settings"
-        android:name="org.linphone.settings.AudioSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.AudioSettingsFragment"
         tools:layout="@layout/settings_audio"/>
 
     <fragment
         android:id="@+id/videoSettingsFragment"
         android:label="Video Settings"
-        android:name="org.linphone.settings.VideoSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.VideoSettingsFragment"
         tools:layout="@layout/settings_video"/>
 
     <fragment
         android:id="@+id/callSettingsFragment"
         android:label="Call Settings"
-        android:name="org.linphone.settings.CallSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.CallSettingsFragment"
         tools:layout="@layout/settings_call"/>
 
     <fragment
         android:id="@+id/networkSettingsFragment"
         android:label="Network Settings"
-        android:name="org.linphone.settings.NetworkSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.NetworkSettingsFragment"
         tools:layout="@layout/settings_network"/>
 
     <fragment
         android:id="@+id/advancedSettingsFragment"
         android:label="Advanced Settings"
-        android:name="org.linphone.settings.AdvancedSettingsFragment"
+        android:name="com.vikingelectronics.softphone.settings.legacy.AdvancedSettingsFragment"
         tools:layout="@layout/settings_advanced"/>
 
 </navigation>

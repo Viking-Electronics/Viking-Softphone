@@ -103,7 +103,6 @@ import org.linphone.fragments.AboutFragment;
 import org.linphone.fragments.DialerFragment;
 import org.linphone.fragments.EmptyFragment;
 import org.linphone.fragments.FragmentsAvailable;
-import org.linphone.fragments.ScheduleFragment;
 import org.linphone.fragments.StatusFragment;
 import org.linphone.history.HistoryDetailFragment;
 import org.linphone.history.HistoryFragment;

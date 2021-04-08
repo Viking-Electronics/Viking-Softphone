@@ -26,7 +26,6 @@ import android.util.DisplayMetrics;
 import android.view.*;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.View.OnTouchListener;
 import android.widget.RelativeLayout;
 
 import org.linphone.LinphoneManager;

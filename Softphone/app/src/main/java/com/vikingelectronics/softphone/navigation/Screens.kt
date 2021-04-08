@@ -1,6 +1,7 @@
 package com.vikingelectronics.softphone.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -20,12 +21,15 @@ sealed class Screen(
 ) {
     sealed class Primary(
         override val route: String,
-        @StringRes val toolbarResourceId: Int,
-        val icon: @Composable () -> Unit
+        @StringRes val displayResourceId: Int,
+        val icon: @Composable () -> Unit,
+        val toolbarActions: @Composable (RowScope.() -> Unit)? = null
     ): Screen(route) {
 
         object ActivityList: Primary("activityList", R.string.activity, {
             Icon(imageVector = Icons.Filled.Timeline, contentDescription = "Activity list icon")
+        }, {
+
         })
         object DeviceList: Primary("deviceList", R.string.devices, {
             Icon(
@@ -44,9 +48,21 @@ sealed class Screen(
         object Info: Primary("info", R.string.info, {
             Icon(imageVector = Icons.Filled.Info, contentDescription = "Info menu icon")
         })
-        object Settings: Primary("settings", R.string.settings, {
+
+
+        sealed class Settings(
+            override val route: String
+        ): Primary(route, R.string.settings, {
             Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings menu icon")
-        })
+        }) {
+            object Main: Settings("settingsMain")
+            object Tunnel: Settings("tunnelSettings")
+            object Audio: Settings("audioSettings")
+            object Video: Settings("videoSettings")
+            object Call: Settings("callSettings")
+            object Network: Settings("networkSettings")
+            object Advanced: Settings("advancedSettings")
+        }
     }
 
     sealed class Secondary(

@@ -37,18 +37,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.jetbrains.annotations.NotNull;
-import org.linphone.LinphoneManager;
-import org.linphone.LinphoneService;
 import org.linphone.R;
-import org.linphone.call.CallActivity;
-import org.linphone.call.CallManager;
 import org.linphone.compatibility.CompatibilityScaleGestureDetector;
 import org.linphone.compatibility.CompatibilityScaleGestureListener;
 import org.linphone.core.Call;
 import org.linphone.core.Core;
 import org.linphone.core.VideoDefinition;
 import org.linphone.core.tools.Log;
-import org.linphone.settings.LinphonePreferences;
 import org.linphone.utils.LinphoneUtils;
 
 import javax.inject.Inject;

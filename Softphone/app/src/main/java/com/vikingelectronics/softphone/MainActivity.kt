@@ -15,28 +15,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
 import com.vikingelectronics.softphone.activity.list.ActivityList
-import com.vikingelectronics.softphone.call.CallVideoFragment
 import com.vikingelectronics.softphone.call.IncomingCallReceiver
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.list.CapturesList
+import com.vikingelectronics.softphone.databinding.FragmentContainerBinding
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
 import com.vikingelectronics.softphone.navigation.Screen
+import com.vikingelectronics.softphone.schedules.LegacyScheduleFragment
+import com.vikingelectronics.softphone.settings.legacy.*
+import com.vikingelectronics.softphone.settings.legacy.SettingsFragment
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.linphone.core.Call
 import org.linphone.core.Core
 import org.linphone.core.CoreListenerStub
+import org.linphone.fragments.AboutFragment
+import org.linphone.settings.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -73,7 +79,7 @@ class MainActivity: AppCompatActivity() {
 
         setContent {
             MaterialTheme {
-                MainActivityComposable()
+                MainActivityComposable(supportFragmentManager)
             }
         }
 
@@ -90,10 +96,19 @@ class MainActivity: AppCompatActivity() {
 
 
 @Composable
-fun MainActivityComposable() {
+fun MainActivityComposable(
+    supportFragmentManager: FragmentManager
+) {
+    var toolbarTitle by remember { mutableStateOf("") }
+    var shouldShowToolbarActions = remember { mutableStateOf(false) }
+    var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
 
     val scaffoldState = rememberScaffoldState()
-    val navController = rememberNavController()
+    val navController = rememberNavController().apply {
+        addOnDestinationChangedListener { _, _, _ ->
+            shouldShowToolbarActions.value = false
+        }
+    }
     val scope = rememberCoroutineScope()
 
     val bottomNavItems = listOf(
@@ -104,14 +119,14 @@ fun MainActivityComposable() {
     val drawerNavItems = listOf(
         Screen.Primary.Schedules,
         Screen.Primary.Info,
-        Screen.Primary.Settings
+        Screen.Primary.Settings.Main
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-    var toolbarTitle by remember { mutableStateOf("") }
-    var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
+    val settingsTitle = stringResource(id = Screen.Primary.Settings.Main.displayResourceId)
+
 
     Scaffold (
         scaffoldState = scaffoldState,
@@ -119,19 +134,20 @@ fun MainActivityComposable() {
              TopAppBar(
                  title = { Text(text = toolbarTitle) },
                  navigationIcon = {
-                     Icon(
-                         imageVector = Icons.Default.Menu,
-                         contentDescription = "Drawer menu icon",
-                         modifier = Modifier.clickable {
-                             scope.launch {
-                                 scaffoldState.drawerState.apply {
-                                     if (isOpen) close() else open()
-                                 }
+                     Button(onClick = {
+                         scope.launch {
+                             scaffoldState.drawerState.apply {
+                                 if (isOpen) close() else open()
                              }
                          }
-                     )
+                     }) {
+                         Icon(
+                             imageVector = Icons.Default.Menu,
+                             contentDescription = "Drawer menu icon"
+                         )
+                     }
                  },
-                 actions = toolbarActions
+                 actions = if (shouldShowToolbarActions.value) toolbarActions else { {} }
              )
         },
         bottomBar = {
@@ -139,7 +155,7 @@ fun MainActivityComposable() {
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
                         icon = screen.icon,
-                        label = { Text(text = stringResource(id = screen.toolbarResourceId)) },
+                        label = { Text(text = stringResource(id = screen.displayResourceId)) },
                         selected = screen.route == currentRoute,
                         onClick = { navController.navigate(screen.route) })
                 }
@@ -162,7 +178,7 @@ fun MainActivityComposable() {
                 ) {
                     screen.icon()
                     Text(
-                        text = stringResource(id = screen.toolbarResourceId),
+                        text = stringResource(id = screen.displayResourceId),
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -173,30 +189,63 @@ fun MainActivityComposable() {
     ){
         NavHost(navController = navController, startDestination = Screen.Primary.DeviceList.route) {
             composable(Screen.Primary.DeviceList.route) {
-                toolbarTitle = stringResource(id = Screen.Primary.DeviceList.toolbarResourceId)
+                toolbarTitle = stringResource(id = Screen.Primary.DeviceList.displayResourceId)
                 DevicesList(navController = navController)
             }
 
             composable(Screen.Primary.ActivityList.route) {
-                toolbarTitle = stringResource(id = Screen.Primary.ActivityList.toolbarResourceId)
-                ActivityList(navController = navController)
+                toolbarTitle = stringResource(id = Screen.Primary.ActivityList.displayResourceId)
+                toolbarActions = ActivityList(navController = navController, shouldShowToolbarActions)
             }
 
             composable(Screen.Primary.CaptureList.route) {
-                toolbarTitle = stringResource(id = Screen.Primary.CaptureList.toolbarResourceId)
-                CapturesList(navController = navController)
+                toolbarTitle = stringResource(id = Screen.Primary.CaptureList.displayResourceId)
+                toolbarActions = CapturesList(navController = navController, shouldShowToolbarActions)
             }
 
             composable(Screen.Primary.Schedules.route) {
-
+                toolbarTitle = stringResource(id = Screen.Primary.Schedules.displayResourceId)
+                LegacyFragmentContainer(LegacyScheduleFragment(), supportFragmentManager)
             }
 
             composable(Screen.Primary.Info.route) {
-
+                toolbarTitle = stringResource(id = Screen.Primary.Info.displayResourceId)
+                LegacyFragmentContainer(fragment = AboutFragment(), supportFragmentManager = supportFragmentManager)
             }
 
-            composable(Screen.Primary.Settings.route) {
+            composable(Screen.Primary.Settings.Main.route) {
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Main.displayResourceId)
+                LegacyFragmentContainer(fragment = SettingsFragment().apply { this.navController = navController }, supportFragmentManager = supportFragmentManager)
+            }
 
+            composable(Screen.Primary.Settings.Tunnel.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = TunnelSettingsFragment(), supportFragmentManager = supportFragmentManager)
+            }
+
+            composable(Screen.Primary.Settings.Audio.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = AudioSettingsFragment(), supportFragmentManager = supportFragmentManager)
+            }
+
+            composable(Screen.Primary.Settings.Video.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = VideoSettingsFragment(), supportFragmentManager = supportFragmentManager)
+            }
+
+            composable(Screen.Primary.Settings.Call.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = CallSettingsFragment(), supportFragmentManager = supportFragmentManager)
+            }
+
+            composable(Screen.Primary.Settings.Network.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = NetworkSettingsFragment(), supportFragmentManager = supportFragmentManager)
+            }
+
+            composable(Screen.Primary.Settings.Advanced.route) {
+                toolbarTitle = settingsTitle
+                LegacyFragmentContainer(fragment = AdvancedSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(
@@ -225,5 +274,14 @@ fun MainActivityComposable() {
 
             }
         }
+    }
+}
+
+@Composable
+private fun LegacyFragmentContainer(fragment: Fragment, supportFragmentManager: FragmentManager) {
+    AndroidViewBinding(FragmentContainerBinding::inflate) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

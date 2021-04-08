@@ -34,7 +34,6 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
-import org.linphone.BuildConfig;
 import org.linphone.R;
 import org.linphone.core.Core;
 import org.linphone.core.Core.LogCollectionUploadState;
