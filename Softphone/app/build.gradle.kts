@@ -147,8 +147,6 @@ dependencies {
 
     implementation("com.karumi:dexter:6.2.2")
 
-//    implementation("com.google.accompanist:accompanist-coil:0.6.1")
-
     implementation("joda-time:joda-time:2.10")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.30")
