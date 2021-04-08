@@ -76,9 +76,10 @@ fun DeviceDetail(
         items(viewModel.activityList) { entry ->
             ActivityEntryCard(
                 entry = entry,
-                modifier = Modifier.clickable {
-                    navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, entry)
-                }
+                navController
+//                modifier = Modifier.clickable {
+//                    navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, entry)
+//                }
             )
         }
     }

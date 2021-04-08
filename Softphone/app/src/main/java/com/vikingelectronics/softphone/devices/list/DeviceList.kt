@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
@@ -15,7 +16,7 @@ import com.vikingelectronics.softphone.navigation.Screen
 
 @Composable
 fun DevicesList(
-    navController: NavController,
+    navController: NavController
 ) {
     val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
 

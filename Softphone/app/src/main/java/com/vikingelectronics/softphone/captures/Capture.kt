@@ -7,8 +7,9 @@ import android.text.format.DateUtils
 import android.text.format.Formatter
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -68,10 +70,13 @@ data class Capture (
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordCard (
     capture: Capture,
     navController: NavController,
+    selectedState: MutableState<Boolean>,
+    longClick: (() -> Unit)? = null
 ) {
 
     val viewModel: CapturesListViewModel = viewModel()
@@ -90,9 +95,14 @@ fun RecordCard (
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .clickable(enabled = !shouldShowDownloadProgress) {
-//                val directions =
-            }
+            .combinedClickable(
+                enabled = !shouldShowDownloadProgress,
+                onClick = {
+
+                },
+                onLongClick = longClick
+            ),
+        backgroundColor = if (selectedState.value) Color.Blue else Color.White
     ) {
         Box (
             modifier = Modifier.fillMaxSize(),

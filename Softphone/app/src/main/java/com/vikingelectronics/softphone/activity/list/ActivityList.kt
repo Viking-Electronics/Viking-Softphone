@@ -4,12 +4,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -18,14 +23,29 @@ import androidx.navigation.NavController
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
-import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
-import com.vikingelectronics.softphone.navigation.Screen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ActivityList(navController: NavController) {
+fun ActivityList(
+    navController: NavController,
+    shouldShowToolbarActions: MutableState<Boolean>,
+): @Composable (RowScope.() -> Unit) {
+
+    val selectedEntries by remember { mutableStateOf(mutableListOf<ActivityEntry>()) }
 
     val viewModel: ActivityListViewModel = hiltNavGraphViewModel()
+    val toolbarActions: @Composable RowScope.() -> Unit = {
+        Button(onClick = {
+//            selectedEntries.forEach { viewModel }
+        }) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "Favorite Icon"
+            )
+        }
+
+    }
+
 
     LazyColumn {
 //        item {
@@ -42,20 +62,27 @@ fun ActivityList(navController: NavController) {
                 ) {
                     Text(
                         text = deviceName,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
             }
 
             items(activity) { item: ActivityEntry ->
-                ActivityEntryCard(
-                    entry = item,
-                    modifier = Modifier.clickable {
-                        navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, item)
+                val selectedState = mutableStateOf(false)
+
+                ActivityEntryCard(entry = item, navController, selectedState) {
+                    if (selectedEntries.contains(item)) {
+                        selectedEntries.remove(item)
+                        selectedState.value = false
+                    } else {
+                        selectedEntries.add(item)
+                        selectedState.value = true
                     }
-                )
+                    shouldShowToolbarActions.value = selectedEntries.isNotEmpty()
+                }
             }
         }
     }
+
+    return toolbarActions
 }
