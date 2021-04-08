@@ -24,7 +24,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.google.accompanist.coil.CoilImage
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -63,7 +63,7 @@ fun DeviceCard(
         ) {
             Text(text = device.name)
             Box(
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp).defaultMinSize(minHeight = 100.dp)
             ) {
                 CoilImage(
                     data = device.latestActivityEntry.snapshotUrl,

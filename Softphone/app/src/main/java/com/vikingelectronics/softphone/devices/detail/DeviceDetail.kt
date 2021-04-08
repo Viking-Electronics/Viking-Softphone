@@ -19,7 +19,7 @@ import com.vikingelectronics.softphone.activity.ActivityEntryCard
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
 import com.vikingelectronics.softphone.navigation.Screen
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.google.accompanist.coil.CoilImage
 
 @Composable
 fun DeviceDetail(

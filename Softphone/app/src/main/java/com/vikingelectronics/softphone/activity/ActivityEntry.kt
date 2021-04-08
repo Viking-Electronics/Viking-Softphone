@@ -2,8 +2,6 @@ package com.vikingelectronics.softphone.activity
 
 import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
@@ -18,7 +16,7 @@ import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentReference
 import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
 import com.vikingelectronics.softphone.navigation.Screen
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.google.accompanist.coil.CoilImage
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
