@@ -9,15 +9,17 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.vikingelectronics.softphone.accounts.SipAccount
 import com.vikingelectronics.softphone.accounts.User
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 abstract class FirebaseRepository {
+
+    sealed class ListState<out T> {
+        class Success<T>(val list: List<T>): ListState<T>()
+        object Loading: ListState<Nothing>()
+        class Failure(val e: Exception): ListState<Nothing>()
+    }
 
     internal val FAVORITE_KEY = "isFavorite"
 
@@ -70,6 +72,14 @@ abstract class FirebaseRepository {
 
     inline fun <reified T> List<DocumentSnapshot>.iterateToObject(actor: (T) -> Unit) = this.forEach {
         it.toObject<T>()?.let(actor)
+    }
+
+    inline fun <reified T> List<DocumentSnapshot>.iterateToObjectList(actor: (List<T>) -> Unit) {
+        val innerList = mutableListOf<T>()
+        this.iterateToObject<T> {
+            innerList.add(it)
+        }
+        actor(innerList)
     }
 
     fun Task<StorageMetadata>.emitResult() = callbackFlow<Result<Boolean>> {

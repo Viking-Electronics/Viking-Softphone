@@ -41,5 +41,11 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="empty_string_res"> </string>
+
+    <string name="previous_activity">Previous Activity</string>
+    <string name="no_previous_activity">No Previous Activity</string>
+    <string name="loading_previous_activity">Loading Previous Activity</string>
+    <string name="previous_activity_load_failure">Issue Loading Previous Activity</string>
 
 </resources>

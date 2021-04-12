@@ -9,11 +9,12 @@ import com.vikingelectronics.softphone.devices.Device
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.lang.Exception
 import javax.inject.Inject
 
 interface DeviceRepository {
     fun getDevices(username: String): Flow<Device>
-    fun getDeviceActivityList(device: Device): Flow<ActivityEntry>
+    fun getDeviceActivityList(device: Device): Flow<FirebaseRepository.ListState<ActivityEntry>>
 }
 
 @ViewModelScoped
@@ -46,15 +47,21 @@ class DeviceRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDeviceActivityList(device: Device): Flow<ActivityEntry> = flow {
+    override fun getDeviceActivityList(device: Device): Flow<ListState<ActivityEntry>> = flow {
+        emit(ListState.Loading)
+
         val deviceDocRef = devicesCollectionRef.document(device.id)
 
-        activityCollectionRef.whereEqualTo("sourceDevice", deviceDocRef)
-            .getAwait()
-            .documents
-            .apply {
-                subList(1, size).iterateToObject<ActivityEntry> { emit(it) }
-            }
-
+        try {
+            activityCollectionRef.whereEqualTo("sourceDevice", deviceDocRef)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .getAwait()
+                .documents
+                .apply {
+                    subList(1, size).iterateToObjectList<ActivityEntry> { emit(ListState.Success(it)) }
+                }
+        } catch (e: Exception) {
+            emit(ListState.Failure(e))
+        }
     }
 }

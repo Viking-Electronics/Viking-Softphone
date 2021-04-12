@@ -116,7 +116,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.core:core-ktx:1.3.2")
 
-    implementation("androidx.activity:activity-compose:1.3.0-alpha05")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha06")
     implementation("androidx.compose.ui:ui:1.0.0-beta04")
     implementation("androidx.compose.ui:ui-tooling:1.0.0-beta04")
     implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta04")
@@ -131,7 +131,7 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
 
     implementation("com.google.accompanist:accompanist-coil:0.7.1")
     implementation("com.google.android.material:material:1.3.0")
@@ -151,7 +151,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.30")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.30")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
