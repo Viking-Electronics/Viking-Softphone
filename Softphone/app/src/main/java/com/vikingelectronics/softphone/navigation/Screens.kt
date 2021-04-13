@@ -19,6 +19,9 @@ import com.vikingelectronics.softphone.devices.Device
 sealed class Screen(
     open val route: String,
 ) {
+    object Login: Screen("login")
+    object QrCodeReader: Screen("qrCodeReader")
+
     sealed class Primary(
         override val route: String,
         @StringRes val displayResourceId: Int,

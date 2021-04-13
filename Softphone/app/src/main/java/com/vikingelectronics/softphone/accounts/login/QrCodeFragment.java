@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.accounts.add.legacy;
+package com.vikingelectronics.softphone.accounts.login;
 
 /*
 QrCodeFragment.java
@@ -23,6 +23,9 @@ import android.util.Log;
 import android.view.TextureView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavBackStackEntry;
+
+import com.vikingelectronics.softphone.accounts.login.LoginViewModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,16 +36,22 @@ import org.linphone.core.CoreListenerStub;
 
 import javax.inject.Inject;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 public class QrCodeFragment extends Fragment {
     public QrCodeFragment() {
         super(R.layout.qrcode);
     }
 
-    @Inject
+
+//    @Inject
     public Core core;
+
+    public LoginViewModel viewModel;
 
     private TextureView mQrcodeView;
     private CoreListenerStub mListener =

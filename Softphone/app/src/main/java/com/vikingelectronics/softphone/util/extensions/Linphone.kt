@@ -8,10 +8,10 @@ fun Core.restart() {
     start()
 }
 
-fun Address.getSafeDisplayName(): String {
-    return when {
-        displayName != null && displayName.isNotEmpty() -> displayName
-        username != null && username.isNotEmpty() -> username
-        else -> asStringUriOnly()
-    }
-}
+//fun Address.getSafeDisplayName(): String {
+//    return when {
+//        displayName != null && displayName.isNotEmpty() -> displayName
+//        username != null && username.isNotEmpty() -> username
+//        else -> asStringUriOnly()
+//    }
+//}

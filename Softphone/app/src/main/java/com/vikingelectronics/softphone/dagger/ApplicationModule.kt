@@ -46,6 +46,7 @@ object ApplicationModule {
         factory: Factory,
         config: Config
     ): Core = factory.createCoreWithConfig(config, context).apply {
+        isAutoIterateEnabled = true
         start()
     }
 

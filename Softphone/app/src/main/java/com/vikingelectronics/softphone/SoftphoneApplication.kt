@@ -17,14 +17,9 @@ import javax.inject.Inject
 @HiltAndroidApp
 class SoftphoneApplication: MultiDexApplication(), ImageLoaderFactory {
 
-    private val applicationScope = CoroutineScope(SupervisorJob())
-
-    @Inject
-    lateinit var core: Core
 
     override fun onCreate() {
         super.onCreate()
-        iterateCore()
         Timber.plant(Timber.DebugTree())
     }
 
@@ -37,21 +32,5 @@ class SoftphoneApplication: MultiDexApplication(), ImageLoaderFactory {
                 }.build()
             }
         }.build()
-    }
-
-    /**
-     *Previously I had the iteration occurring within the ApplicationModule.
-     * I moved it here as the logs get VERY obscure when crashes occur related to linphone
-     */
-    private fun iterateCore() = with(core) {
-        //apparently linphone requires the client to explicitly call iterate or nothing will work
-        applicationScope.launch(Dispatchers.Default) {
-            while (this@with != null) {
-                delay(30)
-                withContext(Dispatchers.Main) {
-                    iterate()
-                }
-            }
-        }
     }
 }

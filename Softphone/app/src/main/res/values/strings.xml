@@ -48,4 +48,9 @@
     <string name="loading_previous_activity">Loading Previous Activity</string>
     <string name="previous_activity_load_failure">Issue Loading Previous Activity</string>
 
+    <string name="advanced_login">Advanced</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="or">Or</string>
+    <string name="qr_button_content_description">QR scanning button</string>
+
 </resources>

@@ -18,8 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import com.vikingelectronics.softphone.accounts.login.QrCodeFragment
+import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
 import com.vikingelectronics.softphone.activity.list.ActivityList
@@ -79,7 +82,7 @@ class MainActivity: AppCompatActivity() {
 
         setContent {
             MaterialTheme {
-                MainActivityComposable(supportFragmentManager)
+                MainActivityComposable(supportFragmentManager, core)
             }
         }
 
@@ -97,7 +100,8 @@ class MainActivity: AppCompatActivity() {
 
 @Composable
 fun MainActivityComposable(
-    supportFragmentManager: FragmentManager
+    supportFragmentManager: FragmentManager,
+    core: Core
 ) {
     var toolbarTitle by remember { mutableStateOf("") }
     var shouldShowToolbarActions = remember { mutableStateOf(false) }
@@ -135,11 +139,12 @@ fun MainActivityComposable(
                  title = { Text(text = toolbarTitle) },
                  navigationIcon = {
                      Button(onClick = {
-                         scope.launch {
-                             scaffoldState.drawerState.apply {
-                                 if (isOpen) close() else open()
-                             }
-                         }
+                         navController.navigate(Screen.Login.route)
+//                         scope.launch {
+//                             scaffoldState.drawerState.apply {
+//                                 if (isOpen) close() else open()
+//                             }
+//                         }
                      }) {
                          Icon(
                              imageVector = Icons.Default.Menu,
@@ -188,6 +193,18 @@ fun MainActivityComposable(
         }
     ){
         NavHost(navController = navController, startDestination = Screen.Primary.DeviceList.route) {
+            composable(Screen.Login.route) {
+                LoginScreen(navController)
+            }
+
+            composable(Screen.QrCodeReader.route) {
+                val fragment = QrCodeFragment().apply {
+                    this.core = core
+                    this.viewModel = hiltNavGraphViewModel(backStackEntry = it)
+                }
+                LegacyFragmentContainer(fragment = fragment, supportFragmentManager = supportFragmentManager)
+            }
+
             composable(Screen.Primary.DeviceList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.DeviceList.displayResourceId)
                 DevicesList(navController = navController)

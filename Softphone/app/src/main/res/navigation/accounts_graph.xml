@@ -14,7 +14,7 @@
 
     <fragment
         android:id="@+id/qrFragment"
-        android:name="com.vikingelectronics.softphone.accounts.add.legacy.QrCodeFragment"
+        android:name="com.vikingelectronics.softphone.accounts.login.QrCodeFragment"
         android:label="Qr"
         tools:layout="@layout/qrcode"/>
 
