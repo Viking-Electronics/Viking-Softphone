@@ -21,6 +21,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import com.tfcporciuncula.flow.FlowSharedPreferences
+import com.vikingelectronics.softphone.accounts.AccountProvider
 import com.vikingelectronics.softphone.accounts.login.QrCodeFragment
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
@@ -34,6 +36,7 @@ import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
+import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.schedules.LegacyScheduleFragment
 import com.vikingelectronics.softphone.settings.legacy.*
@@ -53,13 +56,13 @@ class MainActivity: AppCompatActivity() {
 
     @Inject lateinit var core: Core
     @Inject lateinit var linphoneManager: LinphoneManager
+    @Inject lateinit var accountProvider: AccountProvider
 
     private lateinit var callReceiver: IncomingCallReceiver
 
     private val coreListener = object: CoreListenerStub() {
         override fun onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
-            super.onCallStateChanged(lc, call, cstate, message)
-            Log.d("Call state changed", "$call, $cstate, $message")
+            super.onCallStateChanged(lc, call, cstate, message).timber()
 //            when(cstate) {
 //                Call.State.Connected, Call.State.StreamsRunning -> binding.mainPager.currentItem = 1
 //                Call.State.IncomingReceived -> call.accept()
@@ -82,9 +85,10 @@ class MainActivity: AppCompatActivity() {
 
         setContent {
             MaterialTheme {
-                MainActivityComposable(supportFragmentManager, core)
+                MainActivityComposable(supportFragmentManager, accountProvider)
             }
         }
+        accountProvider.checkStoredSipCreds()
 
         core.addListener(coreListener)
     }
@@ -101,7 +105,7 @@ class MainActivity: AppCompatActivity() {
 @Composable
 fun MainActivityComposable(
     supportFragmentManager: FragmentManager,
-    core: Core
+    accountProvider: AccountProvider,
 ) {
     var toolbarTitle by remember { mutableStateOf("") }
     var shouldShowToolbarActions = remember { mutableStateOf(false) }
@@ -132,19 +136,21 @@ fun MainActivityComposable(
     val settingsTitle = stringResource(id = Screen.Primary.Settings.Main.displayResourceId)
 
 
+    val isLoggedIn by accountProvider.isLoggedIn.collectAsFlowState()
+
     Scaffold (
         scaffoldState = scaffoldState,
         topBar = {
+            if (isLoggedIn)
              TopAppBar(
                  title = { Text(text = toolbarTitle) },
                  navigationIcon = {
                      Button(onClick = {
-                         navController.navigate(Screen.Login.route)
-//                         scope.launch {
-//                             scaffoldState.drawerState.apply {
-//                                 if (isOpen) close() else open()
-//                             }
-//                         }
+                         scope.launch {
+                             scaffoldState.drawerState.apply {
+                                 if (isOpen) close() else open()
+                             }
+                         }
                      }) {
                          Icon(
                              imageVector = Icons.Default.Menu,
@@ -156,6 +162,7 @@ fun MainActivityComposable(
              )
         },
         bottomBar = {
+            if (isLoggedIn)
             BottomNavigation {
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
@@ -167,6 +174,7 @@ fun MainActivityComposable(
             }
         },
         drawerContent = {
+            if (isLoggedIn)
             drawerNavItems.forEach { screen ->
                 Row(
                     modifier = Modifier
@@ -192,17 +200,10 @@ fun MainActivityComposable(
             }
         }
     ){
-        NavHost(navController = navController, startDestination = Screen.Primary.DeviceList.route) {
+        val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
+        NavHost(navController = navController, startDestination = startDestination) {
             composable(Screen.Login.route) {
                 LoginScreen(navController)
-            }
-
-            composable(Screen.QrCodeReader.route) {
-                val fragment = QrCodeFragment().apply {
-                    this.core = core
-                    this.viewModel = hiltNavGraphViewModel(backStackEntry = it)
-                }
-                LegacyFragmentContainer(fragment = fragment, supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.DeviceList.route) {

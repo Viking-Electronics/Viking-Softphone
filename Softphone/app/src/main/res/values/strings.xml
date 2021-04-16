@@ -52,5 +52,8 @@
     <string name="scan_qr_code">Scan QR Code</string>
     <string name="or">Or</string>
     <string name="qr_button_content_description">QR scanning button</string>
+    <string name="qr_results_alert_title">Select a user</string>
+    <string name="sip_registration_success">Registration Successful</string>
+    <string name="sip_registration_failure">Registration Failed</string>
 
 </resources>

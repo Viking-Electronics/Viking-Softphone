@@ -28,6 +28,9 @@ repositories {
         // Replace snapshots by releases for releases !
         url = URI("https://linphone.org/releases/maven_repository")
     }
+    maven{
+        url = URI("https://jitpack.io")
+    }
 }
 
 android {
@@ -132,6 +135,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
+//    implementation("androidx.preference:preference:1.1.1")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
 
     implementation("com.google.accompanist:accompanist-coil:0.7.1")
     implementation("com.google.android.material:material:1.3.0")
@@ -143,9 +148,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
 
+    implementation("com.github.tfcporciuncula.flow-preferences:flow-preferences:1.4.0")
     implementation("com.jakewharton.timber:timber:4.7.1")
 
     implementation("com.karumi:dexter:6.2.2")
+
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 
     implementation("joda-time:joda-time:2.10")
 
