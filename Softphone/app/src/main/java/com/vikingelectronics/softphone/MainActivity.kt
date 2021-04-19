@@ -2,7 +2,6 @@ package com.vikingelectronics.softphone
 
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
@@ -18,12 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.vikingelectronics.softphone.accounts.AccountProvider
-import com.vikingelectronics.softphone.accounts.login.QrCodeFragment
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
@@ -37,18 +33,14 @@ import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
 import com.vikingelectronics.softphone.extensions.timber
+import com.vikingelectronics.softphone.legacy.*
 import com.vikingelectronics.softphone.navigation.Screen
-import com.vikingelectronics.softphone.schedules.LegacyScheduleFragment
 import com.vikingelectronics.softphone.settings.legacy.*
-import com.vikingelectronics.softphone.settings.legacy.SettingsFragment
+import com.vikingelectronics.softphone.legacy.settings.SettingsFragment
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.linphone.core.Call
-import org.linphone.core.Core
-import org.linphone.core.CoreListenerStub
-import org.linphone.fragments.AboutFragment
-import org.linphone.settings.*
+import org.linphone.core.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -68,6 +60,10 @@ class MainActivity: AppCompatActivity() {
 //                Call.State.IncomingReceived -> call.accept()
 //                else -> binding.mainPager.currentItem = 0
 //            }
+        }
+
+        override fun onRegistrationStateChanged(core: Core, proxyConfig: ProxyConfig, state: RegistrationState?, message: String) {
+            super.onRegistrationStateChanged(core, proxyConfig, state, message)
         }
     }
 
@@ -174,29 +170,32 @@ fun MainActivityComposable(
             }
         },
         drawerContent = {
-            if (isLoggedIn)
-            drawerNavItems.forEach { screen ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .padding(start = 8.dp)
-                        .clickable {
-                            scope.launch {
-                                scaffoldState.drawerState.close()
-                            }
-                            navController.navigate(screen.route)
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    screen.icon()
-                    Text(
-                        text = stringResource(id = screen.displayResourceId),
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
+            if (isLoggedIn) {
 
-                Divider()
+
+                drawerNavItems.forEach { screen ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .padding(start = 8.dp)
+                            .clickable {
+                                scope.launch {
+                                    scaffoldState.drawerState.close()
+                                }
+                                navController.navigate(screen.route)
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        screen.icon()
+                        Text(
+                            text = stringResource(id = screen.displayResourceId),
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+
+                    Divider()
+                }
             }
         }
     ){
@@ -223,7 +222,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.Schedules.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.Schedules.displayResourceId)
-                LegacyFragmentContainer(LegacyScheduleFragment(), supportFragmentManager)
+                LegacyFragmentContainer(ScheduleFragment(), supportFragmentManager)
             }
 
             composable(Screen.Primary.Info.route) {

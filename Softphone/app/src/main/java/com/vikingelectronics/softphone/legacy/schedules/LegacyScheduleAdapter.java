@@ -1,6 +1,7 @@
-package com.vikingelectronics.softphone.schedules;
+package com.vikingelectronics.softphone.legacy.schedules;
 
 import android.content.Context;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.joda.time.LocalTime;
-import org.linphone.LinphoneApp;
-import org.linphone.R;
-import org.linphone.ScheduleObject;
-import org.linphone.utils.SelectableAdapter;
-import org.linphone.utils.SelectableHelper;
+import com.vikingelectronics.softphone.R;
 
+import org.joda.time.LocalTime;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapter.ViewHolder> {
@@ -95,12 +93,12 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
 
         public ViewHolder(View view, LegacyScheduleAdapter.ViewHolder.ClickListener listener) {
             super(view);
-            select = view.findViewById(R.id.delete);
-            mListener = listener;
-            beginTime = view.findViewById(R.id.begin_time);
-            endTime = view.findViewById(R.id.end_time);
-            scheduleIcon = view.findViewById(R.id.schedule_icon);
-            daysField = view.findViewById(R.id.days_field);
+//            select = view.findViewById(R.id.delete);
+//            mListener = listener;
+//            beginTime = view.findViewById(R.id.begin_time);
+//            endTime = view.findViewById(R.id.end_time);
+//            scheduleIcon = view.findViewById(R.id.schedule_icon);
+//            daysField = view.findViewById(R.id.days_field);
 //            scheduleIcon.setImageResource(R.drawable.snooze_icon);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
@@ -131,32 +129,33 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
             LocalTime b = schedule.getInterval().getIntervalStart();
             LocalTime e = schedule.getInterval().getIntervalEnd();
             boolean[] d = schedule.getDays();
-            String[] week = context.getResources().getStringArray(R.array.days);
+//            String[] week = context.getResources().getStringArray(R.array.days);
             boolean empty = true;
 
             if (Arrays.equals(d, new boolean[] {true, false, false, false, false, false, true})) {
-                daysField.setText(R.string.on_weekends);
+//                daysField.setText(R.string.on_weekends);
             } else if (Arrays.equals(
                     d, new boolean[] {false, true, true, true, true, true, false})) {
-                daysField.setText(R.string.on_weekdays);
+//                daysField.setText(R.string.on_weekdays);
             } else if (Arrays.equals(d, new boolean[] {true, true, true, true, true, true, true})) {
-                daysField.setText(R.string.everyday);
+//                daysField.setText(R.string.everyday);
             } else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("On ");
-                for (int i = 0; i < week.length; i++) {
-                    if (d[i]) {
-                        sb.append(week[i].substring(0, 3)).append(", ");
-                        empty = false;
-                    }
-                }
+//                for (int i = 0; i < week.length; i++) {
+//                    if (d[i]) {
+//                        sb.append(week[i].substring(0, 3)).append(", ");
+//                        empty = false;
+//                    }
+//                }
                 if (!empty) {
                     sb.setLength(sb.length() - 2);
                 }
                 daysField.setText(sb.toString());
             }
-            beginTime.setText(LinphoneApp.parseTime(b));
-            endTime.setText(LinphoneApp.parseTime(e));
+//            beginTime.setText(LinphoneApp.parseTime(b));
+//            endTime.setText(LinphoneApp.parseTime(e));
         }
     }
 }
+

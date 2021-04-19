@@ -24,7 +24,7 @@
         <item name="android:colorPrimary">@color/primary_color</item>
         <!-- Comment out the following line to disable system's status bar coloring -->
         <item name="android:colorPrimaryDark">@color/primary_dark_color</item>
-        <item name="android:textColorPrimary">@color/light_primary_text_color</item>
+<!--        <item name="android:textColorPrimary">@color/light_primary_text_color</item>-->
         <item name="android:textColorSecondary">@color/grey_color</item>
         <item name="android:textColorHint">@color/light_grey_color</item>
         <item name="android:colorBackground">@color/white_color</item>
@@ -34,7 +34,7 @@
         <item name="accentColor">@color/primary_color</item>
         <item name="accentColorLight30">@color/primary_light_color</item>
         <item name="accentTextColor">@color/white_color</item>
-        <item name="primaryTextColor">@color/light_primary_text_color</item>
+<!--        <item name="primaryTextColor">@color/light_primary_text_color</item>-->
         <item name="secondaryTextColor">@color/white_color</item>
         <item name="primarySubtextDarkColor">@color/grey_color</item>
         <item name="primarySubtextLightColor">@color/light_grey_color</item>
@@ -54,7 +54,7 @@
         <item name="darkToolbarBackgroundColor">@color/dark_grey_color</item>
         <item name="darkToolbarTextColor">@color/white_color</item>
 
-        <item name="button_background_drawable">@drawable/button_background_light</item>
+<!--        <item name="button_background_drawable">@drawable/button_background_light</item>-->
     </style>
 
     <style name="standard_text_font" parent="@android:style/TextAppearance.Medium">

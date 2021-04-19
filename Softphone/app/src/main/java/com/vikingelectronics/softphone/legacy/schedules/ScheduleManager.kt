@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.schedules
+package com.vikingelectronics.softphone.legacy.schedules
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,14 +7,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.text.format.DateFormat
 import android.util.Log
+import com.vikingelectronics.softphone.legacy.StartServiceReceiver
+import com.vikingelectronics.softphone.legacy.StopServiceReceiver
+import com.vikingelectronics.softphone.legacy.schedules.ScheduleObject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.joda.time.DateTime
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
-import org.linphone.LinphoneService
-import org.linphone.ScheduleObject
-import org.linphone.receivers.StartServiceReceiver
-import org.linphone.receivers.StopServiceReceiver
 import java.io.*
 import java.util.*
 import javax.inject.Inject

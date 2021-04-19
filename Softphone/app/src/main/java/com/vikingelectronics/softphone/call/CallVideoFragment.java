@@ -36,22 +36,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.R;
+
 import org.jetbrains.annotations.NotNull;
-import org.linphone.R;
-import org.linphone.compatibility.CompatibilityScaleGestureDetector;
-import org.linphone.compatibility.CompatibilityScaleGestureListener;
 import org.linphone.core.Call;
 import org.linphone.core.Core;
 import org.linphone.core.VideoDefinition;
 import org.linphone.core.tools.Log;
-import org.linphone.utils.LinphoneUtils;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint
-public class CallVideoFragment extends Fragment implements OnGestureListener, OnDoubleTapListener, CompatibilityScaleGestureListener {
+//@AndroidEntryPoint
+public class CallVideoFragment extends Fragment implements OnGestureListener, OnDoubleTapListener {
     private TextureView mVideoView;
     public TextureView getVideoView(){
         return mVideoView;
@@ -60,45 +58,50 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
     private GestureDetector mGestureDetector;
     private float mZoomFactor = 1.f;
     private float mZoomCenterX, mZoomCenterY;
-    private CompatibilityScaleGestureDetector mScaleDetector;
+//    private CompatibilityScaleGestureDetector mScaleDetector;
 //    private CallActivity mInCallActivity;
     private int mPreviewX, mPreviewY;
     
-    @Inject
-    public Core core;
+//    @Inject
+//    public Core core;
 
-    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+//    @SuppressLint("ClickableViewAccessibility")
 //    @SuppressWarnings("deprecation")
     // Warning useless because value is ignored and automatically set by new APIs.
-    @Override
-    public View onCreateView(
-        @NotNull LayoutInflater inflater,
-        ViewGroup container,
-        Bundle savedInstanceState) {
-        View view;
-        if (core.hasCrappyOpengl()) {
-            view = inflater.inflate(R.layout.video_no_opengl, container, false);
-        } else {
-            view = inflater.inflate(R.layout.video, container, false);
-        }
+//    @Override
+//    public View onCreateView(
+//        @NotNull LayoutInflater inflater,
+//        ViewGroup container,
+//        Bundle savedInstanceState) {
+//        View view;
+//        if (core.hasCrappyOpengl()) {
+//            view = inflater.inflate(R.layout.video_no_opengl, container, false);
+//        } else {
+//            view = inflater.inflate(R.layout.video, container, false);
+//        }
 
-        mVideoView = view.findViewById(R.id.videoSurface);
+//        mVideoView = view.findViewById(R.id.videoSurface);
 //        mCaptureView = view.findViewById(R.id.videoCaptureSurface);
 
 
 
-        mVideoView.setOnTouchListener(
-            (v, event) -> {
-                if (mScaleDetector != null) {
-                    mScaleDetector.onTouchEvent(event);
-                }
-
-                mGestureDetector.onTouchEvent(event);
-//                if (mInCallActivity != null) {
-//                    mInCallActivity.displayVideoControlsIfHidden();
-//                }
-                return true;
-            });
+//        mVideoView.setOnTouchListener(
+//            (v, event) -> {
+////                if (mScaleDetector != null) {
+////                    mScaleDetector.onTouchEvent(event);
+////                }
+//
+//                mGestureDetector.onTouchEvent(event);
+////                if (mInCallActivity != null) {
+////                    mInCallActivity.displayVideoControlsIfHidden();
+////                }
+//                return true;
+//            });
 
 //        mCaptureView.setOnTouchListener(
 //                new OnTouchListener() {
@@ -126,15 +129,15 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
 //                        return true;
 //                    }
 //                });
-        return view;
-    }
+//        return view;
+//    }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        core.setNativeVideoWindowId(mVideoView);
-        core.setNativePreviewWindowId(mVideoView);
+//        core.setNativeVideoWindowId(mVideoView);
+//        core.setNativePreviewWindowId(mVideoView);
     }
 
     @Override
@@ -147,41 +150,41 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
     }
 
     private void resizePreview() {
-        if (core.getCallsNb() > 0) {
-            Call call = core.getCurrentCall();
-            if (call == null) {
-                call = core.getCalls()[0];
-            }
-            if (call == null) { return; }
-
-            DisplayMetrics metrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int screenHeight = metrics.heightPixels;
-            int maxHeight = screenHeight / 4; // Let's take at most 1/4 of the screen for the camera preview
-
-            VideoDefinition videoSize = call.getCurrentParams().getSentVideoDefinition(); // It already takes care of rotation
-            if (videoSize.getWidth() == 0 || videoSize.getHeight() == 0) {
-                Log.w("[Video Fragment] Couldn't get sent video definition, using default video definition");
-                videoSize = core.getPreferredVideoDefinition();
-            }
-            int width = videoSize.getWidth();
-            int height = videoSize.getHeight();
-
-            Log.d("[Video Fragment] Video height is " + height + ", width is " + width);
-            width = width * maxHeight / height;
-            height = maxHeight;
-
-//            if (mCaptureView == null) {
-//                Log.e("[Video Fragment] mCaptureView is null !");
-//                return;
+//        if (core.getCallsNb() > 0) {
+//            Call call = core.getCurrentCall();
+//            if (call == null) {
+//                call = core.getCalls()[0];
 //            }
-
-            RelativeLayout.LayoutParams newLp = new RelativeLayout.LayoutParams(width, height);
-            newLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 1); // Clears the rule, as there is no removeRule until API 17.
-            newLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
-//            mCaptureView.setLayoutParams(newLp);
-            Log.d("[Video Fragment] Video preview size set to " + width + "x" + height);
-        }
+//            if (call == null) { return; }
+//
+//            DisplayMetrics metrics = new DisplayMetrics();
+//            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//            int screenHeight = metrics.heightPixels;
+//            int maxHeight = screenHeight / 4; // Let's take at most 1/4 of the screen for the camera preview
+//
+//            VideoDefinition videoSize = call.getCurrentParams().getSentVideoDefinition(); // It already takes care of rotation
+//            if (videoSize.getWidth() == 0 || videoSize.getHeight() == 0) {
+//                Log.w("[Video Fragment] Couldn't get sent video definition, using default video definition");
+//                videoSize = core.getPreferredVideoDefinition();
+//            }
+//            int width = videoSize.getWidth();
+//            int height = videoSize.getHeight();
+//
+//            Log.d("[Video Fragment] Video height is " + height + ", width is " + width);
+//            width = width * maxHeight / height;
+//            height = maxHeight;
+//
+////            if (mCaptureView == null) {
+////                Log.e("[Video Fragment] mCaptureView is null !");
+////                return;
+////            }
+//
+//            RelativeLayout.LayoutParams newLp = new RelativeLayout.LayoutParams(width, height);
+//            newLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 1); // Clears the rule, as there is no removeRule until API 17.
+//            newLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
+////            mCaptureView.setLayoutParams(newLp);
+//            Log.d("[Video Fragment] Video preview size set to " + width + "x" + height);
+//        }
     }
 
 //    public void switchCamera() {
@@ -217,8 +220,8 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
 //        }
 
         mGestureDetector = new GestureDetector(requireContext(), this);
-        mScaleDetector = new CompatibilityScaleGestureDetector(requireContext());
-        mScaleDetector.setOnScaleListener(this);
+//        mScaleDetector = new CompatibilityScaleGestureDetector(requireContext());
+//        mScaleDetector.setOnScaleListener(this);
 
         resizePreview();
     }
@@ -236,72 +239,72 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
         super.onPause();
     }
 
-    public boolean onScale(CompatibilityScaleGestureDetector detector) {
-        mZoomFactor *= detector.getScaleFactor();
-        // Don't let the object get too small or too large.
-        // Zoom to make the video fill the screen vertically
-        float portraitZoomFactor = ((float) mVideoView.getHeight()) / (float) ((3 * mVideoView.getWidth()) / 4);
-        // Zoom to make the video fill the screen horizontally
-        float landscapeZoomFactor = ((float) mVideoView.getWidth()) / (float) ((3 * mVideoView.getHeight()) / 4);
-        mZoomFactor = Math.max(0.1f, Math.min(mZoomFactor, Math.max(portraitZoomFactor, landscapeZoomFactor)));
+//    public boolean onScale(CompatibilityScaleGestureDetector detector) {
+//        mZoomFactor *= detector.getScaleFactor();
+//        // Don't let the object get too small or too large.
+//        // Zoom to make the video fill the screen vertically
+//        float portraitZoomFactor = ((float) mVideoView.getHeight()) / (float) ((3 * mVideoView.getWidth()) / 4);
+//        // Zoom to make the video fill the screen horizontally
+//        float landscapeZoomFactor = ((float) mVideoView.getWidth()) / (float) ((3 * mVideoView.getHeight()) / 4);
+//        mZoomFactor = Math.max(0.1f, Math.min(mZoomFactor, Math.max(portraitZoomFactor, landscapeZoomFactor)));
+//
+//        Call currentCall = core.getCurrentCall();
+//        if (currentCall != null) {
+//            currentCall.zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
+//            return true;
+//        }
+//        return false;
+//    }
 
-        Call currentCall = core.getCurrentCall();
-        if (currentCall != null) {
-            currentCall.zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (LinphoneUtils.isCallEstablished(core.getCurrentCall())) {
-            if (mZoomFactor > 1) {
-                // Video is zoomed, slide is used to change center of zoom
-                if (distanceX > 0 && mZoomCenterX < 1) {
-                    mZoomCenterX += 0.01;
-                }
-                else if (distanceX < 0 && mZoomCenterX > 0) {
-                    mZoomCenterX -= 0.01;
-                }
-                if (distanceY < 0 && mZoomCenterY < 1) {
-                    mZoomCenterY += 0.01;
-                }
-                else if (distanceY > 0 && mZoomCenterY > 0) {
-                    mZoomCenterY -= 0.01;
-                }
-
-                if (mZoomCenterX > 1) { mZoomCenterX = 1; }
-                if (mZoomCenterX < 0) { mZoomCenterX = 0; }
-                if (mZoomCenterY > 1) { mZoomCenterY = 1; }
-                if (mZoomCenterY < 0) { mZoomCenterY = 0; }
-
-                core.getCurrentCall().zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
-                return true;
-            }
-        }
-
-        return false;
-    }
+//    @Override
+//    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//        if (LinphoneUtils.isCallEstablished(core.getCurrentCall())) {
+//            if (mZoomFactor > 1) {
+//                // Video is zoomed, slide is used to change center of zoom
+//                if (distanceX > 0 && mZoomCenterX < 1) {
+//                    mZoomCenterX += 0.01;
+//                }
+//                else if (distanceX < 0 && mZoomCenterX > 0) {
+//                    mZoomCenterX -= 0.01;
+//                }
+//                if (distanceY < 0 && mZoomCenterY < 1) {
+//                    mZoomCenterY += 0.01;
+//                }
+//                else if (distanceY > 0 && mZoomCenterY > 0) {
+//                    mZoomCenterY -= 0.01;
+//                }
+//
+//                if (mZoomCenterX > 1) { mZoomCenterX = 1; }
+//                if (mZoomCenterX < 0) { mZoomCenterX = 0; }
+//                if (mZoomCenterY > 1) { mZoomCenterY = 1; }
+//                if (mZoomCenterY < 0) { mZoomCenterY = 0; }
+//
+//                core.getCurrentCall().zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        if (LinphoneUtils.isCallEstablished(core.getCurrentCall())) {
-            if (mZoomFactor == 1.f) {
-                // Zoom to make the video fill the screen vertically
-                float portraitZoomFactor = ((float) mVideoView.getHeight()) / (float) ((3 * mVideoView.getWidth()) / 4);
-                // Zoom to make the video fill the screen horizontally
-                float landscapeZoomFactor = ((float) mVideoView.getWidth()) / (float) ((3 * mVideoView.getHeight()) / 4);
-
-                mZoomFactor = Math.max(portraitZoomFactor, landscapeZoomFactor);
-            }
-            else {
-                resetZoom();
-            }
-
-            core.getCurrentCall().zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
-            return true;
-        }
+//        if (LinphoneUtils.isCallEstablished(core.getCurrentCall())) {
+//            if (mZoomFactor == 1.f) {
+//                // Zoom to make the video fill the screen vertically
+//                float portraitZoomFactor = ((float) mVideoView.getHeight()) / (float) ((3 * mVideoView.getWidth()) / 4);
+//                // Zoom to make the video fill the screen horizontally
+//                float landscapeZoomFactor = ((float) mVideoView.getWidth()) / (float) ((3 * mVideoView.getHeight()) / 4);
+//
+//                mZoomFactor = Math.max(portraitZoomFactor, landscapeZoomFactor);
+//            }
+//            else {
+//                resetZoom();
+//            }
+//
+//            core.getCurrentCall().zoom(mZoomFactor, mZoomCenterX, mZoomCenterY);
+//            return true;
+//        }
 
         return false;
     }
@@ -324,10 +327,10 @@ public class CallVideoFragment extends Fragment implements OnGestureListener, On
             mGestureDetector.setOnDoubleTapListener(null);
             mGestureDetector = null;
         }
-        if (mScaleDetector != null) {
-            mScaleDetector.destroy();
-            mScaleDetector = null;
-        }
+//        if (mScaleDetector != null) {
+//            mScaleDetector.destroy();
+//            mScaleDetector = null;
+//        }
 
         super.onDestroy();
     }

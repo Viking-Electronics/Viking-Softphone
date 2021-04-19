@@ -14,10 +14,6 @@
     <string name="password">Password</string>
     <string name="domain">Domain</string>
     <string name="display_name_optional">Display name (optional)</string>
-    <string name="transport">Transport</string>
-    <string name="pref_transport_udp">UDP</string>
-    <string name="pref_transport_tcp">TCP</string>
-    <string name="pref_transport_tls">TLS</string>
     <string name="login">Login</string>
     <string name="snapshot_loading_error">There was an issue loading the latest snapshot.</string>
 

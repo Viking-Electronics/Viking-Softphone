@@ -14,8 +14,8 @@ import dagger.hilt.android.scopes.ViewModelScoped
 @InstallIn(ActivityComponent::class)
 object ActivityProviders {
 
-    @Provides
-    @ViewModelScoped
-    fun provideNavController(activity: MainActivity): NavController = activity.findNavController(R.id.fragmentContainer)
+//    @Provides
+//    @ViewModelScoped
+//    fun provideNavController(activity: MainActivity): NavController = activity.findNavController(R.id.fragmentContainer)
 
 }

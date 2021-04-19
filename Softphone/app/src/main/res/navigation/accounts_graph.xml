@@ -12,10 +12,10 @@
         android:label="Account"
         tools:layout="@layout/fragment_legacy_login"/>
 
-    <fragment
-        android:id="@+id/qrFragment"
-        android:name="com.vikingelectronics.softphone.accounts.login.QrCodeFragment"
-        android:label="Qr"
-        tools:layout="@layout/qrcode"/>
+<!--    <fragment-->
+<!--        android:id="@+id/qrFragment"-->
+<!--        android:name="com.vikingelectronics.softphone.accounts.login.QrCodeFragment"-->
+<!--        android:label="Qr"-->
+<!--        tools:layout="@layout/qrcode"/>-->
 
 </navigation>

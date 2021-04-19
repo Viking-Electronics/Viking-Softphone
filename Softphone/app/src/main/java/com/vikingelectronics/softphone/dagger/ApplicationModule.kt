@@ -22,7 +22,6 @@ import kotlinx.coroutines.*
 import org.linphone.core.Config
 import org.linphone.core.Core
 import org.linphone.core.Factory
-import org.linphone.utils.LinphoneUtils
 import java.util.*
 import javax.inject.Singleton
 

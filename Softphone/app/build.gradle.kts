@@ -113,7 +113,7 @@ protobuf {
 
 dependencies {
 
-    implementation(project(":legacy"))
+//    implementation(project(":legacy"))
 
     implementation("androidx.appcompat:appcompat:1.3.0-rc01")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
@@ -163,7 +163,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android-debug:4.5.0")
+    implementation("org.linphone:linphone-sdk-android:4.5.4")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'

@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.4"
 
-        classpath 'com.android.tools.build:gradle:7.0.0-alpha12'
+        classpath 'com.android.tools.build:gradle:7.0.0-alpha14'
 
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.29.0"
 

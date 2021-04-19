@@ -130,7 +130,7 @@ fun LoginScreen(
             )
             
             Text(
-                text = stringResource(id = R.string.transport),
+                text = stringResource(id = R.string.pref_transport),
                 modifier = Modifier.padding(top = 16.dp, start = 16.dp)
             )
 
