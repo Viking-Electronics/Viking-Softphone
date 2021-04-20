@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.vikingelectronics.softphone.accounts.AccountProvider
+import com.vikingelectronics.softphone.accounts.SipAccountDrawerHeader
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
@@ -60,10 +61,6 @@ class MainActivity: AppCompatActivity() {
 //                Call.State.IncomingReceived -> call.accept()
 //                else -> binding.mainPager.currentItem = 0
 //            }
-        }
-
-        override fun onRegistrationStateChanged(core: Core, proxyConfig: ProxyConfig, state: RegistrationState?, message: String) {
-            super.onRegistrationStateChanged(core, proxyConfig, state, message)
         }
     }
 
@@ -171,9 +168,10 @@ fun MainActivityComposable(
         },
         drawerContent = {
             if (isLoggedIn) {
-
+                SipAccountDrawerHeader(accountProvider.storedSipCreds.get()!!)
 
                 drawerNavItems.forEach { screen ->
+                    Divider()
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -193,8 +191,6 @@ fun MainActivityComposable(
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
-
-                    Divider()
                 }
             }
         }
