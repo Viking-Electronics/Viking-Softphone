@@ -5,17 +5,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.linphone.core.RegistrationState
 
 @Composable
 fun SipAccountDrawerHeader(
-    creds: StoredSipCredsHolder
+    accountProvider: AccountProvider
 ) {
+    val creds = accountProvider.storedSipCreds.get()
+    val color  = when(accountProvider.sipRegistrationStatus) {
+        RegistrationState.Ok -> Color.Green
+        RegistrationState.Progress -> Color.Yellow
+        RegistrationState.Failed -> Color.Red
+        else -> Color.LightGray
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,16 +39,15 @@ fun SipAccountDrawerHeader(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = creds.displayName ?: creds.username,
+                text = creds?.displayName ?: creds?.username ?: "Something went wrong",
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${creds.username}@${creds.domain}",
+                text = "${creds?.username}@${creds?.domain}",
                 fontSize = 12.sp,
                 color = Color.Red
             )
         }
-
 
         Box(
             modifier = Modifier
@@ -51,7 +59,7 @@ fun SipAccountDrawerHeader(
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .background(Color.Red, shape = CircleShape)
+                    .background(color, shape = CircleShape)
                     .align(Alignment.Center)
             )
         }

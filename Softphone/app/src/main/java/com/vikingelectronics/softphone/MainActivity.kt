@@ -167,33 +167,32 @@ fun MainActivityComposable(
             }
         },
         drawerContent = {
-            if (isLoggedIn) {
-                SipAccountDrawerHeader(accountProvider.storedSipCreds.get()!!)
+            SipAccountDrawerHeader(accountProvider)
 
-                drawerNavItems.forEach { screen ->
-                    Divider()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .padding(start = 8.dp)
-                            .clickable {
-                                scope.launch {
-                                    scaffoldState.drawerState.close()
-                                }
-                                navController.navigate(screen.route)
-                            },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        screen.icon()
-                        Text(
-                            text = stringResource(id = screen.displayResourceId),
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
+            drawerNavItems.forEach { screen ->
+                Divider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(start = 8.dp)
+                        .clickable {
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
+                            navController.navigate(screen.route)
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    screen.icon()
+                    Text(
+                        text = stringResource(id = screen.displayResourceId),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
             }
-        }
+        },
+        drawerGesturesEnabled = isLoggedIn
     ){
         val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
         NavHost(navController = navController, startDestination = startDestination) {
