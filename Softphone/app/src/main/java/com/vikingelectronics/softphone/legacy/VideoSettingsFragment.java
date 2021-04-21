@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -27,9 +28,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.settings.widget.ListSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
@@ -47,7 +51,8 @@ import java.util.List;
 
 public class VideoSettingsFragment extends Fragment {
     protected View mRootView;
-    protected LinphonePreferences mPrefs;
+
+    protected LegacyFragmentDependencyProvider provider;
 
     private SwitchSetting mEnable, mAutoInitiate, mAutoAccept, mOverlay;
     private ListSetting mPreset, mSize, mFps;
@@ -55,6 +60,12 @@ public class VideoSettingsFragment extends Fragment {
     private LinearLayout mVideoCodecs;
     private TextView mVideoCodecsHeader;
     private ArrayList<String> videoCodecs = new ArrayList<String>();
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -71,14 +82,6 @@ public class VideoSettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        mPrefs = LinphonePreferences.instance();
-//        if (LinphoneActivity.isInstantiated()) {
-//            LinphoneActivity.instance()
-//                    .selectMenu(
-//                            FragmentsAvailable.SETTINGS_SUBLEVEL,
-//                            getString(R.string.pref_video_title));
-//        }
 
         updateValues();
     }
@@ -112,7 +115,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableVideo(newValue);
+                        provider.getLinphonePreferences().enableVideo(newValue);
                         if (!newValue) {
                             mAutoAccept.setChecked(false);
                             mAutoInitiate.setChecked(false);
@@ -125,7 +128,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setInitiateVideoCall(newValue);
+                        provider.getLinphonePreferences().setInitiateVideoCall(newValue);
                     }
                 });
 
@@ -133,7 +136,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setAutomaticallyAcceptVideoRequests(newValue);
+                        provider.getLinphonePreferences().setAutomaticallyAcceptVideoRequests(newValue);
                     }
                 });
 
@@ -141,7 +144,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableOverlay(newValue);
+                        provider.getLinphonePreferences().enableOverlay(newValue);
                     }
                 });
 
@@ -149,7 +152,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onListValueChanged(int position, String newLabel, String newValue) {
-                        mPrefs.setVideoPreset(newValue);
+                        provider.getLinphonePreferences().setVideoPreset(newValue);
                         mFps.setVisibility(newValue.equals("custom") ? View.VISIBLE : View.GONE);
                         mBandwidth.setVisibility(
                                 newValue.equals("custom") ? View.VISIBLE : View.GONE);
@@ -160,7 +163,7 @@ public class VideoSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onListValueChanged(int position, String newLabel, String newValue) {
-                        mPrefs.setPreferredVideoSize(newValue);
+                        provider.getLinphonePreferences().setPreferredVideoSize(newValue);
                     }
                 });
 
@@ -169,7 +172,7 @@ public class VideoSettingsFragment extends Fragment {
                     @Override
                     public void onListValueChanged(int position, String newLabel, String newValue) {
                         try {
-                            mPrefs.setPreferredVideoFps(Integer.valueOf(newValue));
+                            provider.getLinphonePreferences().setPreferredVideoFps(Integer.valueOf(newValue));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
                         }
@@ -181,7 +184,7 @@ public class VideoSettingsFragment extends Fragment {
                     @Override
                     public void onTextValueChanged(String newValue) {
                         try {
-                            mPrefs.setBandwidthLimit(Integer.valueOf(newValue));
+                            provider.getLinphonePreferences().setBandwidthLimit(Integer.valueOf(newValue));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
                         }
@@ -190,25 +193,25 @@ public class VideoSettingsFragment extends Fragment {
     }
 
     protected void updateValues() {
-        mEnable.setChecked(mPrefs.isVideoEnabled());
-        updateVideoSettingsVisibility(mPrefs.isVideoEnabled());
+        mEnable.setChecked(provider.getLinphonePreferences().isVideoEnabled());
+        updateVideoSettingsVisibility(provider.getLinphonePreferences().isVideoEnabled());
 
-        mAutoInitiate.setChecked(mPrefs.shouldInitiateVideoCall());
+        mAutoInitiate.setChecked(provider.getLinphonePreferences().shouldInitiateVideoCall());
 
-        mAutoAccept.setChecked(mPrefs.shouldAutomaticallyAcceptVideoRequests());
+        mAutoAccept.setChecked(provider.getLinphonePreferences().shouldAutomaticallyAcceptVideoRequests());
 
-        mOverlay.setChecked(mPrefs.isOverlayEnabled());
+        mOverlay.setChecked(provider.getLinphonePreferences().isOverlayEnabled());
 
-        mBandwidth.setValue(mPrefs.getBandwidthLimit());
+        mBandwidth.setValue(provider.getLinphonePreferences().getBandwidthLimit());
         mBandwidth.setVisibility(
-                mPrefs.getVideoPreset().equals("custom") ? View.VISIBLE : View.GONE);
+            provider.getLinphonePreferences().getVideoPreset().equals("custom") ? View.VISIBLE : View.GONE);
 
-        mPreset.setValue(mPrefs.getVideoPreset());
+        mPreset.setValue(provider.getLinphonePreferences().getVideoPreset());
 
-        mSize.setValue(mPrefs.getPreferredVideoSize());
+        mSize.setValue(provider.getLinphonePreferences().getPreferredVideoSize());
 
-        mFps.setValue(mPrefs.getPreferredVideoFps());
-        mFps.setVisibility(mPrefs.getVideoPreset().equals("custom") ? View.VISIBLE : View.GONE);
+        mFps.setValue(provider.getLinphonePreferences().getPreferredVideoFps());
+        mFps.setVisibility(provider.getLinphonePreferences().getVideoPreset().equals("custom") ? View.VISIBLE : View.GONE);
 
         populateVideoCodecs();
 
@@ -244,31 +247,28 @@ public class VideoSettingsFragment extends Fragment {
 
     private void populateVideoCodecs() {
         mVideoCodecs.removeAllViews();
-//        Core core = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-//        if (core != null) {
-//            for (final PayloadType pt : core.getVideoPayloadTypes()) {
-//                String mimeType = pt.getMimeType();
-//                Boolean enabled = pt.enabled();
-//                if (videoCodecs.contains(mimeType)) {
-//                    final SwitchSetting codec = new SwitchSetting(getActivity());
-//                    codec.setTitle(mimeType);
-//                    if (pt.enabled()) {
-//                        // Never use codec.setChecked(pt.enabled) !
-//                        codec.setChecked(true);
-//                    }
-//                    codec.setListener(
-//                            new SettingListenerBase() {
-//                                @Override
-//                                public void onBoolValueChanged(boolean newValue) {
-//                                    pt.enable(newValue);
-//                                }
-//                            });
-//                    mVideoCodecs.addView(codec);
-//                } else {
-//                    pt.enable(false);
-//                }
-//            }
-//        }
+        for (final PayloadType pt : provider.getCore().getVideoPayloadTypes()) {
+            String mimeType = pt.getMimeType();
+            Boolean enabled = pt.enabled();
+            if (videoCodecs.contains(mimeType)) {
+                final SwitchSetting codec = new SwitchSetting(getActivity());
+                codec.setTitle(mimeType);
+                if (pt.enabled()) {
+                    // Never use codec.setChecked(pt.enabled) !
+                    codec.setChecked(true);
+                }
+                codec.setListener(
+                        new SettingListenerBase() {
+                            @Override
+                            public void onBoolValueChanged(boolean newValue) {
+                                pt.enable(newValue);
+                            }
+                        });
+                mVideoCodecs.addView(codec);
+            } else {
+                pt.enable(false);
+            }
+        }
     }
 
     private void updateVideoSettingsVisibility(boolean show) {
