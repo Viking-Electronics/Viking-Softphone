@@ -19,9 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.text.InputType;
@@ -30,9 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.settings.widget.BasicSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.ListSetting;
@@ -47,11 +48,13 @@ import org.linphone.core.PayloadType;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
+
+import kotlin.Unit;
 
 public class AudioSettingsFragment extends Fragment {
     protected View mRootView;
-    protected LinphonePreferences mPrefs;
+
+    protected LegacyFragmentDependencyProvider provider;
 
     private SwitchSetting mEchoCanceller, mAdaptiveRateControl;
     private TextSetting mMicGain, mSpeakerGain;
@@ -61,6 +64,11 @@ public class AudioSettingsFragment extends Fragment {
     private ArrayList<String> audioCodecs = new ArrayList<String>();
 
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -80,14 +88,6 @@ public class AudioSettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        mPrefs = LinphonePreferences.instance();
-//        if (LinphoneActivity.isInstantiated()) {
-//            LinphoneActivity.instance()
-//                    .selectMenu(
-//                            FragmentsAvailable.SETTINGS_SUBLEVEL,
-//                            getString(R.string.pref_audio_title));
-//        }
 
         updateValues();
     }
@@ -117,7 +117,7 @@ public class AudioSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setEchoCancellation(newValue);
+                        provider.getLinphonePreferences().setEchoCancellation(newValue);
                     }
                 });
 
@@ -125,7 +125,7 @@ public class AudioSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableAdaptiveRateControl(newValue);
+                        provider.getLinphonePreferences().enableAdaptiveRateControl(newValue);
                     }
                 });
 
@@ -133,7 +133,7 @@ public class AudioSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setMicGainDb(Float.valueOf(newValue));
+                        provider.getLinphonePreferences().setMicGainDb(Float.valueOf(newValue));
                     }
                 });
 
@@ -141,7 +141,7 @@ public class AudioSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setPlaybackGainDb(Float.valueOf(newValue));
+                        provider.getLinphonePreferences().setPlaybackGainDb(Float.valueOf(newValue));
                     }
                 });
 
@@ -150,14 +150,13 @@ public class AudioSettingsFragment extends Fragment {
                     @Override
                     public void onListValueChanged(int position, String newLabel, String newValue) {
                         int bitrate = Integer.valueOf(newValue);
-                        mPrefs.setCodecBitrateLimit(bitrate);
+                        provider.getLinphonePreferences().setCodecBitrateLimit(bitrate);
 
-//                        Core core = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-//                        for (final PayloadType pt : core.getAudioPayloadTypes()) {
-//                            if (pt.isVbr()) {
-//                                pt.setNormalBitrate(bitrate);
-//                            }
-//                        }
+                        for (final PayloadType pt : provider.getCore().getAudioPayloadTypes()) {
+                            if (pt.isVbr()) {
+                                pt.setNormalBitrate(bitrate);
+                            }
+                        }
                     }
                 });
 
@@ -167,18 +166,10 @@ public class AudioSettingsFragment extends Fragment {
                     public void onClicked() {
                         mEchoCalibration.setSubtitle(getString(R.string.ec_calibrating));
 
-                        int recordAudio =
-                                getActivity()
-                                        .getPackageManager()
-                                        .checkPermission(
-                                                Manifest.permission.RECORD_AUDIO,
-                                                getActivity().getPackageName());
-                        if (recordAudio == PackageManager.PERMISSION_GRANTED) {
+                        provider.getPermissionsManager().requestPermissionsForAudio( () -> {
                             startEchoCancellerCalibration();
-                        } else {
-//                            LinphoneActivity.instance()
-//                                    .checkAndRequestRecordAudioPermissionForEchoCanceller();
-                        }
+                            return Unit.INSTANCE;
+                        });
                     }
                 });
 
@@ -186,42 +177,34 @@ public class AudioSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        int recordAudio =
-                                getActivity()
-                                        .getPackageManager()
-                                        .checkPermission(
-                                                Manifest.permission.RECORD_AUDIO,
-                                                getActivity().getPackageName());
-                        if (recordAudio == PackageManager.PERMISSION_GRANTED) {
-//                            if (LinphoneManager.getInstance().getEchoTesterStatus()) {
-//                                stopEchoTester();
-//                            } else {
-//                                startEchoTester();
-//                            }
-                        } else {
-//                            LinphoneActivity.instance()
-//                                    .checkAndRequestRecordAudioPermissionsForEchoTester();
-                        }
+                        provider.getPermissionsManager().requestPermissionsForAudio( () -> {
+                            if (provider.getLinphoneManager().getEchoTesterStatus()) {
+                                stopEchoTester();
+                            } else {
+                                startEchoTester();
+                            }
+                            return Unit.INSTANCE;
+                        });
                     }
                 });
     }
 
     protected void updateValues() {
-        mEchoCanceller.setChecked(mPrefs.echoCancellationEnabled());
+        mEchoCanceller.setChecked(provider.getLinphonePreferences().echoCancellationEnabled());
 
-        mAdaptiveRateControl.setChecked(mPrefs.adaptiveRateControlEnabled());
+        mAdaptiveRateControl.setChecked(provider.getLinphonePreferences().adaptiveRateControlEnabled());
 
-        mMicGain.setValue(mPrefs.getMicGainDb());
+        mMicGain.setValue(provider.getLinphonePreferences().getMicGainDb());
 
-        mSpeakerGain.setValue(mPrefs.getPlaybackGainDb());
+        mSpeakerGain.setValue(provider.getLinphonePreferences().getPlaybackGainDb());
 
-        mCodecBitrateLimit.setValue(mPrefs.getCodecBitrateLimit());
+        mCodecBitrateLimit.setValue(provider.getLinphonePreferences().getCodecBitrateLimit());
 
-        if (mPrefs.echoCancellationEnabled()) {
+        if (provider.getLinphonePreferences().echoCancellationEnabled()) {
             mEchoCalibration.setSubtitle(
                     String.format(
                             getString(R.string.ec_calibrated),
-                            String.valueOf(mPrefs.getEchoCalibration())));
+                            String.valueOf(provider.getLinphonePreferences().getEchoCalibration())));
         }
 
         populateAudioCodecs();
@@ -231,82 +214,80 @@ public class AudioSettingsFragment extends Fragment {
 
     private void populateAudioCodecs() {
         mAudioCodecs.removeAllViews();
-//        Core core = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-//        if (core != null) {
-//            for (final PayloadType pt : core.getAudioPayloadTypes()) {
-//                String mimeType = pt.getMimeType();
-//                Boolean enabled = pt.enabled();
-//                if (audioCodecs.contains(mimeType)) {
-//                    audioCodecs.remove(mimeType);
-//                    final SwitchSetting codec = new SwitchSetting(getActivity());
-//                    codec.setTitle(pt.getMimeType());
-//                    /* Special case */
-//                    if (pt.getMimeType().equals("mpeg4-generic")) {
-//                        codec.setTitle("AAC-ELD");
-//                    }
-//
-//                    codec.setSubtitle(pt.getClockRate() + " Hz");
-//                    if (pt.enabled()) {
-//                        // Never use codec.setChecked(pt.enabled) !
-//                        codec.setChecked(true);
-//                    }
-//                    codec.setListener(
-//                            new SettingListenerBase() {
-//                                @Override
-//                                public void onBoolValueChanged(boolean newValue) {
-//                                    pt.enable(newValue);
-//                                }
-//                            });
-//
-//                    mAudioCodecs.addView(codec);
-//                } else {
-//                    pt.enable(false);
-//                }
-//            }
-//        }
+
+        for (final PayloadType pt : provider.getCore().getAudioPayloadTypes()) {
+            String mimeType = pt.getMimeType();
+            Boolean enabled = pt.enabled();
+            if (audioCodecs.contains(mimeType)) {
+                audioCodecs.remove(mimeType);
+                final SwitchSetting codec = new SwitchSetting(getActivity());
+                codec.setTitle(pt.getMimeType());
+                /* Special case */
+                if (pt.getMimeType().equals("mpeg4-generic")) {
+                    codec.setTitle("AAC-ELD");
+                }
+
+                codec.setSubtitle(pt.getClockRate() + " Hz");
+                if (pt.enabled()) {
+                    // Never use codec.setChecked(pt.enabled) !
+                    codec.setChecked(true);
+                }
+                codec.setListener(
+                        new SettingListenerBase() {
+                            @Override
+                            public void onBoolValueChanged(boolean newValue) {
+                                pt.enable(newValue);
+                            }
+                        });
+
+                mAudioCodecs.addView(codec);
+            } else {
+                pt.enable(false);
+            }
+        }
+
     }
 
     public void startEchoTester() {
-//        if (LinphoneManager.getInstance().startEchoTester() > 0) {
-//            mEchoTester.setSubtitle("Is running");
-//        }
+        if (provider.getLinphoneManager().startEchoTester() > 0) {
+            mEchoTester.setSubtitle("Is running");
+        }
     }
 
     private void stopEchoTester() {
-//        if (LinphoneManager.getInstance().stopEchoTester() > 0) {
-//            mEchoTester.setSubtitle("Is stopped");
-//        }
+        if (provider.getLinphoneManager().stopEchoTester() > 0) {
+            mEchoTester.setSubtitle("Is stopped");
+        }
     }
 
     public void startEchoCancellerCalibration() {
-//        if (LinphoneManager.getInstance().getEchoTesterStatus()) stopEchoTester();
-//        LinphoneManager.getLc()
-//                .addListener(
-//                        new CoreListenerStub() {
-//                            @Override
-//                            public void onEcCalibrationResult(
-//                                    Core core, EcCalibratorStatus status, int delayMs) {
-//                                if (status == EcCalibratorStatus.InProgress) return;
-//                                core.removeListener(this);
-//                                LinphoneManager.getInstance().routeAudioToReceiver();
-//
-//                                if (status == EcCalibratorStatus.DoneNoEcho) {
-//                                    mEchoCalibration.setSubtitle(getString(R.string.no_echo));
-//                                } else if (status == EcCalibratorStatus.Done) {
-//                                    mEchoCalibration.setSubtitle(
-//                                            String.format(
-//                                                    getString(R.string.ec_calibrated),
-//                                                    String.valueOf(delayMs)));
-//                                } else if (status == EcCalibratorStatus.Failed) {
-//                                    mEchoCalibration.setSubtitle(getString(R.string.failed));
-//                                }
-//                                mEchoCanceller.setChecked(status != EcCalibratorStatus.DoneNoEcho);
-//                                ((AudioManager)
-//                                                getActivity()
-//                                                        .getSystemService(Context.AUDIO_SERVICE))
-//                                        .setMode(AudioManager.MODE_NORMAL);
-//                            }
-//                        });
-//        LinphoneManager.getInstance().startEcCalibration();
+        if (provider.getLinphoneManager().getEchoTesterStatus()) { stopEchoTester(); }
+        provider.getCore().addListener(
+                new CoreListenerStub() {
+                    @Override
+                    public void onEcCalibrationResult(
+                            Core core, EcCalibratorStatus status, int delayMs) {
+                        if (status == EcCalibratorStatus.InProgress) return;
+                        core.removeListener(this);
+                        provider.getLinphoneManager().routeAudioToSpeaker(false);
+
+                        if (status == EcCalibratorStatus.DoneNoEcho) {
+                            mEchoCalibration.setSubtitle(getString(R.string.no_echo));
+                        } else if (status == EcCalibratorStatus.Done) {
+                            mEchoCalibration.setSubtitle(
+                                    String.format(
+                                            getString(R.string.ec_calibrated),
+                                            String.valueOf(delayMs)));
+                        } else if (status == EcCalibratorStatus.Failed) {
+                            mEchoCalibration.setSubtitle(getString(R.string.failed));
+                        }
+                        mEchoCanceller.setChecked(status != EcCalibratorStatus.DoneNoEcho);
+                        ((AudioManager)
+                                        getActivity()
+                                                .getSystemService(Context.AUDIO_SERVICE))
+                                .setMode(AudioManager.MODE_NORMAL);
+                    }
+                });
+        provider.getLinphoneManager().startEcCalibration();
     }
 }

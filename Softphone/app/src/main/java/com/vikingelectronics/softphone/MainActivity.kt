@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.vikingelectronics.softphone.accounts.AccountProvider
@@ -25,7 +26,6 @@ import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
 import com.vikingelectronics.softphone.activity.list.ActivityList
-import com.vikingelectronics.softphone.call.IncomingCallReceiver
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.list.CapturesList
 import com.vikingelectronics.softphone.databinding.FragmentContainerBinding
@@ -33,64 +33,46 @@ import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
-import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.legacy.*
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.settings.legacy.*
 import com.vikingelectronics.softphone.legacy.settings.SettingsFragment
 import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.linphone.core.*
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class MainActivity: AppCompatActivity() {
+interface LegacyFragmentDependencyProvider {
+    val core: Core
+    val permissionsManager: PermissionsManager
+    val linphonePreferences: LinphonePreferences
+    val linphoneManager: LinphoneManager
+    val navController: NavController
+}
 
-    @Inject lateinit var core: Core
-    @Inject lateinit var linphoneManager: LinphoneManager
+@AndroidEntryPoint
+class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
+
     @Inject lateinit var accountProvider: AccountProvider
 
-    private lateinit var callReceiver: IncomingCallReceiver
+    @Inject override lateinit var core: Core
+    @Inject override lateinit var linphoneManager: LinphoneManager
+    @Inject override lateinit var linphonePreferences: LinphonePreferences
+    @Inject override lateinit var permissionsManager: PermissionsManager
+    override lateinit var navController: NavController
 
-    private val coreListener = object: CoreListenerStub() {
-        override fun onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
-            super.onCallStateChanged(lc, call, cstate, message).timber()
-//            when(cstate) {
-//                Call.State.Connected, Call.State.StreamsRunning -> binding.mainPager.currentItem = 1
-//                Call.State.IncomingReceived -> call.accept()
-//                else -> binding.mainPager.currentItem = 0
-//            }
-        }
-    }
-
-//    private val fragmentStateAdapter = object : FragmentStateAdapter(this) {
-//        override fun getItemCount(): Int = 2
-//
-//        override fun createFragment(position: Int): Fragment = when(position) {
-//            0 -> ContentHostFragment()
-//            else -> CallVideoFragment()
-//        }
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             MaterialTheme {
-                MainActivityComposable(supportFragmentManager, accountProvider)
+                navController = MainActivityComposable(supportFragmentManager, accountProvider)
             }
         }
         accountProvider.checkStoredSipCreds()
-
-        core.addListener(coreListener)
-    }
-
-
-    private fun setupIntentFilter() {
-        val filter = IntentFilter().apply {
-
-        }
     }
 }
 
@@ -99,7 +81,7 @@ class MainActivity: AppCompatActivity() {
 fun MainActivityComposable(
     supportFragmentManager: FragmentManager,
     accountProvider: AccountProvider,
-) {
+): NavController {
     var toolbarTitle by remember { mutableStateOf("") }
     var shouldShowToolbarActions = remember { mutableStateOf(false) }
     var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
@@ -227,7 +209,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.Settings.Main.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.Settings.Main.displayResourceId)
-                LegacyFragmentContainer(fragment = SettingsFragment().apply { this.navController = navController }, supportFragmentManager = supportFragmentManager)
+                LegacyFragmentContainer(fragment = SettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Tunnel.route) {
@@ -287,6 +269,7 @@ fun MainActivityComposable(
             }
         }
     }
+    return navController
 }
 
 @Composable

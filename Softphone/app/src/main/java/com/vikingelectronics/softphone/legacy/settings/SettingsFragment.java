@@ -19,19 +19,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.NavOptionsBuilder;
 import androidx.navigation.compose.NavHostControllerKt;
 
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
 import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.LinphoneUtils;
@@ -50,9 +53,17 @@ public class SettingsFragment extends Fragment {
     private BasicSetting mTunnel, mAudio, mVideo, mCall, mChat, mNetwork, mAdvanced;
     private LinearLayout mAccounts;
     private TextView mAccountsHeader;
-    public NavController navController;
+
+    protected LegacyFragmentDependencyProvider provider;
 
     private final Function1<NavOptionsBuilder, Unit> builderOptions = navOptionsBuilder -> Unit.INSTANCE;
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -101,7 +112,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Tunnel.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Tunnel.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -109,7 +120,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Audio.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Audio.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -117,7 +128,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Video.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Video.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -125,7 +136,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Call.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Call.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -141,7 +152,7 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Network.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Network.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -149,18 +160,14 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(navController, Screen.Primary.Settings.Advanced.INSTANCE.getRoute(), builderOptions);
+                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Advanced.INSTANCE.getRoute(), builderOptions);
                     }
                 });
     }
 
     protected void updateValues() {
-//        MainActivity main = ;
-        Core core = ((MainActivity) requireActivity()).core;
-//        if (core != null) {
-            mTunnel.setVisibility(core.tunnelAvailable() ? View.VISIBLE : View.GONE);
-            initAccounts(core);
-//        }
+        mTunnel.setVisibility(provider.getCore().tunnelAvailable() ? View.VISIBLE : View.GONE);
+        initAccounts(provider.getCore());
     }
 
     private void initAccounts(Core core) {
