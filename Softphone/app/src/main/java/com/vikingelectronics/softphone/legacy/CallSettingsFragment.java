@@ -27,9 +27,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.settings.widget.ListSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
@@ -47,7 +50,7 @@ import java.util.List;
 public class CallSettingsFragment extends Fragment {
     protected View mRootView;
 
-    protected LinphonePreferences mPrefs;
+    protected LegacyFragmentDependencyProvider provider;
 
     private SwitchSetting mDeviceRingtone,
             mVibrateIncomingCall,
@@ -56,6 +59,13 @@ public class CallSettingsFragment extends Fragment {
             mAutoAnswer;
     private ListSetting mMediaEncryption;
     private TextSetting mAutoAnswerTime, mIncomingCallTimeout, mVoiceMailUri, mSnoozeTime;
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -72,13 +82,6 @@ public class CallSettingsFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        mPrefs = LinphonePreferences.instance();
-//        if (LinphoneActivity.isInstantiated()) {
-//            LinphoneActivity.instance()
-//                    .selectMenu(
-//                            FragmentsAvailable.SETTINGS_SUBLEVEL,
-//                            getString(R.string.pref_call_title));
-//        }
 
         updateValues();
     }
@@ -115,7 +118,7 @@ public class CallSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableDeviceRingtone(newValue);
+                        provider.getLinphonePreferences().enableDeviceRingtone(newValue);
                     }
                 });
 
@@ -123,7 +126,7 @@ public class CallSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableIncomingCallVibration(newValue);
+                        provider.getLinphonePreferences().enableIncomingCallVibration(newValue);
                     }
                 });
 
@@ -132,7 +135,7 @@ public class CallSettingsFragment extends Fragment {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
                         if (newValue) mDtmfRfc2833.setChecked(false);
-                        mPrefs.sendDTMFsAsSipInfo(newValue);
+                        provider.getLinphonePreferences().sendDTMFsAsSipInfo(newValue);
                     }
                 });
 
@@ -141,7 +144,7 @@ public class CallSettingsFragment extends Fragment {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
                         if (newValue) mDtmfSipInfo.setChecked(false);
-                        mPrefs.sendDtmfsAsRfc2833(newValue);
+                        provider.getLinphonePreferences().sendDtmfsAsRfc2833(newValue);
                     }
                 });
 
@@ -149,9 +152,9 @@ public class CallSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableAutoAnswer(newValue);
+                        provider.getLinphonePreferences().enableAutoAnswer(newValue);
                         mAutoAnswerTime.setVisibility(
-                                mPrefs.isAutoAnswerEnabled() ? View.VISIBLE : View.GONE);
+                            provider.getLinphonePreferences().isAutoAnswerEnabled() ? View.VISIBLE : View.GONE);
                     }
                 });
 
@@ -160,7 +163,7 @@ public class CallSettingsFragment extends Fragment {
                     @Override
                     public void onListValueChanged(int position, String newLabel, String newValue) {
                         try {
-                            mPrefs.setMediaEncryption(
+                            provider.getLinphonePreferences().setMediaEncryption(
                                     MediaEncryption.fromInt(Integer.parseInt(newValue)));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
@@ -173,7 +176,7 @@ public class CallSettingsFragment extends Fragment {
                     @Override
                     public void onTextValueChanged(String newValue) {
                         try {
-                            mPrefs.setAutoAnswerTime(Integer.parseInt(newValue));
+                            provider.getLinphonePreferences().setAutoAnswerTime(Integer.parseInt(newValue));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
                         }
@@ -185,7 +188,7 @@ public class CallSettingsFragment extends Fragment {
                     @Override
                     public void onTextValueChanged(String newValue) {
                         try {
-                            mPrefs.setIncTimeout(Integer.parseInt(newValue));
+                            provider.getLinphonePreferences().setIncTimeout(Integer.parseInt(newValue));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
                         }
@@ -196,7 +199,7 @@ public class CallSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setVoiceMailUri(newValue);
+                        provider.getLinphonePreferences().setVoiceMailUri(newValue);
                     }
                 });
 
@@ -220,24 +223,24 @@ public class CallSettingsFragment extends Fragment {
     }
 
     protected void updateValues() {
-        mDeviceRingtone.setChecked(mPrefs.isDeviceRingtoneEnabled());
+        mDeviceRingtone.setChecked(provider.getLinphonePreferences().isDeviceRingtoneEnabled());
 
-        mVibrateIncomingCall.setChecked(mPrefs.isIncomingCallVibrationEnabled());
+        mVibrateIncomingCall.setChecked(provider.getLinphonePreferences().isIncomingCallVibrationEnabled());
 
-        mDtmfSipInfo.setChecked(mPrefs.useSipInfoDtmfs());
+        mDtmfSipInfo.setChecked(provider.getLinphonePreferences().useSipInfoDtmfs());
 
-        mDtmfRfc2833.setChecked(mPrefs.useRfc2833Dtmfs());
+        mDtmfRfc2833.setChecked(provider.getLinphonePreferences().useRfc2833Dtmfs());
 
-        mAutoAnswer.setChecked(mPrefs.isAutoAnswerEnabled());
+        mAutoAnswer.setChecked(provider.getLinphonePreferences().isAutoAnswerEnabled());
 
-        mMediaEncryption.setValue(mPrefs.getMediaEncryption().toInt());
+        mMediaEncryption.setValue(provider.getLinphonePreferences().getMediaEncryption().toInt());
 
-        mAutoAnswerTime.setValue(mPrefs.getAutoAnswerTime());
-        mAutoAnswerTime.setVisibility(mPrefs.isAutoAnswerEnabled() ? View.VISIBLE : View.GONE);
+        mAutoAnswerTime.setValue(provider.getLinphonePreferences().getAutoAnswerTime());
+        mAutoAnswerTime.setVisibility(provider.getLinphonePreferences().isAutoAnswerEnabled() ? View.VISIBLE : View.GONE);
 
-        mIncomingCallTimeout.setValue(mPrefs.getIncTimeout());
+        mIncomingCallTimeout.setValue(provider.getLinphonePreferences().getIncTimeout());
 
-        mVoiceMailUri.setValue(mPrefs.getVoiceMailUri());
+        mVoiceMailUri.setValue(provider.getLinphonePreferences().getVoiceMailUri());
 
         SharedPreferences prefs = getActivity().getSharedPreferences("snooze", Context.MODE_PRIVATE);
         mSnoozeTime.setValue(prefs.getInt("snoozeInterval",10));
@@ -252,29 +255,28 @@ public class CallSettingsFragment extends Fragment {
         entries.add(getString(R.string.pref_none));
         values.add(String.valueOf(MediaEncryption.None.toInt()));
 
-//        Core core = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-//        if (core != null && !getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
-//            boolean hasZrtp = core.mediaEncryptionSupported(MediaEncryption.ZRTP);
-//            boolean hasSrtp = core.mediaEncryptionSupported(MediaEncryption.SRTP);
-//            boolean hasDtls = core.mediaEncryptionSupported(MediaEncryption.DTLS);
-//
-//            if (!hasSrtp && !hasZrtp && !hasDtls) {
-//                mMediaEncryption.setEnabled(false);
-//            } else {
-//                if (hasSrtp) {
-//                    entries.add("SRTP");
-//                    values.add(String.valueOf(MediaEncryption.SRTP.toInt()));
-//                }
-//                if (hasZrtp) {
-//                    entries.add("ZRTP");
-//                    values.add(String.valueOf(MediaEncryption.ZRTP.toInt()));
-//                }
-//                if (hasDtls) {
-//                    entries.add("DTLS");
-//                    values.add(String.valueOf(MediaEncryption.DTLS.toInt()));
-//                }
-//            }
-//        }
+        if (!getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
+            boolean hasZrtp = provider.getCore().mediaEncryptionSupported(MediaEncryption.ZRTP);
+            boolean hasSrtp = provider.getCore().mediaEncryptionSupported(MediaEncryption.SRTP);
+            boolean hasDtls = provider.getCore().mediaEncryptionSupported(MediaEncryption.DTLS);
+
+            if (!hasSrtp && !hasZrtp && !hasDtls) {
+                mMediaEncryption.setEnabled(false);
+            } else {
+                if (hasSrtp) {
+                    entries.add("SRTP");
+                    values.add(String.valueOf(MediaEncryption.SRTP.toInt()));
+                }
+                if (hasZrtp) {
+                    entries.add("ZRTP");
+                    values.add(String.valueOf(MediaEncryption.ZRTP.toInt()));
+                }
+                if (hasDtls) {
+                    entries.add("DTLS");
+                    values.add(String.valueOf(MediaEncryption.DTLS.toInt()));
+                }
+            }
+        }
 
         mMediaEncryption.setItems(entries, values);
     }
