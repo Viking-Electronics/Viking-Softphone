@@ -40,6 +40,7 @@ class LinphoneManager @Inject constructor(
 
         val proxyConfig = core.createProxyConfig().apply {
             serverAddr = "<sip:$domain;transport=${transport.name.toLowerCase()}>"
+            enableRegister(true)
         }
 
         val identityAddr = Factory.instance().createAddress(
@@ -59,8 +60,9 @@ class LinphoneManager @Inject constructor(
             core.natPolicy = this
         }
 
+        val proxySetStatus = core.addProxyConfig(proxyConfig) == 0
         core.defaultProxyConfig = proxyConfig
-        return core.addProxyConfig(proxyConfig) == 0 //According to docs 0 is success *shrug*
+        return proxySetStatus //According to docs 0 is success *shrug*
     }
 
     fun callDevice(scope: CoroutineScope,

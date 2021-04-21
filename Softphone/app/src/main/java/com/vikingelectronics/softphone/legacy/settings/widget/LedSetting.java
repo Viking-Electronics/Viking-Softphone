@@ -68,16 +68,16 @@ public class LedSetting extends BasicSetting {
     public void setColor(Color color) {
         switch (color) {
             case GRAY:
-//                mLed.setImageResource(R.drawable.led_disconnected);
+                mLed.setImageResource(R.drawable.led_disconnected);
                 break;
             case GREEN:
-//                mLed.setImageResource(R.drawable.led_connected);
+                mLed.setImageResource(R.drawable.led_connected);
                 break;
             case ORANGE:
-//                mLed.setImageResource(R.drawable.led_inprogress);
+                mLed.setImageResource(R.drawable.led_inprogress);
                 break;
             case RED:
-//                mLed.setImageResource(R.drawable.led_error);
+                mLed.setImageResource(R.drawable.led_error);
                 break;
         }
     }

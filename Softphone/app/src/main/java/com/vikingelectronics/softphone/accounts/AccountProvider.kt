@@ -7,12 +7,16 @@ import com.squareup.moshi.Moshi
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.tfcporciuncula.flow.NullableSerializer
 import com.vikingelectronics.softphone.extensions.nonSettable
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.scopes.ViewModelScoped
 import org.linphone.core.Core
 import org.linphone.core.CoreListenerStub
 import org.linphone.core.ProxyConfig
 import org.linphone.core.RegistrationState
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AccountProvider @Inject constructor(
     preferences: FlowSharedPreferences,
     moshi: Moshi,
@@ -44,6 +48,7 @@ class AccountProvider @Inject constructor(
     val storedSipCreds = _storedSipCreds.nonSettable()
 
     var sipRegistrationStatus by mutableStateOf(RegistrationState.None)
+        private set
 
     init {
         core.addListener(registrationStateListener)

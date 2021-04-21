@@ -19,15 +19,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -36,7 +32,12 @@ import androidx.navigation.NavOptionsBuilder;
 import androidx.navigation.compose.NavHostControllerKt;
 
 
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
+import com.vikingelectronics.softphone.legacy.LinphoneUtils;
+import com.vikingelectronics.softphone.legacy.settings.widget.BasicSetting;
+import com.vikingelectronics.softphone.legacy.settings.widget.LedSetting;
+import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
 import com.vikingelectronics.softphone.navigation.Screen;
 import org.linphone.core.Core;
 import org.linphone.core.ProxyConfig;
@@ -154,10 +155,11 @@ public class SettingsFragment extends Fragment {
     }
 
     protected void updateValues() {
-//        Core core = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+//        MainActivity main = ;
+        Core core = ((MainActivity) requireActivity()).core;
 //        if (core != null) {
-//            mTunnel.setVisibility(core.tunnelAvailable() ? View.VISIBLE : View.GONE);
-//            initAccounts(core);
+            mTunnel.setVisibility(core.tunnelAvailable() ? View.VISIBLE : View.GONE);
+            initAccounts(core);
 //        }
     }
 
@@ -171,158 +173,42 @@ public class SettingsFragment extends Fragment {
             mAccountsHeader.setVisibility(View.VISIBLE);
             int i = 0;
             for (ProxyConfig proxyConfig : proxyConfigs) {
-//                final LedSetting account = new LedSetting(getActivity());
-//                account.setTitle(
-//                        LinphoneUtils.getDisplayableAddress(proxyConfig.getIdentityAddress()));
-//
-//                if (proxyConfig.equals(core.getDefaultProxyConfig())) {
-//                    account.setSubtitle(getString(R.string.default_account_flag));
-//                }
-//
-//                switch (proxyConfig.getState()) {
-//                    case Ok:
-//                        account.setColor(LedSetting.Color.GREEN);
-//                        break;
-//                    case Failed:
-//                        account.setColor(LedSetting.Color.RED);
-//                        break;
-//                    case Progress:
-//                        account.setColor(LedSetting.Color.ORANGE);
-//                        break;
-//                    case None:
-//                    case Cleared:
-//                        account.setColor(LedSetting.Color.GRAY);
-//                        break;
-//                }
+                final LedSetting account = new LedSetting(getActivity());
+                account.setTitle(
+                        LinphoneUtils.getDisplayableAddress(proxyConfig.getIdentityAddress()));
 
-//                final int accountIndex = i;
-//                account.setListener(
-//                        new SettingListenerBase() {
-//                            @Override
-//                            public void onClicked() {
-//                                LinphoneActivity.instance().displayAccountSettings(accountIndex);
-//                            }
-//                        });
-//
-//                mAccounts.addView(account);
-//                i += 1;
-            }
-        }
-    }
-
-    public class BasicSetting extends LinearLayout {
-        protected Context mContext;
-        protected View mView;
-        protected TextView mTitle, mSubtitle;
-        protected SettingListener mListener;
-
-        public BasicSetting(Context context) {
-            super(context);
-            mContext = context;
-            init(null, 0, 0);
-        }
-
-        public BasicSetting(Context context, @Nullable AttributeSet attrs) {
-            super(context, attrs);
-            mContext = context;
-            init(attrs, 0, 0);
-        }
-
-        public BasicSetting(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-            mContext = context;
-            init(attrs, defStyleAttr, 0);
-        }
-
-        public BasicSetting(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-            super(context, attrs, defStyleAttr, defStyleRes);
-            mContext = context;
-            init(attrs, defStyleAttr, defStyleRes);
-        }
-
-        protected void inflateView() {
-            mView = LayoutInflater.from(mContext).inflate(R.layout.settings_widget_basic, this, true);
-        }
-
-        public void setListener(SettingListener listener) {
-            mListener = listener;
-        }
-
-        protected void init(@Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-            inflateView();
-
-            mTitle = mView.findViewById(R.id.setting_title);
-            mSubtitle = mView.findViewById(R.id.setting_subtitle);
-
-            RelativeLayout rlayout = mView.findViewById(R.id.setting_layout);
-            rlayout.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mTitle.isEnabled() && mListener != null) {
-                            mListener.onClicked();
-                        }
-                    }
-                });
-
-            if (attrs != null) {
-                TypedArray a =
-                    mContext.getTheme()
-                        .obtainStyledAttributes(
-                            attrs, R.styleable.Settings, defStyleAttr, defStyleRes);
-                try {
-                    String title = a.getString(R.styleable.Settings_title);
-                    if (title != null) {
-                        mTitle.setText(title);
-                    } else {
-                        mTitle.setVisibility(GONE);
-                    }
-
-                    String subtitle = a.getString(R.styleable.Settings_subtitle);
-                    if (subtitle != null) {
-                        mSubtitle.setText(subtitle);
-                    } else {
-                        mSubtitle.setVisibility(GONE);
-                    }
-                } finally {
-                    a.recycle();
+                if (proxyConfig.equals(core.getDefaultProxyConfig())) {
+                    account.setSubtitle(getString(R.string.default_account_flag));
                 }
+
+                switch (proxyConfig.getState()) {
+                    case Ok:
+                        account.setColor(LedSetting.Color.GREEN);
+                        break;
+                    case Failed:
+                        account.setColor(LedSetting.Color.RED);
+                        break;
+                    case Progress:
+                        account.setColor(LedSetting.Color.ORANGE);
+                        break;
+                    case None:
+                    case Cleared:
+                        account.setColor(LedSetting.Color.GRAY);
+                        break;
+                }
+
+                final int accountIndex = i;
+                account.setListener(
+                        new SettingListenerBase() {
+                            @Override
+                            public void onClicked() {
+//                                LinphoneActivity.instance().displayAccountSettings(accountIndex);
+                            }
+                        });
+
+                mAccounts.addView(account);
+                i += 1;
             }
         }
-
-        public void setTitle(String title) {
-            mTitle.setText(title);
-            mTitle.setVisibility(title == null || title.isEmpty() ? GONE : VISIBLE);
-        }
-
-        public void setSubtitle(String subtitle) {
-            mSubtitle.setText(subtitle);
-            mSubtitle.setVisibility(subtitle == null || subtitle.isEmpty() ? GONE : VISIBLE);
-        }
-
-        public void setEnabled(boolean enabled) {
-            mTitle.setEnabled(enabled);
-            mSubtitle.setEnabled(enabled);
-        }
-    }
-
-    public interface SettingListener {
-        void onClicked();
-
-        void onTextValueChanged(String newValue);
-
-        void onBoolValueChanged(boolean newValue);
-
-        void onListValueChanged(int position, String newLabel, String newValue);
-    }
-
-    public class SettingListenerBase implements SettingListener {
-        public void onClicked() {}
-
-        public void onTextValueChanged(String newValue) {}
-
-        public void onBoolValueChanged(boolean newValue) {}
-
-        public void onListValueChanged(int position, String newLabel, String newValue) {}
     }
 }
