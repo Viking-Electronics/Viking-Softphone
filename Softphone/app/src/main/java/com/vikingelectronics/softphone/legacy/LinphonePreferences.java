@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.vikingelectronics.softphone.R;
+import com.vikingelectronics.softphone.legacy.compatibility.Compatibility;
 
 import org.linphone.core.Address;
 import org.linphone.core.AuthInfo;
@@ -1042,10 +1043,10 @@ public class LinphonePreferences {
 //        }
     }
 
-//    public String getDeviceName(Context context) {
-////        String defaultValue = Compatibility.getDeviceName(context);
-//        return getConfig().getString("app", "device_name", defaultValue);
-//    }
+    public String getDeviceName(Context context) {
+        String defaultValue = Compatibility.getDeviceName(context);
+        return getConfig().getString("app", "device_name", defaultValue);
+    }
 
     public void setDeviceName(String name) {
         getConfig().setString("app", "device_name", name);

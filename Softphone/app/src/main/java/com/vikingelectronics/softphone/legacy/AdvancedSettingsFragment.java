@@ -30,9 +30,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.settings.widget.BasicSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
@@ -42,11 +45,17 @@ import com.vikingelectronics.softphone.legacy.settings.widget.TextSetting;
 
 public class AdvancedSettingsFragment extends Fragment {
     protected View mRootView;
-    protected LinphonePreferences mPrefs;
+    protected LegacyFragmentDependencyProvider provider;
 
     private SwitchSetting mDebug, mJavaLogger, mFriendListSubscribe, mBackgroundMode, mStartAtBoot, mDarkMode;
     private TextSetting mRemoteProvisioningUrl, mDisplayName, mUsername, mDeviceName;
     private BasicSetting mAndroidAppSettings;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -62,14 +71,6 @@ public class AdvancedSettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        mPrefs = LinphonePreferences.instance();
-//        if (LinphoneActivity.isInstantiated()) {
-//            LinphoneActivity.instance()
-//                    .selectMenu(
-//                            FragmentsAvailable.SETTINGS_SUBLEVEL,
-//                            getString(R.string.pref_advanced_title));
-//        }
 
         updateValues();
     }
@@ -108,7 +109,7 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setDebugEnabled(newValue);
+                        provider.getLinphonePreferences().setDebugEnabled(newValue);
                     }
                 });
 
@@ -116,7 +117,7 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setJavaLogger(newValue);
+                        provider.getLinphonePreferences().setJavaLogger(newValue);
                     }
                 });
 
@@ -124,44 +125,44 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enabledFriendlistSubscription(newValue);
+                        provider.getLinphonePreferences().enabledFriendlistSubscription(newValue);
                     }
                 });
 
-        mBackgroundMode.setListener(
-                new SettingListenerBase() {
-                    @Override
-                    public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setServiceNotificationVisibility(newValue);
-                        if (newValue) {
-//                            LinphoneService.instance().getNotificationManager().startForeground();
-                        } else {
-//                            LinphoneService.instance().getNotificationManager().stopForeground();
-                        }
-                    }
-                });
+//        mBackgroundMode.setListener(
+//                new SettingListenerBase() {
+//                    @Override
+//                    public void onBoolValueChanged(boolean newValue) {
+//                        mPrefs.setServiceNotificationVisibility(newValue);
+//                        if (newValue) {
+////                            LinphoneService.instance().getNotificationManager().startForeground();
+//                        } else {
+////                            LinphoneService.instance().getNotificationManager().stopForeground();
+//                        }
+//                    }
+//                });
 
-        mStartAtBoot.setListener(
-                new SettingListenerBase() {
-                    @Override
-                    public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setAutoStart(newValue);
-                    }
-                });
+//        mStartAtBoot.setListener(
+//                new SettingListenerBase() {
+//                    @Override
+//                    public void onBoolValueChanged(boolean newValue) {
+//                        mPrefs.setAutoStart(newValue);
+//                    }
+//                });
 
-        mDarkMode.setListener(
-                new SettingListenerBase() {
-                    @Override
-                    public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.enableDarkMode(newValue);
-                    }
-                });
+//        mDarkMode.setListener(
+//                new SettingListenerBase() {
+//                    @Override
+//                    public void onBoolValueChanged(boolean newValue) {
+//                        mPrefs.enableDarkMode(newValue);
+//                    }
+//                });
 
         mRemoteProvisioningUrl.setListener(
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setRemoteProvisioningUrl(newValue);
+                        provider.getLinphonePreferences().setRemoteProvisioningUrl(newValue);
                     }
                 });
 
@@ -169,7 +170,7 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setDefaultDisplayName(newValue);
+                        provider.getLinphonePreferences().setDefaultDisplayName(newValue);
                     }
                 });
 
@@ -177,7 +178,7 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setDefaultUsername(newValue);
+                        provider.getLinphonePreferences().setDefaultUsername(newValue);
                     }
                 });
 
@@ -201,31 +202,31 @@ public class AdvancedSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setDeviceName(newValue);
+                        provider.getLinphonePreferences().setDeviceName(newValue);
                     }
                 });
     }
 
     protected void updateValues() {
-        mDebug.setChecked(mPrefs.isDebugEnabled());
+        mDebug.setChecked(provider.getLinphonePreferences().isDebugEnabled());
 
-        mJavaLogger.setChecked(mPrefs.useJavaLogger());
+        mJavaLogger.setChecked(provider.getLinphonePreferences().useJavaLogger());
 
-        mFriendListSubscribe.setChecked(mPrefs.isFriendlistsubscriptionEnabled());
+        mFriendListSubscribe.setChecked(provider.getLinphonePreferences().isFriendlistsubscriptionEnabled());
 
-        mBackgroundMode.setChecked(mPrefs.getServiceNotificationVisibility());
+        mBackgroundMode.setChecked(provider.getLinphonePreferences().getServiceNotificationVisibility());
 
-        mStartAtBoot.setChecked(mPrefs.isAutoStartEnabled());
+        mStartAtBoot.setChecked(provider.getLinphonePreferences().isAutoStartEnabled());
 
-        mDarkMode.setChecked(mPrefs.isDarkModeEnabled());
+        mDarkMode.setChecked(provider.getLinphonePreferences().isDarkModeEnabled());
 
-        mRemoteProvisioningUrl.setValue(mPrefs.getRemoteProvisioningUrl());
+        mRemoteProvisioningUrl.setValue(provider.getLinphonePreferences().getRemoteProvisioningUrl());
 
-        mDisplayName.setValue(mPrefs.getDefaultDisplayName());
+        mDisplayName.setValue(provider.getLinphonePreferences().getDefaultDisplayName());
 
-        mUsername.setValue(mPrefs.getDefaultUsername());
+        mUsername.setValue(provider.getLinphonePreferences().getDefaultUsername());
 
-//        mDeviceName.setValue(mPrefs.getDeviceName(requireContext()));
+        mDeviceName.setValue(provider.getLinphonePreferences().getDeviceName(requireContext()));
 
         setListeners();
     }
