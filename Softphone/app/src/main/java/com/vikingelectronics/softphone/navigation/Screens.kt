@@ -23,7 +23,7 @@ sealed class Screen(
 
     sealed class Primary(
         override val route: String,
-        @StringRes val displayResourceId: Int,
+        @StringRes open val displayResourceId: Int,
         val icon: @Composable () -> Unit,
         val toolbarActions: @Composable (RowScope.() -> Unit)? = null
     ): Screen(route) {
@@ -53,17 +53,18 @@ sealed class Screen(
 
 
         sealed class Settings(
-            override val route: String
-        ): Primary(route, R.string.settings, {
+            override val route: String,
+            @StringRes override val displayResourceId: Int,
+        ): Primary(route, displayResourceId, {
             Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings menu icon")
         }) {
-            object Main: Settings("settingsMain")
-            object Tunnel: Settings("tunnelSettings")
-            object Audio: Settings("audioSettings")
-            object Video: Settings("videoSettings")
-            object Call: Settings("callSettings")
-            object Network: Settings("networkSettings")
-            object Advanced: Settings("advancedSettings")
+            object Main: Settings("settingsMain", R.string.settings)
+            object Tunnel: Settings("tunnelSettings", R.string.tunnel_settings)
+            object Audio: Settings("audioSettings", R.string.audio_settings)
+            object Video: Settings("videoSettings", R.string.video_settings)
+            object Call: Settings("callSettings", R.string.call_settings)
+            object Network: Settings("networkSettings", R.string.network_settings)
+            object Advanced: Settings("advancedSettings", R.string.advanced_settings)
         }
     }
 

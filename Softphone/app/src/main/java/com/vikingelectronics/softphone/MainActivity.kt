@@ -108,9 +108,6 @@ fun MainActivityComposable(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-    val settingsTitle = stringResource(id = Screen.Primary.Settings.Main.displayResourceId)
-
-
     val isLoggedIn by accountProvider.isLoggedIn.collectAsFlowState()
 
     Scaffold (
@@ -213,32 +210,32 @@ fun MainActivityComposable(
             }
 
             composable(Screen.Primary.Settings.Tunnel.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Tunnel.displayResourceId)
                 LegacyFragmentContainer(fragment = TunnelSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Audio.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Audio.displayResourceId)
                 LegacyFragmentContainer(fragment = AudioSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Video.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Video.displayResourceId)
                 LegacyFragmentContainer(fragment = VideoSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Call.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Call.displayResourceId)
                 LegacyFragmentContainer(fragment = CallSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Network.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Network.displayResourceId)
                 LegacyFragmentContainer(fragment = NetworkSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 
             composable(Screen.Primary.Settings.Advanced.route) {
-                toolbarTitle = settingsTitle
+                toolbarTitle = stringResource(id = Screen.Primary.Settings.Advanced.displayResourceId)
                 LegacyFragmentContainer(fragment = AdvancedSettingsFragment(), supportFragmentManager = supportFragmentManager)
             }
 

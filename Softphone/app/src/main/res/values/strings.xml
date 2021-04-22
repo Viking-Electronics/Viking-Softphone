@@ -51,5 +51,11 @@
     <string name="qr_results_alert_title">Select a user</string>
     <string name="sip_registration_success">Registration Successful</string>
     <string name="sip_registration_failure">Registration Failed</string>
+    <string name="tunnel_settings">Tunnel Settings</string>
+    <string name="advanced_settings">Advanced Settings</string>
+    <string name="network_settings">Network Settings</string>
+    <string name="call_settings">Call Settings</string>
+    <string name="video_settings">Video Settings</string>
+    <string name="audio_settings">Audio Settings</string>
 
 </resources>
