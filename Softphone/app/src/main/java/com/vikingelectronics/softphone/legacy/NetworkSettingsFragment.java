@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -26,9 +27,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
+import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
 import com.vikingelectronics.softphone.legacy.settings.widget.BasicSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
@@ -39,11 +43,17 @@ import org.linphone.core.tools.Log;
 
 public class NetworkSettingsFragment extends Fragment {
     protected View mRootView;
-    protected LinphonePreferences mPrefs;
+    protected LegacyFragmentDependencyProvider provider;
 
     private SwitchSetting mWifiOnly, mIpv6, mPush, mRandomPorts, mIce, mTurn;
     private TextSetting mSipPort, mStunServer, mTurnUsername, mTurnPassword;
     private BasicSetting mAndroidBatterySaverSettings;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        provider = (MainActivity) context;
+    }
 
     @Nullable
     @Override
@@ -60,21 +70,11 @@ public class NetworkSettingsFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        mPrefs = LinphonePreferences.instance();
-//        if (LinphoneActivity.isInstantiated()) {
-//            LinphoneActivity.instance()
-//                    .selectMenu(
-//                            FragmentsAvailable.SETTINGS_SUBLEVEL,
-//                            getString(R.string.pref_network_title));
-//        }
-
         updateValues();
     }
 
     protected void loadSettings() {
         mWifiOnly = mRootView.findViewById(R.id.pref_wifi_only);
-
-//        mIpv6 = mRootView.findViewById(R.id.pref_ipv6);
 
         mPush = mRootView.findViewById(R.id.pref_push_notification);
 
@@ -105,23 +105,15 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setWifiOnlyEnabled(newValue);
+                        provider.getLinphonePreferences().setWifiOnlyEnabled(newValue);
                     }
                 });
-
-//        mIpv6.setListener(
-//                new SettingListenerBase() {
-//                    @Override
-//                    public void onBoolValueChanged(boolean newValue) {
-//                        mPrefs.useIpv6(newValue);
-//                    }
-//                });
 
         mPush.setListener(
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setPushNotificationEnabled(newValue);
+                        provider.getLinphonePreferences().setPushNotificationEnabled(newValue);
                     }
                 });
 
@@ -129,9 +121,9 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.useRandomPort(newValue);
+                        provider.getLinphonePreferences().useRandomPort(newValue);
                         mSipPort.setVisibility(
-                                mPrefs.isUsingRandomPort() ? View.GONE : View.VISIBLE);
+                            provider.getLinphonePreferences().isUsingRandomPort() ? View.GONE : View.VISIBLE);
                     }
                 });
 
@@ -139,7 +131,7 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setIceEnabled(newValue);
+                        provider.getLinphonePreferences().setIceEnabled(newValue);
                     }
                 });
 
@@ -147,9 +139,9 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onBoolValueChanged(boolean newValue) {
-                        mPrefs.setTurnEnabled(newValue);
-                        mTurnUsername.setEnabled(mPrefs.isTurnEnabled());
-                        mTurnPassword.setEnabled(mPrefs.isTurnEnabled());
+                        provider.getLinphonePreferences().setTurnEnabled(newValue);
+                        mTurnUsername.setEnabled(provider.getLinphonePreferences().isTurnEnabled());
+                        mTurnPassword.setEnabled(provider.getLinphonePreferences().isTurnEnabled());
                     }
                 });
 
@@ -158,7 +150,7 @@ public class NetworkSettingsFragment extends Fragment {
                     @Override
                     public void onTextValueChanged(String newValue) {
                         try {
-                            mPrefs.setSipPort(Integer.valueOf(newValue));
+                            provider.getLinphonePreferences().setSipPort(Integer.valueOf(newValue));
                         } catch (NumberFormatException nfe) {
                             Log.e(nfe);
                         }
@@ -169,13 +161,13 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setStunServer(newValue);
+                        provider.getLinphonePreferences().setStunServer(newValue);
                         mIce.setEnabled(
-                                mPrefs.getStunServer() != null
-                                        && !mPrefs.getStunServer().isEmpty());
+                            provider.getLinphonePreferences().getStunServer() != null
+                                        && !provider.getLinphonePreferences().getStunServer().isEmpty());
                         mTurn.setEnabled(
-                                mPrefs.getStunServer() != null
-                                        && !mPrefs.getStunServer().isEmpty());
+                            provider.getLinphonePreferences().getStunServer() != null
+                                        && !provider.getLinphonePreferences().getStunServer().isEmpty());
                         if (newValue == null || newValue.isEmpty()) {
                             mIce.setChecked(false);
                             mTurn.setChecked(false);
@@ -187,7 +179,7 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setTurnUsername(newValue);
+                        provider.getLinphonePreferences().setTurnUsername(newValue);
                     }
                 });
 
@@ -195,7 +187,7 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onTextValueChanged(String newValue) {
-                        mPrefs.setTurnPassword(newValue);
+                        provider.getLinphonePreferences().setTurnPassword(newValue);
                     }
                 });
 
@@ -203,47 +195,47 @@ public class NetworkSettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        mPrefs.powerSaverDialogPrompted(true);
-//                        Intent intent =
-//                                DeviceUtils.getDevicePowerManagerIntent(
-//                                        LinphoneActivity.instance());
-//                        if (intent != null) {
-//                            startActivity(intent);
-//                        }
+                        provider.getLinphonePreferences().powerSaverDialogPrompted(true);
+                        Intent intent =
+                                DeviceUtils.getDevicePowerManagerIntent(requireActivity());
+                        if (intent != null) {
+                            startActivity(intent);
+                        }
                     }
                 });
     }
 
     protected void updateValues() {
-        mWifiOnly.setChecked(mPrefs.isWifiOnlyEnabled());
+        mWifiOnly.setChecked(provider.getLinphonePreferences().isWifiOnlyEnabled());
 
 //        mIpv6.setChecked(mPrefs.isUsingIpv6());
 
-        mPush.setChecked(mPrefs.isPushNotificationEnabled());
+        //TODO: deal with these setting when we implement push
+//        mPush.setChecked(provider.getLinphonePreferences().isPushNotificationEnabled());
 //        mPush.setVisibility(
 //                PushNotificationUtils.isAvailable(getActivity()) ? View.VISIBLE : View.GONE);
 
-        mRandomPorts.setChecked(mPrefs.isUsingRandomPort());
+        mRandomPorts.setChecked(provider.getLinphonePreferences().isUsingRandomPort());
 
-        mIce.setChecked(mPrefs.isIceEnabled());
-        mIce.setEnabled(mPrefs.getStunServer() != null && !mPrefs.getStunServer().isEmpty());
+        mIce.setChecked(provider.getLinphonePreferences().isIceEnabled());
+        mIce.setEnabled(provider.getLinphonePreferences().getStunServer() != null && !provider.getLinphonePreferences().getStunServer().isEmpty());
 
-        mTurn.setChecked(mPrefs.isTurnEnabled());
-        mTurn.setEnabled(mPrefs.getStunServer() != null && !mPrefs.getStunServer().isEmpty());
+        mTurn.setChecked(provider.getLinphonePreferences().isTurnEnabled());
+        mTurn.setEnabled(provider.getLinphonePreferences().getStunServer() != null && !provider.getLinphonePreferences().getStunServer().isEmpty());
 
-        mSipPort.setValue(mPrefs.getSipPort());
-        mSipPort.setVisibility(mPrefs.isUsingRandomPort() ? View.GONE : View.VISIBLE);
+        mSipPort.setValue(provider.getLinphonePreferences().getSipPort());
+        mSipPort.setVisibility(provider.getLinphonePreferences().isUsingRandomPort() ? View.GONE : View.VISIBLE);
 
-        mStunServer.setValue(mPrefs.getStunServer());
+        mStunServer.setValue(provider.getLinphonePreferences().getStunServer());
 
-        mTurnUsername.setValue(mPrefs.getTurnUsername());
-        mTurnUsername.setEnabled(mPrefs.isTurnEnabled());
-        mTurnPassword.setEnabled(mPrefs.isTurnEnabled());
+        mTurnUsername.setValue(provider.getLinphonePreferences().getTurnUsername());
+        mTurnUsername.setEnabled(provider.getLinphonePreferences().isTurnEnabled());
+        mTurnPassword.setEnabled(provider.getLinphonePreferences().isTurnEnabled());
 
-//        mAndroidBatterySaverSettings.setVisibility(
-//                DeviceUtils.hasDevicePowerManager(LinphoneActivity.instance())
-//                        ? View.VISIBLE
-//                        : View.GONE);
+        mAndroidBatterySaverSettings.setVisibility(
+                DeviceUtils.hasDevicePowerManager(requireActivity())
+                        ? View.VISIBLE
+                        : View.GONE);
 
         setListeners();
     }
