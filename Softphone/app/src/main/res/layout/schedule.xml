@@ -18,11 +18,12 @@
             android:id="@+id/add_schedule"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="?attr/button_background_drawable"
+
             android:contentDescription="@string/content_description_all_contacts"
             android:padding="15dp"
             android:scaleType="center"
              />
+<!--        android:background="?attr/button_background_drawable"-->
 <!--        android:src="@drawable/add_icon"-->
 
         <View
@@ -43,10 +44,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight=".21"
-            android:background="?attr/button_background_drawable"
+
             android:contentDescription="@string/content_description_edit_list"
             android:padding="15dp"
              />
+<!--        android:background="?attr/button_background_drawable"-->
 <!--        android:src="@drawable/edit_list"-->
     </LinearLayout>
 
@@ -60,7 +62,7 @@
         android:gravity="center"
         android:text="No schedules set."
         android:visibility="gone" />
-    style="@style/empty_list_font"
+<!--    style="@style/empty_list_font"-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/schedule_list"

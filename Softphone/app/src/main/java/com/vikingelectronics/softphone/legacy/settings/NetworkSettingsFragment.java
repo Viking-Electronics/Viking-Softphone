@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.legacy;
+package com.vikingelectronics.softphone.legacy.settings;
 
 /*
 NetworkSettingsFragment.java
@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
 import com.vikingelectronics.softphone.MainActivity;
 import com.vikingelectronics.softphone.R;
+import com.vikingelectronics.softphone.legacy.DeviceUtils;
 import com.vikingelectronics.softphone.legacy.settings.widget.BasicSetting;
 import com.vikingelectronics.softphone.legacy.settings.widget.SettingListenerBase;
 import com.vikingelectronics.softphone.legacy.settings.widget.SwitchSetting;

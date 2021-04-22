@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.legacy;
+package com.vikingelectronics.softphone.legacy.settings;
 
 /*
 AudioSettingsFragment.java

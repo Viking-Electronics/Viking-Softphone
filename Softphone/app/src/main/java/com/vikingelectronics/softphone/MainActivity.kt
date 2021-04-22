@@ -1,6 +1,5 @@
 package com.vikingelectronics.softphone
 
-import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -34,9 +33,11 @@ import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
 import com.vikingelectronics.softphone.legacy.*
+import com.vikingelectronics.softphone.legacy.schedules.ScheduleFragment
+import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
+import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.settings.legacy.*
-import com.vikingelectronics.softphone.legacy.settings.SettingsFragment
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,7 @@ interface LegacyFragmentDependencyProvider {
     val linphonePreferences: LinphonePreferences
     val linphoneManager: LinphoneManager
     val navController: NavController
+    val scheduleManager: ScheduleManager
 }
 
 @AndroidEntryPoint
@@ -61,6 +63,7 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
     @Inject override lateinit var linphoneManager: LinphoneManager
     @Inject override lateinit var linphonePreferences: LinphonePreferences
     @Inject override lateinit var permissionsManager: PermissionsManager
+    @Inject override lateinit var scheduleManager: ScheduleManager
     override lateinit var navController: NavController
 
 

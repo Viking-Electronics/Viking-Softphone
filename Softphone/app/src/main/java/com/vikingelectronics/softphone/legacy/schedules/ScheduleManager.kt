@@ -17,24 +17,26 @@ import org.joda.time.LocalTime
 import java.io.*
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ScheduleManager @Inject constructor(
     @ApplicationContext val context: Context
 ) {
 
-    private val _schedules = mutableListOf<ScheduleObject>()
-    val schedules: List<ScheduleObject> = _schedules
+    private var _schedules = mutableListOf<ScheduleObject>()
+    val schedules: List<ScheduleObject> get() = _schedules
 
     // Returns list of Schedule Objects
-//    fun getSchedule(): LinkedList<ScheduleObject?>? {
-//        return schedule
-//    }
+    fun getSchedule(): List<ScheduleObject?>? {
+        return schedules
+    }
 
     // Adds a Schedule Object to the list
     // Then two repeating alarms are created to start and stop the service
     @Throws(IOException::class)
     fun addSchedule(o: ScheduleObject) {
-//        schedule.add(o)
+        _schedules.add(o)
         serializeSchedule()
         if (!o.interval.isAllDay) {
             val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -53,7 +55,7 @@ class ScheduleManager @Inject constructor(
     // Then it cancels its corresponding alarms
     @Throws(IOException::class)
     fun removeSchedule(o: Any?) {
-//        schedule.remove(o)
+        _schedules.remove(o)
         serializeSchedule()
         val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, StartServiceReceiver::class.java)
@@ -69,7 +71,7 @@ class ScheduleManager @Inject constructor(
     fun serializeSchedule() {
         val fos: FileOutputStream = context.openFileOutput("schedule.ser", Context.MODE_PRIVATE)
         val os = ObjectOutputStream(fos)
-//        os.writeObject(schedule)
+        os.writeObject(_schedules)
         os.close()
     }
 
@@ -78,7 +80,7 @@ class ScheduleManager @Inject constructor(
     private fun deserializeSchedule() {
         val fis: FileInputStream = context.openFileInput("schedule.ser")
         val inputStream = ObjectInputStream(fis)
-//        schedule = inputStream.readObject() as LinkedList<ScheduleObject?>
+        _schedules = inputStream.readObject() as MutableList<ScheduleObject>
         inputStream.close()
         fis.close()
     }
