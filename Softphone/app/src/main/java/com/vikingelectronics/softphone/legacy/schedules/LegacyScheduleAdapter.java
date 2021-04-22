@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vikingelectronics.softphone.LegacyFragmentDependencyProvider;
 import com.vikingelectronics.softphone.R;
 
 import org.joda.time.LocalTime;
@@ -26,16 +27,19 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
     private List<ScheduleObject> mSchedules;
     private Context mContext;
     private LegacyScheduleAdapter.ViewHolder.ClickListener clickListener;
+    private LegacyFragmentDependencyProvider provider;
 
     public LegacyScheduleAdapter(
-            Context aContext,
-            List<ScheduleObject> schedules,
-            LegacyScheduleAdapter.ViewHolder.ClickListener listener,
-            SelectableHelper helper) {
+        Context aContext,
+        List<ScheduleObject> schedules,
+        LegacyScheduleAdapter.ViewHolder.ClickListener listener,
+        SelectableHelper helper,
+        LegacyFragmentDependencyProvider provider) {
         super(helper);
         this.mContext = aContext;
         this.clickListener = listener;
         this.mSchedules = schedules;
+        this.provider = provider;
     }
 
     public int getCount() {
@@ -52,7 +56,7 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
         View v =
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_schedule_item, parent, false);
-        return new ViewHolder(v, clickListener);
+        return new ViewHolder(v, clickListener, provider);
     }
 
     @Override
@@ -85,23 +89,27 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
             implements View.OnClickListener, View.OnLongClickListener {
         CheckBox select;
         private LegacyScheduleAdapter.ViewHolder.ClickListener mListener;
+        private LegacyFragmentDependencyProvider provider;
 
         private TextView beginTime;
         private TextView endTime;
         private ImageView scheduleIcon;
         private TextView daysField;
 
-        public ViewHolder(View view, LegacyScheduleAdapter.ViewHolder.ClickListener listener) {
+        public ViewHolder(View view, LegacyScheduleAdapter.
+            ViewHolder.ClickListener listener,
+                          LegacyFragmentDependencyProvider provider) {
             super(view);
-//            select = view.findViewById(R.id.delete);
-//            mListener = listener;
-//            beginTime = view.findViewById(R.id.begin_time);
-//            endTime = view.findViewById(R.id.end_time);
-//            scheduleIcon = view.findViewById(R.id.schedule_icon);
-//            daysField = view.findViewById(R.id.days_field);
+            select = view.findViewById(R.id.delete);
+            mListener = listener;
+            beginTime = view.findViewById(R.id.begin_time);
+            endTime = view.findViewById(R.id.end_time);
+            scheduleIcon = view.findViewById(R.id.schedule_icon);
+            daysField = view.findViewById(R.id.days_field);
 //            scheduleIcon.setImageResource(R.drawable.snooze_icon);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
+            this.provider = provider;
         }
 
         @Override
@@ -129,32 +137,32 @@ public class LegacyScheduleAdapter extends SelectableAdapter<LegacyScheduleAdapt
             LocalTime b = schedule.getInterval().getIntervalStart();
             LocalTime e = schedule.getInterval().getIntervalEnd();
             boolean[] d = schedule.getDays();
-//            String[] week = context.getResources().getStringArray(R.array.days);
+            String[] week = context.getResources().getStringArray(R.array.days);
             boolean empty = true;
 
             if (Arrays.equals(d, new boolean[] {true, false, false, false, false, false, true})) {
-//                daysField.setText(R.string.on_weekends);
+                daysField.setText(R.string.on_weekends);
             } else if (Arrays.equals(
                     d, new boolean[] {false, true, true, true, true, true, false})) {
-//                daysField.setText(R.string.on_weekdays);
+                daysField.setText(R.string.on_weekdays);
             } else if (Arrays.equals(d, new boolean[] {true, true, true, true, true, true, true})) {
 //                daysField.setText(R.string.everyday);
             } else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("On ");
-//                for (int i = 0; i < week.length; i++) {
-//                    if (d[i]) {
-//                        sb.append(week[i].substring(0, 3)).append(", ");
-//                        empty = false;
-//                    }
-//                }
+                for (int i = 0; i < week.length; i++) {
+                    if (d[i]) {
+                        sb.append(week[i].substring(0, 3)).append(", ");
+                        empty = false;
+                    }
+                }
                 if (!empty) {
                     sb.setLength(sb.length() - 2);
                 }
                 daysField.setText(sb.toString());
             }
-//            beginTime.setText(LinphoneApp.parseTime(b));
-//            endTime.setText(LinphoneApp.parseTime(e));
+            beginTime.setText(provider.getScheduleManager().parseTime(b));
+            endTime.setText(provider.getScheduleManager().parseTime(e));
         }
     }
 }
