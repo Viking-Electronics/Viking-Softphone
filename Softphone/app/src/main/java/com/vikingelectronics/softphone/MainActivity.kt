@@ -177,7 +177,11 @@ fun MainActivityComposable(
         drawerGesturesEnabled = isLoggedIn
     ){
         val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
-        NavHost(navController = navController, startDestination = startDestination) {
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.padding(it)
+        ) {
             composable(Screen.Login.route) {
                 LoginScreen(navController)
             }
