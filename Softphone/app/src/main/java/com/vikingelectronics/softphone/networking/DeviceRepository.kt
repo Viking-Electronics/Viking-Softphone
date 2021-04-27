@@ -58,7 +58,7 @@ class DeviceRepositoryImpl @Inject constructor(
                 .getAwait()
                 .documents
                 .apply {
-                    subList(1, size).iterateToObjectList<ActivityEntry> { emit(ListState.Success(it)) }
+                    subList(1, size).iterateActorToObjectList<ActivityEntry> { emit(ListState.Success(it)) }
                 }
         } catch (e: Exception) {
             emit(ListState.Failure(e))

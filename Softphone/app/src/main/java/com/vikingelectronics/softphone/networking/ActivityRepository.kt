@@ -1,5 +1,6 @@
 package com.vikingelectronics.softphone.networking
 
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -13,14 +14,35 @@ import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
+
+data class ActivityEntryPaginationHolder(val activities: List<ActivityEntry>, val lastEntry: DocumentSnapshot)
+
 interface ActivityRepository {
     fun getAllEntries(): Flow<ActivityEntry>
+    suspend fun fetchEntries(lastEntry: DocumentSnapshot? = null): ActivityEntryPaginationHolder?
 }
 
 class ActivityRepositoryImpl @Inject constructor(
     override val db: FirebaseFirestore,
     override val storage: FirebaseStorage
 ): FirebaseRepository(), ActivityRepository {
+
+    override suspend fun fetchEntries(lastEntry: DocumentSnapshot?): ActivityEntryPaginationHolder? {
+        val user = getUser("5514255221u1") ?: return null
+        val sipAccount = getSipAccount(user) ?: return null
+
+        var query = activityCollectionRef.whereIn("sourceDevice", sipAccount.devices)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .limit(25)
+
+        lastEntry?.let {
+            query = query.startAfter(it)
+        }
+
+        val docs = query.getAwait().documents
+
+        return ActivityEntryPaginationHolder(docs.iterateToObjectList(), docs.last())
+    }
 
     override fun getAllEntries(): Flow<ActivityEntry> = flow {
         val user = getUser("5514255221u1") ?: return@flow

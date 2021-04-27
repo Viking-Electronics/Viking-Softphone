@@ -74,12 +74,16 @@ abstract class FirebaseRepository {
         it.toObject<T>()?.let(actor)
     }
 
-    inline fun <reified T> List<DocumentSnapshot>.iterateToObjectList(actor: (List<T>) -> Unit) {
+    inline fun <reified T> List<DocumentSnapshot>.iterateToObjectList(): List<T> {
         val innerList = mutableListOf<T>()
         this.iterateToObject<T> {
             innerList.add(it)
         }
-        actor(innerList)
+        return innerList
+    }
+
+    inline fun <reified T> List<DocumentSnapshot>.iterateActorToObjectList(actor: (List<T>) -> Unit) {
+        actor(iterateToObjectList())
     }
 
     fun Task<StorageMetadata>.emitResult() = callbackFlow<Result<Boolean>> {

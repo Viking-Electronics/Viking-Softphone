@@ -182,6 +182,7 @@ fun MainActivityComposable(
             startDestination = startDestination,
             modifier = Modifier.padding(it)
         ) {
+
             composable(Screen.Login.route) {
                 LoginScreen(navController)
             }
@@ -193,7 +194,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.ActivityList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.ActivityList.displayResourceId)
-                toolbarActions = ActivityList(navController = navController, shouldShowToolbarActions)
+                toolbarActions = ActivityList(navController = navController, shouldShowToolbarActions, scaffoldState.snackbarHostState)
             }
 
             composable(Screen.Primary.CaptureList.route) {
