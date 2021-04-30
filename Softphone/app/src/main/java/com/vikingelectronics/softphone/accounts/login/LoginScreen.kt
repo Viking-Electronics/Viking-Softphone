@@ -147,14 +147,7 @@ fun LoginScreen(
         }
 
         Button(
-            onClick = {
-                if (viewModel.login()) {
-//                    Toast.makeText(context, stringResource(R.string.sip_registration_success), Toast.LENGTH_SHORT).show()
-                    navController.navigate(Screen.Primary.DeviceList.route)
-                } else {
-//                    Toast.makeText(context, stringResource(R.string.sip_registration_failure), Toast.LENGTH_SHORT).show()
-                }
-            },
+            onClick = viewModel::login,
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 16.dp)
                 .fillMaxWidth()
@@ -172,7 +165,8 @@ fun LoginScreen(
 //        }
     }
 
-//    when(viewModel.)
+
+    if (viewModel.loginSuccessful) navController.navigate(Screen.Primary.DeviceList.route)
 
     if (viewModel.shouldScanQrCode) QrReaderView(viewModel = viewModel)
 
@@ -218,7 +212,7 @@ fun QrResultsAlert(
                         onClick = {
                             viewModel.apply {
                                 usernameUpdated(it.username)
-                                passwordUpdated(it.username)
+                                passwordUpdated(it.password)
                                 domainUpdated(it.domain)
 
                                 killQrResults()

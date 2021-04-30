@@ -16,10 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import com.vikingelectronics.softphone.accounts.AccountProvider
+import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.SipAccountDrawerHeader
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
@@ -57,7 +58,7 @@ interface LegacyFragmentDependencyProvider {
 @AndroidEntryPoint
 class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
 
-    @Inject lateinit var accountProvider: AccountProvider
+    @Inject lateinit var userProvider: UserProvider
 
     @Inject override lateinit var core: Core
     @Inject override lateinit var linphoneManager: LinphoneManager
@@ -70,12 +71,15 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            MaterialTheme {
-                navController = MainActivityComposable(supportFragmentManager, accountProvider)
+        lifecycleScope.launch {
+            userProvider.checkStoredSipCreds()
+
+            setContent {
+                MaterialTheme {
+                    navController = MainActivityComposable(supportFragmentManager, userProvider)
+                }
             }
         }
-        accountProvider.checkStoredSipCreds()
     }
 }
 
@@ -83,7 +87,7 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
 @Composable
 fun MainActivityComposable(
     supportFragmentManager: FragmentManager,
-    accountProvider: AccountProvider,
+    userProvider: UserProvider,
 ): NavController {
     var toolbarTitle by remember { mutableStateOf("") }
     var shouldShowToolbarActions = remember { mutableStateOf(false) }
@@ -111,7 +115,7 @@ fun MainActivityComposable(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-    val isLoggedIn by accountProvider.isLoggedIn.collectAsFlowState()
+    val isLoggedIn by userProvider.isLoggedIn.collectAsFlowState()
 
     Scaffold (
         scaffoldState = scaffoldState,
@@ -149,7 +153,7 @@ fun MainActivityComposable(
             }
         },
         drawerContent = {
-            SipAccountDrawerHeader(accountProvider)
+            SipAccountDrawerHeader(userProvider)
 
             drawerNavItems.forEach { screen ->
                 Divider()

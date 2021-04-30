@@ -7,7 +7,10 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import com.vikingelectronics.softphone.accounts.SipAccount
+import com.vikingelectronics.softphone.accounts.User
 import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.softphone.dagger.UserScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -22,15 +25,15 @@ interface ActivityRepository {
     suspend fun fetchEntries(lastEntry: DocumentSnapshot? = null): ActivityEntryPaginationHolder?
 }
 
+@UserScope
 class ActivityRepositoryImpl @Inject constructor(
     override val db: FirebaseFirestore,
-    override val storage: FirebaseStorage
+    override val storage: FirebaseStorage,
+    override val user: User,
+    override val sipAccount: SipAccount
 ): FirebaseRepository(), ActivityRepository {
 
     override suspend fun fetchEntries(lastEntry: DocumentSnapshot?): ActivityEntryPaginationHolder? {
-        val user = getUser("5514255221u1") ?: return null
-        val sipAccount = getSipAccount(user) ?: return null
-
         var query = activityCollectionRef.whereIn("sourceDevice", sipAccount.devices)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(25)
@@ -45,9 +48,6 @@ class ActivityRepositoryImpl @Inject constructor(
     }
 
     override fun getAllEntries(): Flow<ActivityEntry> = flow {
-        val user = getUser("5514255221u1") ?: return@flow
-        val sipAccount = getSipAccount(user) ?: return@flow
-
         sipAccount.devices.forEach { ref ->
             activityCollectionRef.whereEqualTo("sourceDevice", ref)
                 .orderBy("timestamp", Query.Direction.DESCENDING)

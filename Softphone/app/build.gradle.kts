@@ -54,7 +54,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled(true)
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 //        getByName("qa") {
@@ -62,7 +62,7 @@ android {
 //            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 //        }
         debug { 
-            minifyEnabled(false)
+            isMinifyEnabled = false
             ext.set("enableCrashlytics", false)
         }
     }
@@ -162,7 +162,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android:4.5.4")
+    implementation("org.linphone:linphone-sdk-android:4.5.10")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'

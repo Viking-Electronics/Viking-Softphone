@@ -2,16 +2,17 @@ package com.vikingelectronics.softphone.accounts.login
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.squareup.moshi.Moshi
-import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.accounts.AccountProvider
+import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.QrReadResult
 import com.vikingelectronics.softphone.accounts.StoredSipCredsHolder
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.linphone.core.Core
 import org.linphone.core.CoreListenerStub
 import org.linphone.core.TransportType
@@ -23,17 +24,10 @@ class LoginViewModel @Inject constructor(
     private val linphoneManager: LinphoneManager,
     private val core: Core,
     private val moshi: Moshi,
-    private val accountProvider: AccountProvider
+    private val userProvider: UserProvider
 ): ViewModel() {
 
-    sealed class Actions {
-        class ShouldShowAdvanced(val shouldShow: Boolean): Actions()
-        class ShouldScanQrCode(val shouldScan: Boolean): Actions()
-        class QrResultsReceived(val qrReadResult: QrReadResult): Actions()
-        class RegistrationStatusUpdate(val wasSuccess: Boolean): Actions()
-
-    }
-
+    private var usernameBase: String = ""
     var username: String by mutableStateOf("")
         private set
     var userId: String by mutableStateOf("")
@@ -45,6 +39,9 @@ class LoginViewModel @Inject constructor(
     var displayName: String by mutableStateOf("")
         private set
     var transport: TransportType by mutableStateOf(TransportType.Udp)
+        private set
+
+    var loginSuccessful by mutableStateOf(false)
         private set
 
 //    var
@@ -60,7 +57,7 @@ class LoginViewModel @Inject constructor(
     private val qrStubListener = object: CoreListenerStub() {
         override fun onQrcodeFound(core: Core, result: String?) {
             super.onQrcodeFound(core, result)
-            result?.let { parseQrResult(it) }.timber()
+            parseQrResult(result)
             qrDeflated()
         }
     }
@@ -104,6 +101,7 @@ class LoginViewModel @Inject constructor(
 
     fun usernameUpdated(newUsername: String) {
         username = newUsername
+        usernameBase = newUsername.substring(0, 9)
     }
 
     fun userIdUpdated(newId: String) {
@@ -126,9 +124,16 @@ class LoginViewModel @Inject constructor(
         transport = newType
     }
 
-    fun login(): Boolean = linphoneManager.login(username, password, domain, transport, userId, displayName).also {
-        toastId = if (it) R.string.sip_registration_success else R.string.sip_registration_failure
-        if (it) accountProvider.setStoredSipCreds(StoredSipCredsHolder(domain, username, password))
+    fun login() {
+        viewModelScope.launch {
+            val registrationSuccess = linphoneManager.login(username, password, domain, transport, userId, displayName)
+
+            loginSuccessful = if (registrationSuccess) {
+                userProvider.userAuthenticatedSuccessfully(StoredSipCredsHolder(usernameBase, domain, username, password))
+            } else false
+
+            toastId = if (loginSuccessful)  R.string.sip_registration_success else R.string.sip_registration_failure
+        }
     }
 
     fun loginTypeSwitch() {

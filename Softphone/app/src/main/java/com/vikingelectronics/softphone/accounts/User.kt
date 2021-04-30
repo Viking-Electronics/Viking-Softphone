@@ -9,4 +9,5 @@ data class User(
     val username: String = "",
 ) {
     lateinit var sipAccount: DocumentReference
+    fun sipAccountExists() = ::sipAccount.isInitialized
 }

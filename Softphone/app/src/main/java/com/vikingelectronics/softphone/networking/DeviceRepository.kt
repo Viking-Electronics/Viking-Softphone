@@ -4,7 +4,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
+import com.vikingelectronics.softphone.accounts.SipAccount
+import com.vikingelectronics.softphone.accounts.User
 import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.devices.Device
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
@@ -17,10 +20,12 @@ interface DeviceRepository {
     fun getDeviceActivityList(device: Device): Flow<FirebaseRepository.ListState<ActivityEntry>>
 }
 
-@ViewModelScoped
+@UserScope
 class DeviceRepositoryImpl @Inject constructor(
    override val db: FirebaseFirestore,
-   override val storage: FirebaseStorage
+   override val storage: FirebaseStorage,
+   override val user: User,
+   override val sipAccount: SipAccount
 ): FirebaseRepository(), DeviceRepository {
 
     private suspend fun Device.getLatestDeviceActivity() {
@@ -38,10 +43,7 @@ class DeviceRepositoryImpl @Inject constructor(
     }
 
     override fun getDevices(username: String): Flow<Device> = flow {
-        val user = getUser(username) ?: return@flow
-        val sipAccount = getSipAccount(user)
-
-        sipAccount?.devices?.iterateToObject<Device> { device ->
+        sipAccount.devices.iterateToObject<Device> { device ->
             device.getLatestDeviceActivity()
             emit(device)
         }

@@ -8,8 +8,11 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
+import com.vikingelectronics.softphone.accounts.SipAccount
+import com.vikingelectronics.softphone.accounts.User
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
+import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
@@ -26,9 +29,12 @@ interface CapturesRepository {
     suspend fun downloadCapture(capture: Capture): Flow<LocalCaptureDataSource.DownloadState>
 }
 
+@UserScope
 class CapturesRepositoryImpl @Inject constructor(
     override val db: FirebaseFirestore,
     override val storage: FirebaseStorage,
+    override val user: User,
+    override val sipAccount: SipAccount,
     private val localCaptureSource: LocalCaptureDataSource,
     @ApplicationContext val context: Context,
 ): FirebaseRepository(), CapturesRepository {
@@ -36,7 +42,6 @@ class CapturesRepositoryImpl @Inject constructor(
     private data class StorageReferenceMetadataHolder(val storageReference: StorageReference, var metadata: StorageMetadata, val shouldIgnoreStoredMetadataUri: Boolean)
 
     override suspend fun getExternalCaptures(storedCaptureUris: List<Uri>): Flow<Capture> {
-        initStorageRecord()
         return storageRef.listAll()
             .await()
             .items

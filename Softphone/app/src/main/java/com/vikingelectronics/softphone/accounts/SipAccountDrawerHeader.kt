@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,10 +15,10 @@ import org.linphone.core.RegistrationState
 
 @Composable
 fun SipAccountDrawerHeader(
-    accountProvider: AccountProvider
+    userProvider: UserProvider
 ) {
-    val creds = accountProvider.storedSipCreds.get()
-    val color  = when(accountProvider.sipRegistrationStatus) {
+    val creds = userProvider.storedSipCreds.get()
+    val color  = when(userProvider.sipRegistrationStatus) {
         RegistrationState.Ok -> Color.Green
         RegistrationState.Progress -> Color.Yellow
         RegistrationState.Failed -> Color.Red

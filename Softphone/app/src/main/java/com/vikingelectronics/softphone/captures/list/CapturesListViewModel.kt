@@ -7,12 +7,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.R
+import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
+import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
+import dagger.hilt.EntryPoints
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -22,9 +25,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CapturesListViewModel @Inject constructor (
-    private val repository: CapturesRepository,
+    private val userProvider: UserProvider,
     private val permissionsManager: PermissionsManager,
 ): ViewModel(){
+
+    private val repository: CapturesRepository
+        get() = EntryPoints.get(userProvider.userComponent, UserComponentEntryPoint::class.java).capturesRepository()
 
     var capturesList: List<Capture> by mutableStateOf(listOf())
         private set

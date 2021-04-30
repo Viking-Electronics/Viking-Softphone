@@ -25,40 +25,38 @@ abstract class FirebaseRepository {
 
     internal abstract val db: FirebaseFirestore
     internal abstract val storage: FirebaseStorage
+    internal abstract val user: User
+    internal abstract val sipAccount: SipAccount
 
-    internal val userCollectionRef by lazy { db.collection("users") }
-    internal val sipCollectionRef by lazy { db.collection("sipAccounts") }
     internal val devicesCollectionRef by lazy { db.collection("devices") }
     internal val activityCollectionRef by lazy { db.collection("activity") }
 
-    lateinit var storageRef: StorageReference
-        private set
+    val storageRef: StorageReference by lazy { storage.reference.child(sipAccount.id) }
 
 
-    //TODO: This will crash the app if anything happens to storage. This cannot go out into production.
-    internal suspend fun initStorageRecord() {
-        if (::storageRef.isInitialized) return
+//    //TODO: This will crash the app if anything happens to storage. This cannot go out into production.
+//    internal suspend fun initStorageRecord() {
+//        if (::storageRef.isInitialized) return
+//
+//        val sipAccount = getSipAccount() ?: return
+//
+//        storageRef = storage.reference.child(sipAccount.id)
+//    }
 
-        val user = getUser("5514255221u1") ?: return
-        val sipAccount = getSipAccount(user) ?: return
+//    internal suspend fun getUser(username: String): User? {
+//        return try {
+//            userCollectionRef.whereEqualTo("username", username)
+//                .limit(1)
+//                .getAwait()
+//                .toObjects<User>()[0]
+//        } catch (e: Exception) {
+//            null
+//        }
+//    }
 
-        storageRef = storage.reference.child(sipAccount.id)
-    }
-
-    internal suspend fun getUser(username: String): User? {
-        return try {
-            userCollectionRef.whereEqualTo("username", username)
-                .limit(1)
-                .getAwait()
-                .toObjects<User>()[0]
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    internal suspend fun getSipAccount(user: User): SipAccount? {
-        return user.sipAccount.get().await().toObject<SipAccount>()
-    }
+//    internal suspend fun getSipAccount(): SipAccount? {
+//        return user.sipAccount.get().await().toObject<SipAccount>()
+//    }
 
     suspend fun Query.getAwait(): QuerySnapshot = this.get().await()
     suspend fun DocumentReference.getAwait(): DocumentSnapshot = this.get().await()
