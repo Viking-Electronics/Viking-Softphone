@@ -21,7 +21,9 @@ class LoginRepository @Inject constructor(
     }
 
      suspend fun attemptSipFetch(base: String): DocumentReference? {
-        return sipCollectionRef.document(base)
+         val doc = sipCollectionRef.document(base)
+         val refData = doc.get().await().data
+         return if (refData != null) doc else null
     }
 
      suspend fun createSipAccount(userRef: DocumentReference, base: String): DocumentReference {
@@ -29,9 +31,9 @@ class LoginRepository @Inject constructor(
             "users" to listOf(userRef),
         )
 
-         sipCollectionRef.document(base)
-
-         return document
+         return sipCollectionRef.document(base).apply {
+             set(sipData).await()
+         }
     }
 
      suspend fun attemptUserFetch(username: String): DocumentReference? {
@@ -58,15 +60,12 @@ class LoginRepository @Inject constructor(
 
      fun associateSipAccount(
          user: User,
-//         sipAccount: SipAccount,
          userReference: DocumentReference,
          sipReference: DocumentReference
      ) {
          user.sipAccount = sipReference
-//         sipAccount.users += userReference
 
          userReference.set(user)
-//         sipReference.set(sipAccount)
      }
 
     suspend inline fun <reified T> getAwaitObject(reference: DocumentReference): T? {

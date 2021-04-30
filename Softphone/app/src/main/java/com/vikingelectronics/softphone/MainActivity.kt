@@ -38,7 +38,6 @@ import com.vikingelectronics.softphone.legacy.schedules.ScheduleFragment
 import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
-import com.vikingelectronics.softphone.settings.legacy.*
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
