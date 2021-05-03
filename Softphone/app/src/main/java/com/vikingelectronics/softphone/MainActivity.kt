@@ -43,6 +43,7 @@ import com.vikingelectronics.softphone.legacy.schedules.ScheduleFragment
 import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
+import com.vikingelectronics.softphone.schedules.SchedulesScreen
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,8 +76,6 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.SplashTheme)
-
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
@@ -90,23 +89,6 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SplashScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.viking_logo),
-            contentDescription = "Viking Electronics logo",
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 64.dp)
-        )
-
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
-        )
     }
 }
 
@@ -235,7 +217,8 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.Schedules.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.Schedules.displayResourceId)
-                LegacyFragmentContainer(ScheduleFragment(), supportFragmentManager)
+                toolbarActions = SchedulesScreen(supportFragmentManager)
+                shouldShowToolbarActions.value = true
             }
 
             composable(Screen.Primary.Info.route) {
