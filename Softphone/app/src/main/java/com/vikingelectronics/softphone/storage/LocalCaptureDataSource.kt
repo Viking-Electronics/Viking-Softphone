@@ -12,6 +12,7 @@ import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.extensions.toInt
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -55,6 +56,7 @@ class LocalCaptureDataSource @Inject constructor(
 
 
     //TODO: Figure out why this doesn't work on any other api than 30
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun saveCapture(capture: Capture): Flow<DownloadState> = callbackFlow {
 
@@ -110,6 +112,7 @@ class LocalCaptureDataSource @Inject constructor(
         awaitClose()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun fetchLocalCaptureTemplates(): Flow<LocalStorageCaptureTemplate> = callbackFlow {
         resolver.query(
             imagesCollection,

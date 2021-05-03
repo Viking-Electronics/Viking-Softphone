@@ -1,11 +1,12 @@
 package com.vikingelectronics.softphone.captures.list
 
-import androidx.annotation.StringRes
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.networking.CapturesRepository
@@ -17,8 +18,6 @@ import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,36 +26,30 @@ import javax.inject.Inject
 class CapturesListViewModel @Inject constructor (
     private val userProvider: UserProvider,
     private val permissionsManager: PermissionsManager,
-): ViewModel(){
+): ViewModel() {
 
     private val repository: CapturesRepository
         get() = EntryPoints.get(userProvider.userComponent, UserComponentEntryPoint::class.java).capturesRepository()
 
-    var capturesList: List<Capture> by mutableStateOf(listOf())
-        private set
+
+    private val localUris = mutableListOf<Uri>()
+
+    val capturesList: Flow<PagingData<Capture>> = Pager(
+        config = PagingConfig(8),
+        initialKey = null,
+        pagingSourceFactory = { CapturePagingSource(repository, localUris) }
+    ).flow.cachedIn(viewModelScope)
 
     init {
-        fetchCaptures()
-    }
-
-
-    //TODO: Clean this method up
-    fun fetchCaptures() {
         viewModelScope.launch {
-            val list = mutableListOf<Capture>()
-            val localUriStrings = mutableListOf<LocalStorageCaptureTemplate>()
-            repository.getStoredTemplates().flowOn(IO).collect {
-                localUriStrings.add(it)
+            repository.getStoredTemplates().transform<LocalStorageCaptureTemplate, Uri> {
+                it.uri
+            }.collect {
+                localUris.add(it)
             }
-
-            repository.getExternalCaptures(localUriStrings.map { it.uri }).flowOn(IO).collect {
-                list.add(it)
-            }
-
-            list.sortByDescending { it.creationTimeMillis }
-            capturesList += list
         }
     }
+
 
     suspend fun favoriteCapture(capture: Capture): Flow<Int> {
         val shouldBeFavorite = !capture.isFavorite
@@ -72,11 +65,9 @@ class CapturesListViewModel @Inject constructor (
         }
     }
 
-    suspend fun deleteCapture(capture: Capture): Flow<Int> = repository.deleteCapture(capture).transform {
+    suspend fun deleteCapture(capture: Capture, onSuccess: () -> Unit): Flow<Int> = repository.deleteCapture(capture).transform {
         if (it.isSuccess) {
-            val newList = capturesList.toMutableList()
-            newList.remove(capture)
-            capturesList = newList
+            onSuccess()
 
             emit(R.string.cap_delete_success)
         } else emit(R.string.cap_delete_failure)

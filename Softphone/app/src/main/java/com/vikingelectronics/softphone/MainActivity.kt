@@ -41,7 +41,9 @@ import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.linphone.core.*
 import javax.inject.Inject
 
@@ -73,9 +75,11 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
         lifecycleScope.launch {
             userProvider.checkStoredSipCreds()
 
-            setContent {
-                MaterialTheme {
-                    navController = MainActivityComposable(supportFragmentManager, userProvider)
+            withContext(Main) {
+                setContent {
+                    MaterialTheme {
+                        navController = MainActivityComposable(supportFragmentManager, userProvider)
+                    }
                 }
             }
         }
@@ -202,7 +206,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.CaptureList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.CaptureList.displayResourceId)
-                toolbarActions = CapturesList(navController = navController, shouldShowToolbarActions)
+                toolbarActions = CapturesList(navController = navController, shouldShowToolbarActions, scaffoldState.snackbarHostState)
             }
 
             composable(Screen.Primary.Schedules.route) {

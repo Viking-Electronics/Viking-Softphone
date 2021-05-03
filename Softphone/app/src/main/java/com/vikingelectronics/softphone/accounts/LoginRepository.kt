@@ -69,6 +69,6 @@ class LoginRepository @Inject constructor(
      }
 
     suspend inline fun <reified T> getAwaitObject(reference: DocumentReference): T? {
-      return reference.get().await().toObject(T::class.java).timber()
+      return reference.get().await().toObject(T::class.java)
     }
 }

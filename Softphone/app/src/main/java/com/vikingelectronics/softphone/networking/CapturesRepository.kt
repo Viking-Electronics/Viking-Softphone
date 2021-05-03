@@ -15,14 +15,18 @@ import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.Result
 
+data class CapturesListPaginationHolder(val captures: List<Capture>, val pageToken: String?)
+
 interface CapturesRepository {
-    suspend fun getExternalCaptures(storedCaptureUris: List<Uri>): Flow<Capture>
+    suspend fun getExternalCaptures(amountToFetch: Int, storedCaptureUris: List<Uri>, pageToken: String?, ): CapturesListPaginationHolder?
     suspend fun getStoredTemplates(): Flow<LocalStorageCaptureTemplate>
     suspend fun updateFavorite(capture: Capture, shouldBeFavorite: Boolean): Flow<Result<Boolean>>
     suspend fun deleteCapture(capture: Capture): Flow<Result<Boolean>>
@@ -39,26 +43,24 @@ class CapturesRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
 ): FirebaseRepository(), CapturesRepository {
 
-    private data class StorageReferenceMetadataHolder(val storageReference: StorageReference, var metadata: StorageMetadata, val shouldIgnoreStoredMetadataUri: Boolean)
 
-    override suspend fun getExternalCaptures(storedCaptureUris: List<Uri>): Flow<Capture> {
-        return storageRef.listAll()
-            .await()
-            .items
-            .map {
-                val metadata = it.metadata.await()
-                val cloudStoredUri = metadata.getCustomMetadata("5514255221u1")?.toUri()
+    override suspend fun getExternalCaptures(amountToFetch: Int, storedCaptureUris: List<Uri>, pageToken: String?): CapturesListPaginationHolder? {
+        val listTask = pageToken?.let { storageRef.list(amountToFetch, it) } ?: storageRef.list(amountToFetch)
+
+        val listResult = listTask.await()
+
+        val captures = listResult.items.map { storageReference ->
+            withContext(Dispatchers.IO) {
+                val metadata = storageReference.metadata.await()
+                val cloudStoredUri = metadata.getCustomMetadata(user.username)?.toUri()
                 val shouldIgnore = cloudStoredUri != null && cloudStoredUri !in storedCaptureUris
-                if (shouldIgnore) removeUriMetadata(it)
+                if (shouldIgnore) removeUriMetadata(storageReference)
 
-                StorageReferenceMetadataHolder(it, metadata, shouldIgnore)
+                generateCaptureFromStorageRef(storageReference, metadata, shouldIgnore)
             }
-
-            .asFlow()
-            .transform {
-                val cap = generateCaptureFromStorageRef(it)
-                emit(cap)
         }
+
+        return CapturesListPaginationHolder(captures, listResult.pageToken)
     }
 
     override suspend fun getStoredTemplates(): Flow<LocalStorageCaptureTemplate> = localCaptureSource.fetchLocalCaptureTemplates()
@@ -89,7 +91,7 @@ class CapturesRepositoryImpl @Inject constructor(
         return localCaptureSource.saveCapture(capture).onEach { state ->
             if (state is LocalCaptureDataSource.DownloadState.Success) {
                 val metadata = storageMetadata {
-                    setCustomMetadata("5514255221u1", state.captureUri.toString())
+                    setCustomMetadata(user.username, state.captureUri.toString())
                 }
                 capture.storageReference.updateMetadata(metadata).await()
             }
@@ -97,16 +99,18 @@ class CapturesRepositoryImpl @Inject constructor(
     }
 
     //TODO: Get actual user
-    private suspend fun generateCaptureFromStorageRef(holder: StorageReferenceMetadataHolder): Capture {
-        val metadata = holder.metadata
-
-        val cloudStoreUri = holder.metadata.getCustomMetadata("5514255221u1")?.toUri()
-        val storedLocally = !(cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)
-        val uri: Uri = if (cloudStoreUri == null || holder.shouldIgnoreStoredMetadataUri)  {
-            holder.storageReference.downloadUrl.await()
+    private suspend fun generateCaptureFromStorageRef(
+        storageReference: StorageReference,
+        metadata: StorageMetadata,
+        shouldIgnoreStoredMetadataUri: Boolean
+    ): Capture {
+        val cloudStoreUri = metadata.getCustomMetadata(user.username)?.toUri()
+        val storedLocally = !(cloudStoreUri == null || shouldIgnoreStoredMetadataUri)
+        val uri: Uri = if (cloudStoreUri == null || shouldIgnoreStoredMetadataUri)  {
+            storageReference.downloadUrl.await()
         } else cloudStoreUri
 
-        val name = holder.storageReference.name
+        val name = storageReference.name
         val creationTimeMillis = metadata.creationTimeMillis
         val size = metadata.sizeBytes
         val type = metadata.contentType ?: ""
@@ -115,7 +119,7 @@ class CapturesRepositoryImpl @Inject constructor(
 
 
         return Capture(name, uri, creationTimeMillis, size, type).apply {
-            storageReference = holder.storageReference
+            this.storageReference = storageReference
             isFavorite = favorite
             isStoredLocally = storedLocally
         }
@@ -123,7 +127,7 @@ class CapturesRepositoryImpl @Inject constructor(
 
     private suspend fun removeUriMetadata(reference: StorageReference) {
         val metadata = storageMetadata {
-            setCustomMetadata("5514255221u1", null)
+            setCustomMetadata(user.username, null)
         }
 
         reference.updateMetadata(metadata).await()
