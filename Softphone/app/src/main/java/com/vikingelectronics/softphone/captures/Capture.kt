@@ -72,10 +72,11 @@ data class Capture (
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecordCard (
+fun CaptureCard (
     capture: Capture,
     navController: NavController,
     selectedState: MutableState<Boolean>,
+    onDeleteSuccess: () -> Unit,
     longClick: (() -> Unit)? = null
 ) {
 
@@ -233,7 +234,7 @@ fun RecordCard (
         DeleteConfirmationDialog(
             onConfirm = {
                 scope.launch {
-                    viewModel.deleteCapture(capture).collect {
+                    viewModel.deleteCapture(capture, onDeleteSuccess).collect {
                         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -250,9 +251,7 @@ fun DeleteConfirmationDialog(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = {
-            onDismiss()
-        },
+        onDismissRequest = onDismiss,
         title = {
             Text(text = stringResource(R.string.cap_delete_dialog_title))
         },
