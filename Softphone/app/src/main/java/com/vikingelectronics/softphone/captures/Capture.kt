@@ -8,6 +8,7 @@ import android.text.format.Formatter
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ import com.google.firebase.storage.StorageReference
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
 import com.google.accompanist.coil.CoilImage
+import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -76,7 +78,7 @@ fun CaptureCard (
     capture: Capture,
     navController: NavController,
     selectedState: MutableState<Boolean>,
-    onDeleteSuccess: () -> Unit,
+    onDeleteSuccess: () -> Unit, //TODO: Not thrilled with this if the card ends up being reused
     longClick: (() -> Unit)? = null
 ) {
 
@@ -114,11 +116,15 @@ fun CaptureCard (
                 Box(
                     modifier = Modifier.width(125.dp),
                 ) {
-                    CoilImage(
-                        data = capture.uri,
+                    {}
+                    Image(
+                        painter = rememberCoilPainter(
+                            request = capture.uri,
+                            shouldRefetchOnSizeChange = { _, _ -> false },
+                        ),
                         contentDescription = "Record of activity from ${capture.sourceRef}",
                         alignment = Alignment.Center,
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
                     )
                     if (capture.isFavorite) {
                         Icon (

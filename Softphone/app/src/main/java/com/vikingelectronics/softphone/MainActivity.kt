@@ -3,6 +3,7 @@ package com.vikingelectronics.softphone
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -11,6 +12,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
@@ -20,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import com.google.accompanist.coil.rememberCoilPainter
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.SipAccountDrawerHeader
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
@@ -70,6 +75,8 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.SplashTheme)
+
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
@@ -83,6 +90,23 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SplashScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.viking_logo),
+            contentDescription = "Viking Electronics logo",
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 64.dp)
+        )
+
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
+        )
     }
 }
 
