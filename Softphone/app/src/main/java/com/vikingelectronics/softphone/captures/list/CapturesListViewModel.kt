@@ -41,11 +41,15 @@ class CapturesListViewModel @Inject constructor (
     ).flow.cachedIn(viewModelScope)
 
     init {
+
         viewModelScope.launch {
-            repository.getStoredTemplates().transform<LocalStorageCaptureTemplate, Uri> {
-                it.uri
-            }.collect {
-                localUris.add(it)
+            //TODO: this is a less than ideal solution to the permissions issue
+            permissionsManager.requestPermissionForStorage(this) {
+                repository.getStoredTemplates().transform<LocalStorageCaptureTemplate, Uri> {
+                    it.uri
+                }.collect {
+                    localUris.add(it)
+                }
             }
         }
     }

@@ -48,10 +48,11 @@ class LocalCaptureDataSource @Inject constructor(
         ImageMedia._ID,
         ImageMedia.DISPLAY_NAME,
         ImageMedia.MIME_TYPE,
-        ImageMedia.IS_FAVORITE,
         ImageMedia.SIZE,
         ImageMedia.DISPLAY_NAME
-    )
+    ).apply {
+        if (Build.VERSION.SDK_INT >= 30) set(size + 1, ImageMedia.IS_FAVORITE)
+    }
     private val imageQuerySortOrder = "${ImageMedia.DATE_ADDED} DESC"
 
 
