@@ -7,7 +7,7 @@ data class QrReadResult(
     val passes: List<Map<Int, String>>,
     @Json(name = "num") val usernameBase: String
 ){
-    data class QrCreds(val username: String, val password: String, val domain: String)
+    data class QrCreds(val username: String, val password: String, val domain: String, val base: String)
 
     fun forEasyConsumption(): List<QrCreds> {
         val credsList = mutableListOf<QrCreds>()
@@ -19,7 +19,7 @@ data class QrReadResult(
             val key = entry.first
             val username = "${usernameBase}u$key"
             val password = entry.second ?: ""
-            credsList.add(QrCreds(username, password, domain))
+            credsList.add(QrCreds(username, password, domain, usernameBase))
         }
         return credsList
     }

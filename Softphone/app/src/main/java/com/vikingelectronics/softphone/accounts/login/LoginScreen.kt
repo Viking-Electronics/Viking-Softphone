@@ -214,6 +214,7 @@ fun QrResultsAlert(
                                 usernameUpdated(it.username)
                                 passwordUpdated(it.password)
                                 domainUpdated(it.domain)
+                                userBaseUpdated(it.base)
 
                                 killQrResults()
 

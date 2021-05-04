@@ -44,7 +44,6 @@ class LoginViewModel @Inject constructor(
     var loginSuccessful by mutableStateOf(false)
         private set
 
-//    var
     var toastId: Int? by mutableStateOf(null)
         private set
     var shouldShowAdvanced by mutableStateOf(false)
@@ -99,9 +98,13 @@ class LoginViewModel @Inject constructor(
         qrResults = null
     }
 
+    fun userBaseUpdated(newBase: String) {
+        usernameBase = newBase
+    }
+
     fun usernameUpdated(newUsername: String) {
         username = newUsername
-        usernameBase = newUsername.substring(0, 9)
+        usernameBase = newUsername.substring(0, 10)
     }
 
     fun userIdUpdated(newId: String) {
