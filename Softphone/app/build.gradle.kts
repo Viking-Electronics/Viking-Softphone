@@ -117,10 +117,10 @@ dependencies {
     implementation("androidx.core:core-ktx:1.3.2")
 
     implementation("androidx.activity:activity-compose:1.3.0-alpha07")
-    implementation("androidx.compose.ui:ui:1.0.0-beta05")
+    implementation("androidx.compose.ui:ui:1.0.0-beta06")
     implementation("androidx.compose.ui:ui-tooling:1.0.0-beta05")
     implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta05")
-    implementation("androidx.compose.foundation:foundation:1.0.0-beta05")
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta06")
     implementation("androidx.compose.material:material:1.0.0-beta05")
     //This aar is large, if compile and install times get too long we can pull the icons we need
     implementation("androidx.compose.material:material-icons-extended:1.0.0-beta05")
@@ -139,7 +139,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-coil:0.8.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.8.0")
     implementation("com.google.android.material:material:1.3.0")
-    implementation("com.google.dagger:hilt-android:2.33-beta")
 
     implementation(platform("com.google.firebase:firebase-bom:26.6.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -156,13 +155,13 @@ dependencies {
 
     implementation("joda-time:joda-time:2.10")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android:4.5.10")
+    implementation("org.linphone:linphone-sdk-android:4.5.13")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'
@@ -172,8 +171,9 @@ dependencies {
 //    testImplementation 'com.google.dagger:hilt-android-testing:<VERSION>'
 //    testAnnotationProcessor 'com.google.dagger:hilt-android-compiler:<VERSION>'
 
-    kapt("androidx.hilt:hilt-compiler:1.0.0-beta01")
-    kapt("com.google.dagger:hilt-android-compiler:2.31.2-alpha")
+    implementation("com.google.dagger:hilt-android:2.35.1")
+//    kapt("androidx.hilt:hilt-compiler:1.0.0-beta01")
+    kapt("com.google.dagger:hilt-compiler:2.35.1")
 
 
     testImplementation("junit:junit:4.+")

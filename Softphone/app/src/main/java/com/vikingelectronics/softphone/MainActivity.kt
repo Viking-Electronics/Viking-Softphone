@@ -3,7 +3,6 @@ package com.vikingelectronics.softphone
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -12,9 +11,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
@@ -24,13 +20,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import com.google.accompanist.coil.rememberCoilPainter
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.SipAccountDrawerHeader
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
 import com.vikingelectronics.softphone.activity.list.ActivityList
+import com.vikingelectronics.softphone.call.CallScreen
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.list.CapturesList
 import com.vikingelectronics.softphone.databinding.FragmentContainerBinding
@@ -38,8 +34,8 @@ import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
+import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.legacy.*
-import com.vikingelectronics.softphone.legacy.schedules.ScheduleFragment
 import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
@@ -74,6 +70,28 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
     @Inject override lateinit var scheduleManager: ScheduleManager
     override lateinit var navController: NavController
 
+    private lateinit var onCallEnd: () -> Unit
+    private val callListener = object: CoreListenerStub() {
+        override fun onCallStateChanged(
+            core: Core,
+            call: Call,
+            state: Call.State?,
+            message: String
+        ) {
+            super.onCallStateChanged(core, call, state, message)
+            when(state) {
+                Call.State.IncomingReceived, Call.State.OutgoingInit -> {
+                    navController.navigate(Screen.Call.route)
+                }
+                Call.State.End -> {
+                    navController.popBackStack()
+                    onCallEnd()
+                }
+            }
+            message.timber()
+            state.timber()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,10 +102,19 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
             withContext(Main) {
                 setContent {
                     MaterialTheme {
-                        navController = MainActivityComposable(supportFragmentManager, userProvider)
+                        MainActivityComposable(
+                            supportFragmentManager,
+                            userProvider,
+                            permissionsManager,
+                            core
+                        ) { navController, onCallEnd ->
+                            this@MainActivity.navController = navController
+                            this@MainActivity.onCallEnd = onCallEnd
+                        }
                     }
                 }
             }
+            core.addListener(callListener)
         }
     }
 }
@@ -97,7 +124,10 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
 fun MainActivityComposable(
     supportFragmentManager: FragmentManager,
     userProvider: UserProvider,
-): NavController {
+    permissionsManager: PermissionsManager,
+    core: Core,
+    emissionsActor: (NavController, () -> Unit) -> Unit
+) {
     var toolbarTitle by remember { mutableStateOf("") }
     var shouldShowToolbarActions = remember { mutableStateOf(false) }
     var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
@@ -125,11 +155,39 @@ fun MainActivityComposable(
     val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
     val isLoggedIn by userProvider.isLoggedIn.collectAsFlowState()
+    var shouldDisplayStructuralUIElements by remember { mutableStateOf(true) }
+
+    val derivedState by derivedStateOf {
+        isLoggedIn && shouldDisplayStructuralUIElements
+    }
+
+//    val callListener: CoreListener by remember {
+////        produceState(initialValue = , producer = )
+//        object: CoreListenerStub() {
+//            override fun onCallStateChanged(
+//                core: Core,
+//                call: Call,
+//                state: Call.State?,
+//                message: String
+//            ) {
+//                super.onCallStateChanged(core, call, state, message)
+//                when(state) {
+//                    Call.State.IncomingReceived -> navController.navigate(Screen.Call.route)
+//                    Call.State.End -> {
+//                        navController.popBackStack()
+////                        onCallEnd()
+//                    }
+//                }
+//                state.timber()
+//            }
+//        }
+//    }
+    permissionsManager.requestPermissionsForAudio {  }
 
     Scaffold (
         scaffoldState = scaffoldState,
         topBar = {
-            if (isLoggedIn)
+            if (derivedState)
              TopAppBar(
                  title = { Text(text = toolbarTitle) },
                  navigationIcon = {
@@ -150,7 +208,7 @@ fun MainActivityComposable(
              )
         },
         bottomBar = {
-            if (isLoggedIn)
+            if (derivedState)
             BottomNavigation {
                 bottomNavItems.forEach { screen ->
                     BottomNavigationItem(
@@ -187,7 +245,7 @@ fun MainActivityComposable(
                 }
             }
         },
-        drawerGesturesEnabled = isLoggedIn
+        drawerGesturesEnabled = derivedState
     ){
         val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
         NavHost(
@@ -198,6 +256,11 @@ fun MainActivityComposable(
 
             composable(Screen.Login.route) {
                 LoginScreen(navController)
+            }
+
+            composable(Screen.Call.route) {
+                CallScreen(core = core)
+                shouldDisplayStructuralUIElements = false
             }
 
             composable(Screen.Primary.DeviceList.route) {
@@ -288,7 +351,8 @@ fun MainActivityComposable(
             }
         }
     }
-    return navController
+
+    emissionsActor(navController) { shouldDisplayStructuralUIElements = true }
 }
 
 @Composable

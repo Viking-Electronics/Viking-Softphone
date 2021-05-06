@@ -42,7 +42,7 @@ class UserProvider @Inject constructor(
             message: String
         ) {
             super.onRegistrationStateChanged(core, proxyConfig, state, message)
-            sipRegistrationStatus = state ?: RegistrationState.None
+            sipRegistrationStatus = proxyConfig.state ?: RegistrationState.None
         }
     }
 
@@ -80,12 +80,10 @@ class UserProvider @Inject constructor(
     suspend fun userAuthenticatedSuccessfully(holder: StoredSipCredsHolder): Boolean {
         val userRef = repository.attemptUserFetch(holder.username)
             ?: repository.createUserAccount(holder.username)
-        userRef.get().await().timber()
         val user = repository.getAwaitObject<User>(userRef) ?: return false
 
         val sipRef = repository.attemptSipFetch(holder.accountBase)
             ?: repository.createSipAccount(userRef, holder.accountBase)
-        sipRef.get().await().timber()
         val sipAccount: SipAccount =  repository.getAwaitObject<SipAccount>(sipRef) ?: return false
 
         if (!user.sipAccountExists()) repository.associateSipAccount(user, userRef, sipRef)

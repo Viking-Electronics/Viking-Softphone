@@ -64,9 +64,11 @@ class LinphoneManager @Inject constructor(
             core.natPolicy = this
         }
 
-        val proxySetStatus = core.addProxyConfig(proxyConfig) == 0
-        core.defaultProxyConfig = proxyConfig
-        return proxySetStatus //According to docs 0 is success *shrug*
+        return if (core.proxyConfigList.contains(proxyConfig)) true else {
+            val proxySetStatus = core.addProxyConfig(proxyConfig) == 0
+            core.defaultProxyConfig = proxyConfig
+            proxySetStatus //According to docs 0 is success *shrug*
+        }
     }
 
     fun callDevice(scope: CoroutineScope,

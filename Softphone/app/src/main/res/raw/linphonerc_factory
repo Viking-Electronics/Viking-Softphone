@@ -8,6 +8,7 @@ mtu=1300
 download_bw=0
 upload_bw=0
 force_ice_disablement=0
+inc_timeout=60
 
 [sip]
 guess_hostname=1

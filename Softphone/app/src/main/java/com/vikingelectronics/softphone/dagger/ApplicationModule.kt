@@ -31,7 +31,7 @@ object ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideLinphoneFactory(): Factory = Factory.instance()
+    fun provideLinphoneFactory(): Factory = Factory.instance().apply { setDebugMode(true, "LinphoneDebug") }
 
     @Singleton
     @Provides

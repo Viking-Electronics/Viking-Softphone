@@ -16,7 +16,7 @@ buildscript {
 
         classpath("com.diffplug.spotless:spotless-plugin-gradle:3.29.0")
 
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.35")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.35.1")
         classpath("com.google.firebase:firebase-appdistribution-gradle:2.1.1")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.5.2")
         classpath("com.google.gms:google-services:4.3.5")

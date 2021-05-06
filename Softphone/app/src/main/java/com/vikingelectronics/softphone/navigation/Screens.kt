@@ -20,6 +20,7 @@ sealed class Screen(
     open val route: String,
 ) {
     object Login: Screen("login")
+    object Call: Screen("call")
 
     sealed class Primary(
         override val route: String,
