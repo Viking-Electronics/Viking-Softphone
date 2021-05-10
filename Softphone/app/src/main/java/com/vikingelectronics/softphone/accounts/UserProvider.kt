@@ -42,7 +42,8 @@ class UserProvider @Inject constructor(
             message: String
         ) {
             super.onRegistrationStateChanged(core, proxyConfig, state, message)
-            sipRegistrationStatus = proxyConfig.state ?: RegistrationState.None
+            sipRegistrationStatus = state ?: RegistrationState.None
+            message.timber()
         }
     }
 

@@ -103,7 +103,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun usernameUpdated(newUsername: String) {
-        username = newUsername
+        username = newUsername.trim()
     }
 
     fun userIdUpdated(newId: String) {
@@ -129,6 +129,7 @@ class LoginViewModel @Inject constructor(
     fun login() {
         if (usernameBase.isEmpty() && domain == "sip.myviking.com:5799") usernameBase = username.substring(0, 10)
         if (usernameBase.isEmpty()) usernameBase = username
+
         viewModelScope.launch {
             val registrationSuccess = linphoneManager.login(username, password, domain, transport, userId, displayName)
 

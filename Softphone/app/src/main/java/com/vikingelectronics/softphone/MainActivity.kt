@@ -80,16 +80,16 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
         ) {
             super.onCallStateChanged(core, call, state, message)
             when(state) {
-                Call.State.IncomingReceived, Call.State.OutgoingInit -> {
+                Call.State.IncomingReceived, Call.State.OutgoingProgress -> {
                     navController.navigate(Screen.Call.route)
                 }
-                Call.State.End -> {
+                Call.State.Released -> {
                     navController.popBackStack()
                     onCallEnd()
                 }
+                else -> {}
             }
-            message.timber()
-            state.timber()
+            state.timber(postfix = message)
         }
     }
 
@@ -106,7 +106,8 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
                             supportFragmentManager,
                             userProvider,
                             permissionsManager,
-                            core
+                            core,
+                            linphoneManager
                         ) { navController, onCallEnd ->
                             this@MainActivity.navController = navController
                             this@MainActivity.onCallEnd = onCallEnd
@@ -126,6 +127,7 @@ fun MainActivityComposable(
     userProvider: UserProvider,
     permissionsManager: PermissionsManager,
     core: Core,
+    linphoneManager: LinphoneManager,
     emissionsActor: (NavController, () -> Unit) -> Unit
 ) {
     var toolbarTitle by remember { mutableStateOf("") }
@@ -259,7 +261,7 @@ fun MainActivityComposable(
             }
 
             composable(Screen.Call.route) {
-                CallScreen(core = core)
+                CallScreen(core = core, linphoneManager)
                 shouldDisplayStructuralUIElements = false
             }
 

@@ -4,8 +4,9 @@ import android.content.Context
 import android.media.AudioManager
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.util.extensions.initIfNull
-import com.vikingelectronics.softphone.util.extensions.invokeIfNotNull
+import com.vikingelectronics.softphone.extensions.initIfNull
+import com.vikingelectronics.softphone.extensions.invokeIfNotNull
+import com.vikingelectronics.softphone.extensions.timber
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -37,37 +38,27 @@ class LinphoneManager @Inject constructor(
     ): Boolean {
 
         Factory.instance().createAuthInfo(
-            username, userId, password, null, null, domain
+            username, userId, password, null, null, domain, null
         ).apply {
             core.addAuthInfo(this)
         }
 
-        val proxyConfig = core.createProxyConfig().apply {
-            serverAddr = "<sip:$domain;transport=${transport.name.toLowerCase()}>"
-            enableRegister(true)
+        val address = factory.createAddress("sip:$domain")?.apply {
+            this.transport = transport
         }
 
-        val identityAddr = Factory.instance().createAddress(
-            "sip:$username@$domain"
-        )
-        if (identityAddr != null) {
-            identityAddr.displayName = displayName
-            proxyConfig.identityAddress = identityAddr
+        val params = core.createAccountParams().apply {
+            identityAddress = factory.createAddress("sip:$username@$domain")
+            serverAddress = address
+            registerEnabled = true
         }
 
-        proxyConfig.natPolicy.initIfNull {
-            core.createNatPolicy()
-        }.run {
-            stunServer = context.getString(R.string.default_stun)
-            enableStun(true)
-            enableIce(true)
-            core.natPolicy = this
-        }
+        val account = core.createAccount(params)
 
-        return if (core.proxyConfigList.contains(proxyConfig)) true else {
-            val proxySetStatus = core.addProxyConfig(proxyConfig) == 0
-            core.defaultProxyConfig = proxyConfig
-            proxySetStatus //According to docs 0 is success *shrug*
+        return if(core.accountList.contains(account)) true else {
+            val accountSetStatus = core.addAccount(account) == 0
+            core.defaultAccount = account
+            accountSetStatus
         }
     }
 
@@ -78,12 +69,32 @@ class LinphoneManager @Inject constructor(
             enableVideo(true)
             videoDirection = MediaDirection.RecvOnly
             setAudioBandwidthLimit(0)
+            enableAudio(true)
         }
         audioManager.isSpeakerphoneOn = true
+        setAudioManagerInCallMode()
 
         invokeIfNotNull(address, parameters) { addr, params ->
             core.inviteAddressWithParams(addr, params)
         }
+    }
+
+    fun answerCall() {
+        val call = core.currentCall
+
+        val params = core.createCallParams(call)?.apply {
+            enableVideo(true)
+            videoDirection = MediaDirection.RecvOnly
+
+            setAudioBandwidthLimit(0)
+            enableAudio(true)
+            audioDirection = MediaDirection.RecvOnly
+        }.timber()
+
+        audioManager.isSpeakerphoneOn = true
+        setAudioManagerInCallMode()
+
+        call?.acceptWithParams(params)
     }
 
 

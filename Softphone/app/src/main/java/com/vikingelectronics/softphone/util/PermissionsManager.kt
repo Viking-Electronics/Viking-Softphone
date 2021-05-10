@@ -11,7 +11,6 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
-import com.vikingelectronics.softphone.util.extensions.restart
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -26,7 +25,6 @@ class PermissionsManager @Inject constructor(
     private fun listener(onSuccess: () -> Unit): PermissionListener {
         return object : PermissionListener {
             override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                core.restart()
                 onSuccess.invoke()
             }
 

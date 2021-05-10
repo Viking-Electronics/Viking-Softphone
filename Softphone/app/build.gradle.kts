@@ -131,8 +131,9 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
     implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.media:media:1.3.1")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
-    implementation("androidx.paging:paging-runtime:3.0.0-rc01")
+    implementation("androidx.paging:paging-runtime:3.0.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha08")
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
 
@@ -146,11 +147,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
 
+    debugImplementation("com.github.pandulapeter.beagle:ui-bottom-sheet:2.6.0")
+    implementation("com.github.pandulapeter.beagle:log:2.6.0")
+    releaseImplementation("com.github.pandulapeter.beagle:noop:2.6.0")
     implementation("com.github.tfcporciuncula.flow-preferences:flow-preferences:1.4.0")
     implementation("com.jakewharton.timber:timber:4.7.1")
-
     implementation("com.karumi:dexter:6.2.2")
-
     implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 
     implementation("joda-time:joda-time:2.10")
@@ -161,7 +163,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android:4.5.13")
+    implementation("org.linphone:linphone-sdk-android:5.0+")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'

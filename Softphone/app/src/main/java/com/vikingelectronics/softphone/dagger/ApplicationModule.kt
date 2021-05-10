@@ -10,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import com.pandulapeter.beagle.Beagle
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.tfcporciuncula.flow.FlowSharedPreferences
@@ -19,9 +20,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.*
-import org.linphone.core.Config
-import org.linphone.core.Core
-import org.linphone.core.Factory
+import org.linphone.core.*
 import java.util.*
 import javax.inject.Singleton
 
@@ -31,7 +30,12 @@ object ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideLinphoneFactory(): Factory = Factory.instance().apply { setDebugMode(true, "LinphoneDebug") }
+    fun provideLinphoneFactory(): Factory = Factory.instance().apply {
+        this.loggingService.addListener { loggingService, tag, logLevel, message ->
+            Beagle.log(message, tag)
+        }
+        setDebugMode(true, "LinphoneDebug")
+    }
 
     @Singleton
     @Provides
@@ -50,6 +54,16 @@ object ApplicationModule {
         factory: Factory,
         config: Config
     ): Core = factory.createCoreWithConfig(config, context).apply {
+        presenceModel = createPresenceModel().apply { basicStatus = PresenceBasicStatus.Open }
+        val deviceName: String = "Test"
+        val appName: String = "VikingSoftphone"
+        val androidVersion = BuildConfig.VERSION_NAME
+        val userAgent = "$appName/$androidVersion ($deviceName) LinphoneSDK"
+
+        setUserAgent(
+            userAgent,
+            "${context.getString(R.string.linphone_sdk_version)} (${context.getString(R.string.linphone_sdk_branch)})"
+        )
         isAutoIterateEnabled = true
         start()
     }
