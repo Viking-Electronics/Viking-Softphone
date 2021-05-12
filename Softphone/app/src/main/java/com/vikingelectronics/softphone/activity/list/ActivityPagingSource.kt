@@ -14,10 +14,10 @@ class ActivityPagingSource (
 
     override suspend fun load(params: LoadParams<DocumentSnapshot>): LoadResult<DocumentSnapshot, ActivityEntry> {
         return try {
-            activityRepository.fetchEntries(params.key)?.let {
+            activityRepository.fetchEntries(params.key).let {
                 LoadResult.Page(
-                    data = it.activities,
-                    nextKey = it.lastEntry,
+                    data = it.entries,
+                    nextKey = it.index,
                     prevKey = params.key
                 )
             } ?: LoadResult.Error(Throwable("Error fetching results"))

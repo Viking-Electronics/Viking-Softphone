@@ -15,6 +15,7 @@ import kotlinx.coroutines.tasks.await
 
 abstract class FirebaseRepository {
 
+    data class PaginationHolder<T> (val entries: List<T>, val index: DocumentSnapshot?)
     sealed class ListState<out T> {
         class Success<T>(val list: List<T>): ListState<T>()
         object Loading: ListState<Nothing>()
@@ -34,30 +35,6 @@ abstract class FirebaseRepository {
     val storageRef: StorageReference by lazy { storage.reference.child(sipAccount.id) }
 
 
-//    //TODO: This will crash the app if anything happens to storage. This cannot go out into production.
-//    internal suspend fun initStorageRecord() {
-//        if (::storageRef.isInitialized) return
-//
-//        val sipAccount = getSipAccount() ?: return
-//
-//        storageRef = storage.reference.child(sipAccount.id)
-//    }
-
-//    internal suspend fun getUser(username: String): User? {
-//        return try {
-//            userCollectionRef.whereEqualTo("username", username)
-//                .limit(1)
-//                .getAwait()
-//                .toObjects<User>()[0]
-//        } catch (e: Exception) {
-//            null
-//        }
-//    }
-
-//    internal suspend fun getSipAccount(): SipAccount? {
-//        return user.sipAccount.get().await().toObject<SipAccount>()
-//    }
-
     suspend fun Query.getAwait(): QuerySnapshot = this.get().await()
     suspend fun DocumentReference.getAwait(): DocumentSnapshot = this.get().await()
 
@@ -73,6 +50,7 @@ abstract class FirebaseRepository {
     }
 
     inline fun <reified T> List<DocumentSnapshot>.iterateToObjectList(): List<T> {
+        map {  }
         val innerList = mutableListOf<T>()
         this.iterateToObject<T> {
             innerList.add(it)

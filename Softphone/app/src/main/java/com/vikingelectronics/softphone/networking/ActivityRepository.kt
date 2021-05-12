@@ -18,11 +18,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-data class ActivityListPaginationHolder(val activities: List<ActivityEntry>, val lastEntry: DocumentSnapshot)
 
 interface ActivityRepository {
     fun getAllEntries(): Flow<ActivityEntry>
-    suspend fun fetchEntries(lastEntry: DocumentSnapshot? = null): ActivityListPaginationHolder?
+    suspend fun fetchEntries(lastEntry: DocumentSnapshot? = null): FirebaseRepository.PaginationHolder<ActivityEntry>
 }
 
 @UserScope
@@ -33,7 +32,7 @@ class ActivityRepositoryImpl @Inject constructor(
     override val sipAccount: SipAccount
 ): FirebaseRepository(), ActivityRepository {
 
-    override suspend fun fetchEntries(lastEntry: DocumentSnapshot?): ActivityListPaginationHolder? {
+    override suspend fun fetchEntries(lastEntry: DocumentSnapshot?): PaginationHolder<ActivityEntry> {
         var query = activityCollectionRef.whereIn("sourceDevice", sipAccount.devices)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(25)
@@ -44,7 +43,7 @@ class ActivityRepositoryImpl @Inject constructor(
 
         val docs = query.getAwait().documents
 
-        return ActivityListPaginationHolder(docs.iterateToObjectList(), docs.last())
+        return PaginationHolder(docs.iterateToObjectList(), docs.last())
     }
 
     override fun getAllEntries(): Flow<ActivityEntry> = flow {

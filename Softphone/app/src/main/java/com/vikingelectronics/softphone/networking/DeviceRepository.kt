@@ -1,5 +1,7 @@
 package com.vikingelectronics.softphone.networking
 
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
@@ -16,7 +18,7 @@ import javax.inject.Inject
 import kotlin.Exception
 
 interface DeviceRepository {
-    fun getDevices(username: String): Flow<Device>
+    suspend fun getDevices(index: DocumentSnapshot?): FirebaseRepository.PaginationHolder<Device>
     fun getDeviceActivityList(device: Device): Flow<FirebaseRepository.ListState<ActivityEntry>>
 }
 
@@ -43,11 +45,14 @@ class DeviceRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getDevices(username: String): Flow<Device> = flow {
-        sipAccount.devices.iterateToObject<Device> { device ->
-            device.getLatestDeviceActivity()
-            emit(device)
+    override suspend fun getDevices(index: DocumentSnapshot?): PaginationHolder<Device> {
+        val list = mutableListOf<Device>()
+
+        sipAccount.devices.iterateToObject<Device> {
+            list.add(it)
         }
+
+        return PaginationHolder(list, null)
     }
 
     override fun getDeviceActivityList(device: Device): Flow<ListState<ActivityEntry>> = flow {

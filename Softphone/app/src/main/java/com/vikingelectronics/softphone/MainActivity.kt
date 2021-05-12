@@ -267,7 +267,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.DeviceList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.DeviceList.displayResourceId)
-                DevicesList(navController = navController)
+                DevicesList(navController = navController, scaffoldState.snackbarHostState)
             }
 
             composable(Screen.Primary.ActivityList.route) {
