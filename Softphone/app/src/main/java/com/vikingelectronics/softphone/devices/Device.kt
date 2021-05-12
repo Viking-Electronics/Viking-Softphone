@@ -2,12 +2,15 @@ package com.vikingelectronics.softphone.devices
 
 import android.net.Uri
 import android.os.Parcelable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +28,7 @@ import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
 import com.google.accompanist.coil.CoilImage
+import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -36,7 +40,7 @@ data class Device(
     val allActivityEntries: List<ActivityEntry>? = null
 ): Parcelable {
     @IgnoredOnParcel
-    lateinit var latestActivityEntry: ActivityEntry
+    var latestActivityEntry: ActivityEntry? = null
     @IgnoredOnParcel
     val activityEntryRefs: List<DocumentReference> = listOf()
 }
@@ -63,37 +67,30 @@ fun DeviceCard(
         ) {
             Text(text = device.name)
             Box(
-                modifier = Modifier.padding(vertical = 8.dp).defaultMinSize(minHeight = 100.dp)
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .defaultMinSize(minHeight = 100.dp)
             ) {
-                CoilImage(
-                    data = device.latestActivityEntry.snapshotUrl,
-                    contentDescription = "Latest snapshot from ${device.name}",
-                    contentScale = ContentScale.FillWidth,
-                    fadeIn = true,
-                    loading = {
-                        Box(Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(
-                                Modifier.align(Alignment.Center)
-                            )
-                        }
-                    },
-                    error = {
-                        Column {
-                            Text(
-                                modifier = Modifier.fillMaxSize(),
-                                text = stringResource(id = R.string.snapshot_loading_error)
-                            )
-                            Text(text = it.toString())
-                        }
-                    }
-                )
-                Text(
-                    modifier = Modifier.align(Alignment.BottomStart),
-                    text = device.latestActivityEntry.timestamp.toDate().toString(),
-                    style = TextStyle(background = colorResource(id = R.color.white))
+                device.latestActivityEntry?.let {
+                    Image(
+                        painter = rememberCoilPainter(
+                            request = device.latestActivityEntry?.snapshotUrl
+                        ),
+                        contentDescription = "Latest snapshot from ${device.name}",
+                        contentScale = ContentScale.FillWidth,
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.BottomStart),
+                        text = device.latestActivityEntry?.timestamp?.toDate().toString(),
+                        style = TextStyle(background = colorResource(id = R.color.white))
+                    )
+                } ?: Image(
+                    modifier = Modifier.fillMaxWidth().size(55.dp).align(Alignment.Center),
+                    imageVector = Icons.Default.Photo,
+                    contentDescription = "Default photo icon"
                 )
             }
-            Text(text = device.latestActivityEntry.description)
+            Text(text = device.latestActivityEntry?.description ?: "No activity entry available")
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { viewModel.goLive(device) }

@@ -12,8 +12,8 @@ import com.vikingelectronics.softphone.devices.Device
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.lang.Exception
 import javax.inject.Inject
+import kotlin.Exception
 
 interface DeviceRepository {
     fun getDevices(username: String): Flow<Device>
@@ -31,14 +31,15 @@ class DeviceRepositoryImpl @Inject constructor(
     private suspend fun Device.getLatestDeviceActivity() {
         val deviceRef = devicesCollectionRef.document(id)
 
-        activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
+        val entries = activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(1)
             .getAwait()
-            .documents[0]
-            .toObject<ActivityEntry>()
-            ?.let { entry ->
-                latestActivityEntry = entry
+
+            latestActivityEntry = try {
+                entries.documents[0].toObject<ActivityEntry>()
+            } catch (e: Exception) {
+                null
             }
     }
 

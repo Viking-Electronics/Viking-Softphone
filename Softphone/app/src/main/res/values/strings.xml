@@ -57,5 +57,6 @@
     <string name="call_settings">Call Settings</string>
     <string name="video_settings">Video Settings</string>
     <string name="audio_settings">Audio Settings</string>
+    <string name="no_activity">No Activity</string>
 
 </resources>
