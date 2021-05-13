@@ -70,6 +70,7 @@ class LinphoneManager @Inject constructor(
             videoDirection = MediaDirection.RecvOnly
             setAudioBandwidthLimit(0)
             enableAudio(true)
+            audioDirection = MediaDirection.RecvOnly
         }
         audioManager.isSpeakerphoneOn = true
         setAudioManagerInCallMode()

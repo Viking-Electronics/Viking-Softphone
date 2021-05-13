@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(
         private set
     var displayName: String by mutableStateOf("")
         private set
-    var transport: TransportType by mutableStateOf(TransportType.Udp)
+    var transport: TransportType by mutableStateOf(TransportType.Tcp)
         private set
 
     var loginSuccessful by mutableStateOf(false)

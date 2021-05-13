@@ -1,6 +1,8 @@
 package com.vikingelectronics.softphone.call
 
 import android.view.TextureView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,11 +10,15 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import com.vikingelectronics.softphone.databinding.GenericTextureViewBinding
+import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.util.LinphoneManager
 import org.linphone.core.Call
@@ -21,72 +27,49 @@ import org.linphone.core.MediaDirection
 import org.linphone.mediastream.video.capture.CaptureTextureView
 import timber.log.Timber
 
+sealed class CallDirection {
+    object Incoming: CallDirection()
+    class Outgoing(val device: Device): CallDirection()
+}
 @Composable
 fun CallScreen(
-    core: Core,
-    linphoneManager: LinphoneManager
-//    call: Call
+    direction: CallDirection
 ) {
-//    val callListener
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    val viewModel: CallViewModel = hiltNavGraphViewModel()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
     ) {
 
-        Button(onClick = { core.currentCall?.terminate() }) {
-            Text(text = "END")
-        }
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                TextureView(context).apply {
+                    viewModel.textureViewInflated(this)
+                }
+            }
+        )
 
-        AndroidViewBinding(
-            GenericTextureViewBinding::inflate,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
         ) {
-            val call = core.currentCall
-            val state = call?.state
-            if (state == Call.State.IncomingReceived || state == Call.State.OutgoingProgress) {
-                core.nativeVideoWindowId = textureView
-                core.enableVideoDisplay(true)
+
+            Button(onClick = viewModel::) {
+
             }
-            if (call?.state == Call.State.IncomingReceived) {
-                linphoneManager.answerCall()
-//
-//                val params = core.createCallParams(call)?.apply {
-//                    enableVideo(true)
-//                    videoDirection = MediaDirection.RecvOnly;
-//                    setAudioBandwidthLimit(0)
-//                }.timber()
-//
-//                call.acceptWithParams(params)
+
+            Button(
+                onClick = viewModel::endCall
+            ) {
+                Text(text = "END")
             }
-//            timber()
         }
 
 
     }
-
-
-
-//    AndroidView(
-//        modifier = Modifier.fillMaxSize(),
-//        factory = { context ->
-//            TextureView(context).apply {
-//                val call = core.currentCall
-//                if (call?.state == Call.State.IncomingReceived) {
-//                    core.nativeVideoWindowId = this
-//                    core.enableVideoDisplay(true)
-//
-////                  call.accept()
-//                    val params = core.createCallParams(call)?.apply {
-//                        enableVideo(true)
-//                        videoDirection = MediaDirection.RecvOnly;
-//                        setAudioBandwidthLimit(0)
-//                    }.timber()
-//
-////                  call.update(params)
-//                    call.acceptWithParams(params)
-//                }
-//                timber()
-//            }
-//        }
-//    )
 }
