@@ -90,7 +90,7 @@ object ApplicationModule {
             .build()
         val preferences = EncryptedSharedPreferences.create(
             context,
-            "v_softphone_prefs_3.xml",
+            "v_softphone_prefs_5.xml",
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM

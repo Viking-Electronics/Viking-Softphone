@@ -9,18 +9,17 @@ import com.squareup.moshi.Moshi
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.tfcporciuncula.flow.NullableSerializer
 import com.vikingelectronics.softphone.dagger.UserComponent
+import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.extensions.nonSettable
 import com.vikingelectronics.softphone.extensions.timber
+import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.linphone.core.Core
-import org.linphone.core.CoreListenerStub
-import org.linphone.core.ProxyConfig
-import org.linphone.core.RegistrationState
+import org.linphone.core.*
 import org.w3c.dom.Document
 import javax.inject.Inject
 import javax.inject.Provider
@@ -31,17 +30,18 @@ class UserProvider @Inject constructor(
     preferences: FlowSharedPreferences,
     moshi: Moshi,
     core: Core,
+    private val userComponentProvider: Provider<UserComponent.Builder>,
     private val repository: LoginRepository
 ) {
 
     private val registrationStateListener = object : CoreListenerStub() {
-        override fun onRegistrationStateChanged(
+        override fun onAccountRegistrationStateChanged(
             core: Core,
-            proxyConfig: ProxyConfig,
+            account: Account,
             state: RegistrationState?,
             message: String
         ) {
-            super.onRegistrationStateChanged(core, proxyConfig, state, message)
+            super.onAccountRegistrationStateChanged(core, account, state, message)
             sipRegistrationStatus = state ?: RegistrationState.None
             message.timber()
         }
@@ -62,8 +62,10 @@ class UserProvider @Inject constructor(
     var sipRegistrationStatus by mutableStateOf(RegistrationState.None)
         private set
 
-    var userComponent: UserComponent? = null
-        private set
+    private var userComponent: UserComponent? = null
+    val userComponentEntryPoint: UserComponentEntryPoint
+        get() = EntryPoints.get(userComponent, UserComponentEntryPoint::class.java)
+
 
     init {
         core.addListener(registrationStateListener)
@@ -92,7 +94,7 @@ class UserProvider @Inject constructor(
         _storedSipCreds.set(holder)
         _isLoggedIn.set(true)
 
-        userComponent = repository.buildUserComponent(sipAccount, user)
+        userComponent = userComponentProvider.get().setUser(user).setSip(sipAccount).build()
 
         return true
     }

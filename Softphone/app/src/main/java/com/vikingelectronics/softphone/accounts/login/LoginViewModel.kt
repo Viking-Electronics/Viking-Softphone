@@ -131,9 +131,9 @@ class LoginViewModel @Inject constructor(
         if (usernameBase.isEmpty()) usernameBase = username
 
         viewModelScope.launch {
-            val registrationSuccess = linphoneManager.login(username, password, domain, transport, userId, displayName)
+            val account = linphoneManager.login(username, password, domain, transport, userId, displayName)
 
-            loginSuccessful = if (registrationSuccess) {
+            loginSuccessful = if (account != null) {
                 userProvider.userAuthenticatedSuccessfully(StoredSipCredsHolder(usernameBase, domain, username, password))
             } else false
 
@@ -143,6 +143,13 @@ class LoginViewModel @Inject constructor(
 
     fun loginTypeSwitch() {
         shouldShowAdvanced = !shouldShowAdvanced
+    }
+
+    fun populateFieldsWithTestData() {
+        username = "4308288631u1"
+        password = "stunningmaybe3457"
+        domain = "sip.myviking.com:5799"
+        login()
     }
 
     private fun setBackCamera() {

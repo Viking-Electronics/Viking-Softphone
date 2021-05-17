@@ -54,6 +54,7 @@ fun DevicesList(
 
                 DeviceCard(
                     device = device,
+                    navController= navController,
                     modifier = Modifier.clickable {
                         navController.setParcelableAndNavigate(Screen.Secondary.DeviceDetail, device)
                     }

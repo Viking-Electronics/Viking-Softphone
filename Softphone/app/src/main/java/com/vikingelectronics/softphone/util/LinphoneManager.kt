@@ -4,9 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.extensions.initIfNull
-import com.vikingelectronics.softphone.extensions.invokeIfNotNull
-import com.vikingelectronics.softphone.extensions.timber
+import com.vikingelectronics.softphone.extensions.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -35,7 +33,7 @@ class LinphoneManager @Inject constructor(
         transport: TransportType,
         userId: String = "",
         displayName: String = "",
-    ): Boolean {
+    ): Account? {
 
         Factory.instance().createAuthInfo(
             username, userId, password, null, null, domain, null
@@ -47,35 +45,34 @@ class LinphoneManager @Inject constructor(
             this.transport = transport
         }
 
-        val params = core.createAccountParams().apply {
+        val account = core.createAccountWithParams {
             identityAddress = factory.createAddress("sip:$username@$domain")
             serverAddress = address
             registerEnabled = true
         }
 
-        val account = core.createAccount(params)
-
-        return if(core.accountList.contains(account)) true else {
+        return if(core.accountList.contains(account)) account else {
             val accountSetStatus = core.addAccount(account) == 0
             core.defaultAccount = account
-            accountSetStatus
+            if (accountSetStatus) account else null
         }
     }
 
-    fun callDevice(scope: CoroutineScope,
-                   device: Device) = scope.launch(Main){
+    fun callDevice(device: Device): Call? {
         val address = factory.createAddress(device.callAddress)
         val parameters = core.createCallParams(null)?.apply {
             enableVideo(true)
             videoDirection = MediaDirection.RecvOnly
+
             setAudioBandwidthLimit(0)
             enableAudio(true)
             audioDirection = MediaDirection.RecvOnly
         }
-        audioManager.isSpeakerphoneOn = true
-        setAudioManagerInCallMode()
 
-        invokeIfNotNull(address, parameters) { addr, params ->
+        setAudioManagerInCallMode()
+        audioManager.isSpeakerphoneOn = true
+
+        return initOrNull(address, parameters) { addr, params ->
             core.inviteAddressWithParams(addr, params)
         }
     }
@@ -133,11 +130,8 @@ class LinphoneManager @Inject constructor(
                 + ", disabling bluetooth audio route"
         )
 //        org.linphone.receivers.BluetoothManager.getInstance().disableBluetoothSCO()
-        enableSpeaker(speakerOn)
-    }
-
-    fun enableSpeaker(enable: Boolean) {
-        audioManager.isSpeakerphoneOn = enable
+        audioManager.isSpeakerphoneOn = speakerOn
+//        enableSpeaker(speakerOn)
     }
 
     private fun setAudioManagerInCallMode() {

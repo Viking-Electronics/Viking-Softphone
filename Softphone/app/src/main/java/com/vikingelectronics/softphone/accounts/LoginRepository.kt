@@ -9,16 +9,10 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class LoginRepository @Inject constructor(
-    private val userComponentProvider: Provider<UserComponent.Builder>,
     db: FirebaseFirestore
 ) {
     private val userCollectionRef = db.collection("users")
     private val sipCollectionRef = db.collection("sipAccounts")
-
-
-    fun buildUserComponent(sipAccount: SipAccount, user: User): UserComponent {
-        return userComponentProvider.get().setUser(user).setSip(sipAccount).build()
-    }
 
      suspend fun attemptSipFetch(base: String): DocumentReference? {
          return try {

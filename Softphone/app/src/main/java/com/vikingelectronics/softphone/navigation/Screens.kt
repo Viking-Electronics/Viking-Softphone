@@ -20,7 +20,6 @@ sealed class Screen(
     open val route: String,
 ) {
     object Login: Screen("login")
-    object Call: Screen("call")
 
     sealed class Primary(
         override val route: String,
@@ -73,6 +72,7 @@ sealed class Screen(
         override val route: String,
         val parcelableKey: String,
     ): Screen(route) {
+        object Call: Secondary("call", "callDevice")
         object ActivityDetail: Secondary("activityDetail", "activityEntry")
         object DeviceDetail: Secondary("deviceDetail", "device")
         object CaptureDetail: Secondary("captureDetail", "capture")

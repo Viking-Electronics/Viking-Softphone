@@ -11,15 +11,19 @@ import com.vikingelectronics.softphone.accounts.User
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.extensions.timber
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.linphone.core.Call
+import org.linphone.core.Core
 import javax.inject.Inject
 import kotlin.Exception
 
 interface DeviceRepository {
     suspend fun getDevices(index: DocumentSnapshot?): FirebaseRepository.PaginationHolder<Device>
     fun getDeviceActivityList(device: Device): Flow<FirebaseRepository.ListState<ActivityEntry>>
+    fun getDeviceForIncomingCall(call: Call): Device?
 }
 
 @UserScope
@@ -30,7 +34,7 @@ class DeviceRepositoryImpl @Inject constructor(
    override val sipAccount: SipAccount
 ): FirebaseRepository(), DeviceRepository {
 
-    private suspend fun Device.getLatestDeviceActivity() {
+    private suspend fun Device.getLatestDeviceActivity(): Device {
         val deviceRef = devicesCollectionRef.document(id)
 
         val entries = activityCollectionRef.whereEqualTo("sourceDevice", deviceRef)
@@ -43,14 +47,18 @@ class DeviceRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 null
             }
+
+        return this
     }
 
     override suspend fun getDevices(index: DocumentSnapshot?): PaginationHolder<Device> {
         val list = mutableListOf<Device>()
 
         sipAccount.devices.iterateToObject<Device> {
-            list.add(it)
+            list.add(it.getLatestDeviceActivity())
         }
+
+        appendDeviceObjectsIfNecessary(index == null, list)
 
         return PaginationHolder(list, null)
     }
@@ -71,5 +79,14 @@ class DeviceRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(ListState.Failure(e))
         }
+    }
+
+    override fun getDeviceForIncomingCall(call: Call): Device? {
+        return sipAccount.deviceObjects.find { it.callAddress == call.remoteAddress.asString() }
+    }
+
+    private fun appendDeviceObjectsIfNecessary(indexIsNull: Boolean, deviceList: List<Device>) {
+        if (!sipAccount.deviceObjectsAreInitialized()) sipAccount.deviceObjects = deviceList
+        if (indexIsNull) sipAccount.deviceObjects += deviceList
     }
 }

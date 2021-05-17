@@ -155,14 +155,14 @@ fun LoginScreen(
             Text(text = stringResource(id = R.string.login))
         }
 
-//        Button(
-//            onClick = viewModel::loginTypeSwitch,
-//            modifier = Modifier
-//                .padding(horizontal = 16.dp)
-//                .fillMaxWidth()
-//        ) {
-//            Text(text = stringResource(id = R.string.advanced_login))
-//        }
+        Button(
+            onClick = viewModel::populateFieldsWithTestData,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.advanced_login))
+        }
     }
 
 

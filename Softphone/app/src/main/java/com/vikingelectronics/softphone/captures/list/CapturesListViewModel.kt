@@ -28,9 +28,7 @@ class CapturesListViewModel @Inject constructor (
     private val permissionsManager: PermissionsManager,
 ): ViewModel() {
 
-    private val repository: CapturesRepository
-        get() = EntryPoints.get(userProvider.userComponent, UserComponentEntryPoint::class.java).capturesRepository()
-
+    private val repository: CapturesRepository = userProvider.userComponentEntryPoint.capturesRepository()
 
     private val localUris = mutableListOf<Uri>()
 

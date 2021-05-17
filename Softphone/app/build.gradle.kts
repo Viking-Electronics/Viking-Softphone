@@ -118,13 +118,13 @@ dependencies {
 
     implementation("androidx.activity:activity-compose:1.3.0-alpha07")
     implementation("androidx.compose.ui:ui:1.0.0-beta06")
-    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta05")
-    implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta05")
+    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta06")
+    implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta06")
     implementation("androidx.compose.foundation:foundation:1.0.0-beta06")
-    implementation("androidx.compose.material:material:1.0.0-beta05")
+    implementation("androidx.compose.material:material:1.0.0-beta06")
     //This aar is large, if compile and install times get too long we can pull the icons we need
-    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta05")
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta05")
+    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta06")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta06")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
 
     implementation("androidx.datastore:datastore-core:1.0.0-beta01")
@@ -136,9 +136,14 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.0.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha08")
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    implementation("com.google.crypto.tink:tink-android") {
+        version {
+            strictly("1.4.0")
+        }
+    }
 
-    implementation("com.google.accompanist:accompanist-coil:0.8.0")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.8.0")
+    implementation("com.google.accompanist:accompanist-coil:0.9.1")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.9.1")
     implementation("com.google.android.material:material:1.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:26.6.0"))
@@ -163,7 +168,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
-    implementation("org.linphone:linphone-sdk-android:5.0+")
+    implementation("org.linphone:linphone-sdk-android-debug:5.0+")
 
     // For instrumentation tests
 //    androidTestImplementation  'com.google.dagger:hilt-android-testing:<VERSION>'

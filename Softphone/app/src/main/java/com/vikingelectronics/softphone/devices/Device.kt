@@ -48,14 +48,12 @@ data class Device(
 @Composable
 fun DeviceCard(
     device: Device,
+    navController: NavController,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
     Card(
-        modifier = modifier
-//            .padding(horizontal = 16.dp)
-//            .padding(top = 8.dp, bottom = 8.dp)
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         backgroundColor = colorResource(id = R.color.light_grey_color),
         elevation = 4.dp
     ) {
@@ -74,14 +72,15 @@ fun DeviceCard(
                 device.latestActivityEntry?.let {
                     Image(
                         painter = rememberCoilPainter(
-                            request = device.latestActivityEntry?.snapshotUrl
+                            request = it.snapshotUrl,
+                            fadeIn = true
                         ),
                         contentDescription = "Latest snapshot from ${device.name}",
                         contentScale = ContentScale.FillWidth,
                     )
                     Text(
                         modifier = Modifier.align(Alignment.BottomStart),
-                        text = device.latestActivityEntry?.timestamp?.toDate().toString(),
+                        text = it.timestamp.toDate().toString(),
                         style = TextStyle(background = colorResource(id = R.color.white))
                     )
                 } ?: Image(
@@ -93,7 +92,7 @@ fun DeviceCard(
             Text(text = device.latestActivityEntry?.description ?: "No activity entry available")
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { viewModel.goLive(device) }
+                onClick = { viewModel.goLive(device, navController) }
             ) {
                 Text("View live feed")
             }

@@ -21,8 +21,7 @@ class ActivityListViewModel @Inject constructor(
     private val userProvider: UserProvider
 ): ViewModel() {
 
-    private val repository: ActivityRepository
-        get() = EntryPoints.get(userProvider.userComponent, UserComponentEntryPoint::class.java).activityRepository()
+    private val repository: ActivityRepository = userProvider.userComponentEntryPoint.activityRepository()
 
     val activityEntries: Flow<PagingData<ActivityEntry>> = Pager(
         config = PagingConfig(10),

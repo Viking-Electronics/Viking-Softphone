@@ -23,11 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class DeviceDetailViewModel @Inject constructor(
     private val userProvider: UserProvider
-//    private val repository: DeviceRepository
 ): ViewModel() {
 
-    private val repository: DeviceRepository
-        get() = EntryPoints.get(userProvider.userComponent, UserComponentEntryPoint::class.java).deviceRepository()
+    private val repository: DeviceRepository = userProvider.userComponentEntryPoint.deviceRepository()
 
     var activityList: List<ActivityEntry> by mutableStateOf(listOf())
         private set

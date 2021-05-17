@@ -17,7 +17,7 @@
 
     <application
         android:name=".SoftphoneApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@drawable/viking_logo"
         android:label="@string/app_name"

@@ -7,7 +7,11 @@ inline fun <T> T.timber(prefix: String = "", postfix: String = ""): T = this.app
 }
 
 inline fun <T: Any?> T?.initIfNull(initializer: () -> T): T {
-    return this ?: initializer.invoke()
+    return this ?: initializer()
+}
+
+inline fun <T: Any, R: Any, Q: Any> initOrNull(first: T?, second: R?, invocation: (T, R) -> Q?): Q? {
+    return if (first != null && second != null) invocation(first, second) else null
 }
 
 inline fun <T: Any?, R: Any?> invokeIfNotNull(first: T?, second: R?, invocation: (T, R) -> Unit ) {
