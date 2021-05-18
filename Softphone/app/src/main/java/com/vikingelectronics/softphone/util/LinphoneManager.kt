@@ -69,16 +69,19 @@ class LinphoneManager @Inject constructor(
             audioDirection = MediaDirection.RecvOnly
         }
 
-        setAudioManagerInCallMode()
-        audioManager.isSpeakerphoneOn = true
+//        setAudioManagerInCallMode()
+
 
         return initOrNull(address, parameters) { addr, params ->
+            setCallModeToRinging()
+            audioManager.isSpeakerphoneOn = true
+
             core.inviteAddressWithParams(addr, params)
         }
     }
 
-    fun answerCall() {
-        val call = core.currentCall
+    fun answerCall(): Call? {
+        val call = core.currentCall ?: return null
 
         val params = core.createCallParams(call)?.apply {
             enableVideo(true)
@@ -90,9 +93,20 @@ class LinphoneManager @Inject constructor(
         }.timber()
 
         audioManager.isSpeakerphoneOn = true
-        setAudioManagerInCallMode()
+//        setAudioManagerInCallMode()
 
-        call?.acceptWithParams(params)
+        return call.apply {
+            acceptWithParams(params)
+        }
+    }
+
+    fun setCallModeToRinging() {
+        audioManager.mode = AudioManager.MODE_RINGTONE
+        audioManager.isSpeakerphoneOn = true
+    }
+
+    fun setCallModeToNormal() {
+        audioManager.mode = AudioManager.MODE_NORMAL
     }
 
 

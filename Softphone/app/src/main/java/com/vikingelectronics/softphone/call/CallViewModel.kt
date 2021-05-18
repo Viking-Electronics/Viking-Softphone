@@ -6,9 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.extensions.invert
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.linphone.core.*
 import javax.inject.Inject
@@ -45,8 +48,9 @@ class CallViewModel @Inject constructor(
             super.onStateChanged(call, state, message)
             if (state == Call.State.Connected) callState.value = BasicCallState.Connected
             if (state == Call.State.End) {
+                linphoneManager.setCallModeToNormal()
+                viewModelScope.launch(Main) { onCallEnd() }
                 call.removeListener(this)
-                viewModelScope.launch(Dispatchers.Main) { onCallEnd() }
             }
         }
     }
@@ -63,7 +67,7 @@ class CallViewModel @Inject constructor(
     }
 
     private fun callDevice(device: Device) {
-        viewModelScope.launch {
+        viewModelScope.launch(Main) {
             linphoneManager.callDevice(device)?.apply {
                 addListener(callListener)
             } ?: kotlin.run { callState.value = BasicCallState.Failed }
@@ -71,7 +75,11 @@ class CallViewModel @Inject constructor(
     }
 
     fun answerCall() {
-        linphoneManager.answerCall()
+        viewModelScope.launch(Main) {
+            linphoneManager.answerCall()?.apply {
+                addListener(callListener)
+            } ?: kotlin.run { callState.value = BasicCallState.Failed }
+        }
     }
 
     fun declineCall() {
@@ -83,14 +91,19 @@ class CallViewModel @Inject constructor(
     }
 
     fun relayActivation() {
-        core.currentCall?.sendDtmfs("* *")
+        viewModelScope.launch(Main) {
+            repeat(2) {
+                core.playDtmf('*', 500)
+                delay(200)
+            }
+        }
     }
 
     fun switchMute() {
-        isMuted.value = !isMuted.value
+        isMuted.invert()
 
         val params = core.createCallParams(core.currentCall)?.apply {
-            audioDirection = if(isMuted.value) MediaDirection.SendRecv else MediaDirection.RecvOnly
+            audioDirection = if(isMuted.value) MediaDirection.RecvOnly else MediaDirection.SendRecv
         }
 
         core.currentCall?.update(params)

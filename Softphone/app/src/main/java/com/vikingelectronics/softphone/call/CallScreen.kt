@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CallEnd
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.VolumeMute
 import androidx.compose.runtime.*
@@ -74,9 +76,15 @@ fun CallScreen(
             is BasicCallState.Waiting -> viewModel.callInitiated(direction, onCallEnd)
             is BasicCallState.Incoming -> {
                 Row(
-                    modifier = Modifier.align(Alignment.BottomStart)
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(vertical = 24.dp)
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = viewModel::answerCall) {
+
                         Text(text = "Answer")
                     }
                     Button(onClick = viewModel::declineCall) {
@@ -89,8 +97,9 @@ fun CallScreen(
                     onClick = viewModel::endCall,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
+                        .padding(horizontal = 36.dp, vertical = 24.dp)
                         .fillMaxWidth()
-                        .padding(bottom = 25.dp)
+                        .height(55.dp)
                 ) {
                     Text(text = "Cancel")
                 }
@@ -99,14 +108,23 @@ fun CallScreen(
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
                         .fillMaxWidth()
-                        .padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .height(55.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = viewModel::relayActivation) {
+                        Icon(
+                            imageVector = Icons.Default.LockOpen,
+                            contentDescription = "Unlock icon"
+                        )
                         Text(text = "Unlock")
                     }
                     Button(onClick = viewModel::endCall) {
+                        Icon(
+                            imageVector = Icons.Default.CallEnd,
+                            contentDescription = "End Call icon"
+                        )
                         Text(text = "Hang up")
                     }
 
@@ -114,10 +132,11 @@ fun CallScreen(
                         onClick = viewModel::switchMute,
                         shape = CircleShape
                     ) {
-                        val icon = if (isMuted) Icons.Default.VolumeMute else Icons.Default.Mic
+                        val tint = if (isMuted) Color.Red else Color.Green
                         Icon(
-                            imageVector = icon,
-                            contentDescription = "Mute Icon"
+                            imageVector = Icons.Default.Mic,
+                            tint = tint,
+                            contentDescription = "Mute icon"
                         )
                     }
                 }

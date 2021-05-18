@@ -82,6 +82,7 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
             super.onCallStateChanged(core, call, state, message)
             when(state) {
                 Call.State.IncomingReceived -> {
+                    linphoneManager.setCallModeToRinging()
                     userProvider.userComponentEntryPoint.deviceRepository()
                         .getDeviceForIncomingCall(call)?.let {
                         navController.setParcelableAndNavigate(
