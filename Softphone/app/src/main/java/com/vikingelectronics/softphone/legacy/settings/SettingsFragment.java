@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavControllerKt;
 import androidx.navigation.NavOptionsBuilder;
 import androidx.navigation.compose.NavHostControllerKt;
 
@@ -112,7 +113,8 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Tunnel.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Tunnel.INSTANCE.getRoute());
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Tunnel.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -120,7 +122,8 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Audio.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Audio.INSTANCE.getRoute());
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Audio.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -128,7 +131,9 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Video.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Video.INSTANCE.getRoute());
+
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Video.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -136,7 +141,9 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Call.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Call.INSTANCE.getRoute());
+
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Call.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -152,7 +159,9 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Network.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Network.INSTANCE.getRoute());
+
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Network.INSTANCE.getRoute(), builderOptions);
                     }
                 });
 
@@ -160,7 +169,9 @@ public class SettingsFragment extends Fragment {
                 new SettingListenerBase() {
                     @Override
                     public void onClicked() {
-                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Advanced.INSTANCE.getRoute(), builderOptions);
+                        provider.getNavController().navigate(Screen.Primary.Settings.Advanced.INSTANCE.getRoute());
+
+//                        NavHostControllerKt.navigate(provider.getNavController(), Screen.Primary.Settings.Advanced.INSTANCE.getRoute(), builderOptions);
                     }
                 });
     }

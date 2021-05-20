@@ -16,6 +16,7 @@ import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -26,7 +27,8 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class UserProvider @Inject constructor(
+class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
+@Inject constructor(
     preferences: FlowSharedPreferences,
     moshi: Moshi,
     core: Core,

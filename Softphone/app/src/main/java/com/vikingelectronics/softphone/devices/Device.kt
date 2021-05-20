@@ -19,15 +19,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentReference
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
-import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -51,7 +49,7 @@ fun DeviceCard(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
+    val viewModel: DeviceListViewModel = hiltViewModel()
     Card(
         modifier = modifier.fillMaxWidth(),
         backgroundColor = colorResource(id = R.color.light_grey_color),

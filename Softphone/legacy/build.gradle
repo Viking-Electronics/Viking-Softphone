@@ -74,9 +74,7 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 30001
-        versionName "0.3.1"
-//        applicationId getPackageName()
+        //        applicationId getPackageName()
         multiDexEnabled true
         manifestPlaceholders = [linphone_address_mime_type: "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address"]
         vectorDrawables.useSupportLibrary = true
@@ -117,9 +115,7 @@ android {
         }
         debug {
 //            applicationIdSuffix ".debug"
-            debuggable true
             jniDebuggable true
-            versionNameSuffix '-debug'
 
             resValue "string", "sync_account_type", getPackageName() + ".sync"
             resValue "string", "file_provider", getPackageName() + ".provider"

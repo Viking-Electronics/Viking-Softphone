@@ -52,6 +52,12 @@ class LinphoneManager @Inject constructor(
         }
 
         return if(core.accountList.contains(account)) account else {
+            //Keep to a single account for now, was causing call issues
+            if (core.accountList.isNotEmpty()) {
+                core.accountList.forEach {
+                    core.removeAccount(it)
+                }
+            }
             val accountSetStatus = core.addAccount(account) == 0
             core.defaultAccount = account
             if (accountSetStatus) account else null
@@ -69,7 +75,7 @@ class LinphoneManager @Inject constructor(
             audioDirection = MediaDirection.RecvOnly
         }
 
-//        setAudioManagerInCallMode()
+        setAudioManagerInCallMode()
 
 
         return initOrNull(address, parameters) { addr, params ->
@@ -80,8 +86,9 @@ class LinphoneManager @Inject constructor(
         }
     }
 
-    fun answerCall(): Call? {
+    fun answerCall(listener: CallListener): Call? {
         val call = core.currentCall ?: return null
+        call.addListener(listener)
 
         val params = core.createCallParams(call)?.apply {
             enableVideo(true)
@@ -93,11 +100,11 @@ class LinphoneManager @Inject constructor(
         }.timber()
 
         audioManager.isSpeakerphoneOn = true
-//        setAudioManagerInCallMode()
+        setAudioManagerInCallMode()
 
-        return call.apply {
-            acceptWithParams(params)
-        }
+        call.acceptWithParams(params)
+
+        return call
     }
 
     fun setCallModeToRinging() {
@@ -145,11 +152,10 @@ class LinphoneManager @Inject constructor(
         )
 //        org.linphone.receivers.BluetoothManager.getInstance().disableBluetoothSCO()
         audioManager.isSpeakerphoneOn = speakerOn
-//        enableSpeaker(speakerOn)
     }
 
     private fun setAudioManagerInCallMode() {
-        if (audioManager.getMode() == AudioManager.MODE_IN_COMMUNICATION) {
+        if (audioManager.mode == AudioManager.MODE_IN_COMMUNICATION) {
             Log.w("[Manager][AudioManager] already in MODE_IN_COMMUNICATION, skipping...")
             return
         }

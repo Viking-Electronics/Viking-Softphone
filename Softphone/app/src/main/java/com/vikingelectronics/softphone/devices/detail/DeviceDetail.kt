@@ -2,7 +2,7 @@ package com.vikingelectronics.softphone.devices.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,12 +18,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
 import com.vikingelectronics.softphone.devices.Device
-import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.coil.rememberCoilPainter
 
 @Composable
@@ -31,7 +30,7 @@ fun DeviceDetail(
     device: Device,
     navController: NavController
 ) {
-    val viewModel: DeviceDetailViewModel = hiltNavGraphViewModel()
+    val viewModel: DeviceDetailViewModel = hiltViewModel()
     viewModel.getActivityFeedForDevice(device)
     LazyColumn (
         modifier = Modifier

@@ -6,26 +6,29 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CallEnd
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.VolumeMute
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vikingelectronics.softphone.MainActivity
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.Device
@@ -42,7 +45,7 @@ fun CallScreen(
     direction: CallDirection,
     onCallEnd: () -> Unit
 ) {
-    val viewModel: CallViewModel = hiltNavGraphViewModel()
+    val viewModel: CallViewModel = hiltViewModel()
     val callback = object: OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             viewModel.endCall()
@@ -54,6 +57,7 @@ fun CallScreen(
 
     val callState by viewModel.callState
     val isMuted by viewModel.isMuted
+    val isEnteringCode by viewModel.isEnteringCode
 
     Box(
         modifier = Modifier
@@ -70,7 +74,7 @@ fun CallScreen(
             }
         )
 
-        CallerIdDisplay(callState = viewModel.callState, direction.device)
+        CallerIdDisplay(callState = viewModel.callState, viewModel.callDuration, direction.device)
 
         when(callState) {
             is BasicCallState.Waiting -> viewModel.callInitiated(direction, onCallEnd)
@@ -127,7 +131,6 @@ fun CallScreen(
                         )
                         Text(text = "Hang up")
                     }
-
                     Button(
                         onClick = viewModel::switchMute,
                         shape = CircleShape
@@ -144,6 +147,40 @@ fun CallScreen(
             is BasicCallState.Failed -> CallFailedDialog {
 
             }
+
+            else -> {}
+        }
+
+        if (isEnteringCode) {
+            val focusRequester = FocusRequester()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color(0xBBCCCCCC))
+            ) {
+                TextField(
+                    value = viewModel.relayCode,
+                    onValueChange = viewModel::relayCodeChanged,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .focusRequester(focusRequester),
+                    label = {
+                        Text(text = "Enter Relay Activation Code")
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Go
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onAny = { viewModel.relayCodeEntered() }
+                    )
+                )
+            }
+            DisposableEffect(Unit) {
+                focusRequester.requestFocus()
+                onDispose{ }
+            }
+
         }
     }
 }
@@ -151,10 +188,12 @@ fun CallScreen(
 @Composable
 fun BoxScope.CallerIdDisplay(
     callState: State<BasicCallState>,
+    callDuration: State<String>,
     device: Device
 ) {
 
     val state by callState
+    val duration by callDuration
 
     when(state) {
         is BasicCallState.Incoming, is BasicCallState.Outgoing -> {
@@ -169,6 +208,11 @@ fun BoxScope.CallerIdDisplay(
 
                 Text(
                     text = text,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    text = duration,
                     color = Color.White,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -187,6 +231,11 @@ fun BoxScope.CallerIdDisplay(
                     color = Color.White,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
+                Text(
+                    text = duration,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
             }
         }
         else -> {}
@@ -200,7 +249,7 @@ fun CallFailedDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(R.string.qr_results_alert_title))
+            Text(text = "Call Error")
         },
         text = null,
         buttons = {

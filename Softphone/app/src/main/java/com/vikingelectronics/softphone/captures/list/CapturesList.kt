@@ -17,7 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -36,7 +36,7 @@ fun CapturesList(
     snackbarHostState: SnackbarHostState
 ): @Composable RowScope.() -> Unit {
 
-    val viewModel: CapturesListViewModel = hiltNavGraphViewModel()
+    val viewModel: CapturesListViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
 
     val lazyCaptures = viewModel.capturesList.collectAsLazyPagingItems()

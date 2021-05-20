@@ -1,6 +1,7 @@
 package com.vikingelectronics.softphone.activity.detail
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -8,16 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.coil.rememberCoilPainter
 import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.google.accompanist.coil.CoilImage
 
 @Composable
 fun ActivityDetail(
     entry: ActivityEntry
 ) {
 
-    val viewModel: ActivityDetailViewModel = hiltNavGraphViewModel()
+    val viewModel: ActivityDetailViewModel = hiltViewModel()
 
     Column(
         modifier = Modifier
@@ -30,11 +31,11 @@ fun ActivityDetail(
             style = MaterialTheme.typography.h5
         )
         
-        CoilImage(
+        Image(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            data = entry.snapshotUrl,
+            painter = rememberCoilPainter(request = entry.snapshotUrl),
             contentDescription = "Image from ${entry.description}, at ${entry.timestamp.toDate()}",
             contentScale = ContentScale.Inside,
         )

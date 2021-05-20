@@ -1,8 +1,6 @@
 package com.vikingelectronics.softphone.activity.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -11,9 +9,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -35,7 +32,7 @@ fun ActivityList(
 
     val selectedEntries by remember { mutableStateOf(mutableListOf<ActivityEntry>()) }
 
-    val viewModel: ActivityListViewModel = hiltNavGraphViewModel()
+    val viewModel: ActivityListViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val lazyActivityEntries = viewModel.activityEntries.collectAsLazyPagingItems()
     var isRefreshing by remember { mutableStateOf(false) }

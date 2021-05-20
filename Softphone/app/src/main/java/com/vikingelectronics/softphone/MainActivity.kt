@@ -128,7 +128,7 @@ fun MainActivityComposable(
     emissionsActor: (NavController) -> Unit
 ) {
     var toolbarTitle by remember { mutableStateOf("") }
-    var shouldShowToolbarActions = remember { mutableStateOf(false) }
+    val shouldShowToolbarActions = remember { mutableStateOf(false) }
     var toolbarActions: @Composable RowScope.() -> Unit by remember { mutableStateOf({}) }
 
 
@@ -160,7 +160,8 @@ fun MainActivityComposable(
     val scope = rememberCoroutineScope()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+    val currentRoute = navBackStackEntry?.destination?.route
+    val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
 
 
     Scaffold (
@@ -194,7 +195,13 @@ fun MainActivityComposable(
                         icon = screen.icon,
                         label = { Text(text = stringResource(id = screen.displayResourceId)) },
                         selected = screen.route == currentRoute,
-                        onClick = { navController.navigate(screen.route) })
+                        onClick = {
+                            navController.navigate(screen.route)  {
+//                                launchSingleTop = true
+//                                restoreState = true
+                            }
+                        }
+                    )
                 }
             }
         },
@@ -226,7 +233,6 @@ fun MainActivityComposable(
         },
         drawerGesturesEnabled = shouldShowStructuralUiElements
     ){
-        val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
         NavHost(
             navController = navController,
             startDestination = startDestination,
@@ -238,7 +244,7 @@ fun MainActivityComposable(
             }
 
             composable(Screen.Secondary.Call.route) {
-                val callDirection: CallDirection = navController.getParcelableFromBackstack(Screen.Secondary.Call) ?: return@composable
+                val callDirection: CallDirection = navController.getParcelableFromBackstack<CallDirection>(Screen.Secondary.Call).timber() ?: return@composable
                 CallScreen(callDirection) {
                     navController.popBackStack()
                     isOnCall = false

@@ -3,11 +3,9 @@ package com.vikingelectronics.softphone.accounts.login
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -20,14 +18,11 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
 import com.vikingelectronics.softphone.MainActivity
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.accounts.QrReadResult
 import com.vikingelectronics.softphone.databinding.GenericTextureViewBinding
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.ui.RadioGroup
@@ -38,7 +33,7 @@ fun LoginScreen(
     navController: NavController
 ) {
 
-    val viewModel: LoginViewModel = hiltNavGraphViewModel()
+    val viewModel: LoginViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
     val callback = object: OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {

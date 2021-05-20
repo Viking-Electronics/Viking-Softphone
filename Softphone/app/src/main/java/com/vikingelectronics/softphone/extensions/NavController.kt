@@ -1,12 +1,18 @@
 package com.vikingelectronics.softphone.extensions
 
+import android.os.Bundle
 import android.os.Parcelable
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
 import com.vikingelectronics.softphone.navigation.Screen
 
 fun NavController.setParcelableAndNavigate(screen: Screen.Secondary, obj: Parcelable) {
-    currentBackStackEntry?.arguments?.putParcelable(screen.parcelableKey, obj)
+    currentBackStackEntry?.arguments?.apply {
+        putParcelable(screen.parcelableKey, obj)
+    } ?: kotlin.run {
+        currentBackStackEntry?.arguments = Bundle().apply {
+            putParcelable(screen.parcelableKey, obj)
+        }
+    }
     navigate(screen.route)
 }
 

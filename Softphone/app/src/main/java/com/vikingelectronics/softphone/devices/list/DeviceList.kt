@@ -3,7 +3,6 @@ package com.vikingelectronics.softphone.devices.list
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.runtime.*
@@ -11,8 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.items
-
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -29,7 +27,7 @@ fun DevicesList(
     navController: NavController,
     snackbarHostState: SnackbarHostState
 ) {
-    val viewModel: DeviceListViewModel = hiltNavGraphViewModel()
+    val viewModel: DeviceListViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
 
     val lazyDevices = viewModel.devicesList.collectAsLazyPagingItems()

@@ -33,7 +33,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.storage.StorageReference
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
-import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
