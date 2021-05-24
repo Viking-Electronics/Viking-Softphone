@@ -20,10 +20,12 @@ import org.linphone.core.Core
 import javax.inject.Inject
 import kotlin.Exception
 
+data class DeviceCall(val device: Device, val call: Call)
+
 interface DeviceRepository {
     suspend fun getDevices(index: DocumentSnapshot?): FirebaseRepository.PaginationHolder<Device>
     fun getDeviceActivityList(device: Device): Flow<FirebaseRepository.ListState<ActivityEntry>>
-    fun getDeviceForIncomingCall(call: Call): Device?
+    fun getDeviceForIncomingCall(): DeviceCall?
 }
 
 @UserScope
@@ -31,7 +33,8 @@ class DeviceRepositoryImpl @Inject constructor(
    override val db: FirebaseFirestore,
    override val storage: FirebaseStorage,
    override val user: User,
-   override val sipAccount: SipAccount
+   override val sipAccount: SipAccount,
+   val core: Core
 ): FirebaseRepository(), DeviceRepository {
 
     private suspend fun Device.getLatestDeviceActivity(): Device {
@@ -81,8 +84,10 @@ class DeviceRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDeviceForIncomingCall(call: Call): Device? {
-        return sipAccount.deviceObjects.find { it.callAddress == call.remoteAddress.asString() }
+    override fun getDeviceForIncomingCall(): DeviceCall? {
+        val call = core.currentCall ?: return null
+        val device = sipAccount.deviceObjects.find { it.callAddress == call.remoteAddress.asString() } ?: return null
+        return DeviceCall(device, call)
     }
 
     private fun appendDeviceObjectsIfNecessary(indexIsNull: Boolean, deviceList: List<Device>) {

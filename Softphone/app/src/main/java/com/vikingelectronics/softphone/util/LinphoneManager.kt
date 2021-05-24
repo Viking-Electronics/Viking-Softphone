@@ -2,17 +2,48 @@ package com.vikingelectronics.softphone.util
 
 import android.content.Context
 import android.media.AudioManager
-import com.vikingelectronics.softphone.R
+import com.vikingelectronics.softphone.call.CallDirection
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.*
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import org.linphone.core.*
 import org.linphone.core.tools.Log
 import javax.inject.Inject
 import javax.inject.Singleton
+
+sealed class BasicCallState {
+    object Waiting: BasicCallState()
+    object Incoming: BasicCallState()
+    object Outgoing: BasicCallState()
+    object Connected: BasicCallState()
+    object Ending: BasicCallState()
+    object Failed: BasicCallState()
+    class Other(val state: Call.State): BasicCallState()
+
+    companion object {
+        fun fromCallDirection(direction: CallDirection): BasicCallState {
+            return when(direction) {
+                is CallDirection.Incoming -> Incoming
+                is CallDirection.Outgoing -> Outgoing
+            }
+        }
+        fun fromCallState(state: Call.State): BasicCallState {
+            return when(state) {
+                Call.State.Idle -> Waiting
+                Call.State.IncomingReceived, Call.State.IncomingEarlyMedia -> Incoming
+                Call.State.OutgoingInit, Call.State.OutgoingRinging, Call.State.OutgoingProgress, Call.State.OutgoingEarlyMedia -> Outgoing
+                Call.State.Connected -> Connected
+                Call.State.Released, Call.State.End -> Ending
+                Call.State.Error -> Failed
+                else -> Other(state)
+            }
+        }
+    }
+}
 
 @Singleton
 class LinphoneManager @Inject constructor(
@@ -21,10 +52,58 @@ class LinphoneManager @Inject constructor(
     val core: Core
 ) {
 
+    val callState = MutableStateFlow<BasicCallState>(BasicCallState.Waiting)
+    val isOnCall = MutableStateFlow(false)
+    private val coreCallListener = object: CoreListenerStub() {
+        override fun onCallStateChanged(
+            core: Core,
+            call: Call,
+            state: Call.State?,
+            message: String
+        ) {
+            super.onCallStateChanged(core, call, state, message)
+
+            GlobalScope.launch {
+                state?.let {
+                    callState.emit(BasicCallState.fromCallState(it))
+                }
+
+                if (state == Call.State.IncomingReceived || state == Call.State.OutgoingInit)  {
+                    setCallModeToRinging()
+                    isOnCall.emit(true)
+                }
+                if (state == Call.State.Connected) setCallModeToInCall()
+                if (state == Call.State.End) {
+                    isOnCall.emit(false)
+                    setCallModeToNormal()
+                }
+            }
+        }
+
+//        override fun onStateChanged(call: Call, state: Call.State?, message: String) {
+//            super.onStateChanged(call, state, message)
+
+//            if (state == Call.State.End) call.removeListener(this)
+//            callState.value = state
+//            if (state == Call.State.Connected) callState.value = BasicCallState.Connected
+//            if (state == Call.State.End) {
+//                timerJob.cancel()
+//                linphoneManager.setCallModeToNormal()
+//                viewModelScope.launch(Main) { onCallEnd() }
+//
+//            }
+//        }
+    }
+
+
     private val audioManager: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private var mEchoTesterIsRunning = false
     private var mAudioFocused = false
+
+    init {
+        core.addListener(coreCallListener)
+    }
 
     fun login(
         username: String,
@@ -64,7 +143,7 @@ class LinphoneManager @Inject constructor(
         }
     }
 
-    fun callDevice(device: Device): Call? {
+    fun callDevice(device: Device) {
         val address = factory.createAddress(device.callAddress)
         val parameters = core.createCallParams(null)?.apply {
             enableVideo(true)
@@ -75,20 +154,19 @@ class LinphoneManager @Inject constructor(
             audioDirection = MediaDirection.RecvOnly
         }
 
-        setAudioManagerInCallMode()
-
-
-        return initOrNull(address, parameters) { addr, params ->
+        initOrNull(address, parameters) { addr, params ->
             setCallModeToRinging()
             audioManager.isSpeakerphoneOn = true
 
             core.inviteAddressWithParams(addr, params)
-        }
+        } ?: kotlin.run { callState.value = BasicCallState.Failed }
     }
 
-    fun answerCall(listener: CallListener): Call? {
-        val call = core.currentCall ?: return null
-        call.addListener(listener)
+    fun answerCall() {
+        val call = core.currentCall ?: kotlin.run {
+            callState.value = BasicCallState.Failed
+            return
+        }
 
         val params = core.createCallParams(call)?.apply {
             enableVideo(true)
@@ -99,33 +177,34 @@ class LinphoneManager @Inject constructor(
             audioDirection = MediaDirection.RecvOnly
         }.timber()
 
-        audioManager.isSpeakerphoneOn = true
-        setAudioManagerInCallMode()
-
         call.acceptWithParams(params)
-
-        return call
     }
 
-    fun setCallModeToRinging() {
+    private fun setCallModeToRinging() {
         audioManager.mode = AudioManager.MODE_RINGTONE
         audioManager.isSpeakerphoneOn = true
     }
 
-    fun setCallModeToNormal() {
+    private fun setCallModeToInCall() {
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+    }
+
+    private fun setCallModeToNormal() {
         audioManager.mode = AudioManager.MODE_NORMAL
     }
 
 
     fun startEchoTester(): Int {
+        val maxVolume: Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
+        val sampleRate: Int = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE).toInt()
+
         routeAudioToSpeaker(true)
-        setAudioManagerInCallMode()
+        setCallModeToInCall()
         Log.i("[Manager] Set audio mode on 'Voice Communication'")
         requestAudioFocus(AudioManager.STREAM_VOICE_CALL)
-        val maxVolume: Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
+
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, maxVolume, 0)
-        val sampleRateProperty: String = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
-        val sampleRate: Int = sampleRateProperty.toInt()
+
         core.startEchoTester(sampleRate)
         mEchoTesterIsRunning = true
         return 1
@@ -135,7 +214,7 @@ class LinphoneManager @Inject constructor(
         mEchoTesterIsRunning = false
         core.stopEchoTester()
         routeAudioToSpeaker(false)
-        audioManager.mode = AudioManager.MODE_NORMAL
+        setCallModeToNormal()
         Log.i("[Manager] Set audio mode on 'Normal'")
         return 1 // status;
     }
@@ -154,14 +233,7 @@ class LinphoneManager @Inject constructor(
         audioManager.isSpeakerphoneOn = speakerOn
     }
 
-    private fun setAudioManagerInCallMode() {
-        if (audioManager.mode == AudioManager.MODE_IN_COMMUNICATION) {
-            Log.w("[Manager][AudioManager] already in MODE_IN_COMMUNICATION, skipping...")
-            return
-        }
-        Log.d("[Manager][AudioManager] Mode: MODE_IN_COMMUNICATION")
-        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-    }
+
 
     private fun requestAudioFocus(stream: Int) {
         if (!mAudioFocused) {
@@ -177,12 +249,14 @@ class LinphoneManager @Inject constructor(
     }
 
     fun startEcCalibration() {
-        routeAudioToSpeaker(true)
-        setAudioManagerInCallMode()
-        Log.i("[Manager] Set audio mode on 'Voice Communication'")
-        requestAudioFocus(AudioManager.STREAM_VOICE_CALL)
         val oldVolume: Int = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL)
         val maxVolume: Int = audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL)
+
+        routeAudioToSpeaker(true)
+        setCallModeToInCall()
+        Log.i("[Manager] Set audio mode on 'Voice Communication'")
+        requestAudioFocus(AudioManager.STREAM_VOICE_CALL)
+
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, maxVolume, 0)
         core.startEchoCancellerCalibration()
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, oldVolume, 0)

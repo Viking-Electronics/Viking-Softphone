@@ -15,8 +15,7 @@ interface NonSettablePreference<T> {
     fun collectAsFlowState(): State<T>
 }
 
-fun <T> Preference<T>.nonSettable(): NonSettablePreference<T> = object :
-    NonSettablePreference<T> {
+fun <T> Preference<T>.nonSettable(): NonSettablePreference<T> = object : NonSettablePreference<T> {
     override fun asFlow(): Flow<T> = this@nonSettable.asFlow()
     override fun get(): T = this@nonSettable.get()
     override fun isNotSet(): Boolean = this@nonSettable.isNotSet()

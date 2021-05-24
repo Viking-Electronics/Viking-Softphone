@@ -45,6 +45,7 @@ class DeviceListViewModel @Inject constructor(
 
     fun goLive(device: Device, navController: NavController) {
         permissionsManager.requestPermissionsForAudio {
+            linphoneManager.callDevice(device)
             navController.setParcelableAndNavigate(Screen.Secondary.Call, CallDirection.Outgoing(device))
         }
     }

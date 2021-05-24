@@ -11,14 +11,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.invert
 import com.vikingelectronics.softphone.extensions.timber
+import com.vikingelectronics.softphone.util.BasicCallState
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
@@ -28,22 +28,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.time.*
 
-sealed class BasicCallState {
-    object Waiting: BasicCallState()
-    object Incoming: BasicCallState()
-    object Outgoing: BasicCallState()
-    object Connected: BasicCallState()
-    object Failed: BasicCallState()
 
-    companion object {
-        fun fromCallDirection(direction: CallDirection): BasicCallState {
-            return when(direction) {
-                is CallDirection.Incoming -> Incoming
-                is CallDirection.Outgoing -> Outgoing
-            }
-        }
-    }
-}
 
 @HiltViewModel
 @OptIn(ExperimentalTime::class)
@@ -52,45 +37,35 @@ class CallViewModel @Inject constructor(
     private val linphoneManager: LinphoneManager
 ): ViewModel() {
 
-    private val timerJob: Job by lazy {
+    private val timerJob: Job =
         viewModelScope.launch(Main) {
             repeat(Int.MAX_VALUE) {
                 delay(1000)
                 callDuration.value = calculateCallDuration()
             }
         }
-    }
+
 
     private val callInitTime = Clock.System.now()
     private val callTimeNow
         get() = Clock.System.now()
 
-    val callState: MutableState<BasicCallState> = mutableStateOf(BasicCallState.Waiting)
+    val callState: Flow<BasicCallState> = linphoneManager.callState.onEach {
+        when(it) {
+            is BasicCallState.Ending -> timerJob.cancel("Call Ended")
+            else -> {}
+        }
+    }
     val callDuration: MutableState<String> = mutableStateOf("0:00")
     val isMuted = mutableStateOf(true)
     val isEnteringCode = mutableStateOf(false)
+    val callError = mutableStateOf(false)
+
     var relayCode: String by mutableStateOf("")
         private set
 
-    lateinit var onCallEnd: () -> Unit
-    private val callListener = object: CallListenerStub() {
-        override fun onStateChanged(call: Call, state: Call.State?, message: String) {
-            super.onStateChanged(call, state, message)
-            if (state == Call.State.Connected) callState.value = BasicCallState.Connected
-            if (state == Call.State.End) {
-                timerJob.cancel()
-                linphoneManager.setCallModeToNormal()
-                viewModelScope.launch(Main) { onCallEnd() }
-                call.removeListener(this)
-            }
-        }
-    }
-
-    fun callInitiated(direction: CallDirection, onCallEnd: () -> Unit) {
-        this.onCallEnd = onCallEnd
-        callState.value = BasicCallState.fromCallDirection(direction)
+    init {
         timerJob.start()
-        if (callState.value is BasicCallState.Outgoing) callDevice(direction.device)
     }
 
     fun textureViewInflated(textureView: TextureView) {
@@ -98,28 +73,12 @@ class CallViewModel @Inject constructor(
         core.nativeVideoWindowId = textureView
     }
 
-    private fun callDevice(device: Device) {
-        viewModelScope.launch(Main) {
-            linphoneManager.callDevice(device)?.apply {
-                addListener(callListener)
-            } ?: kotlin.run { callState.value = BasicCallState.Failed }
-        }
-    }
 
-    fun answerCall() {
-        viewModelScope.launch(Main) {
-            linphoneManager.answerCall(callListener)
-                ?: kotlin.run { callState.value = BasicCallState.Failed }
-        }
-    }
+    fun answerCall() = linphoneManager.answerCall()
 
-    fun declineCall() {
-        core.currentCall?.decline(Reason.Declined)
-    }
+    fun declineCall() = core.currentCall?.decline(Reason.Declined)
 
-    fun endCall() {
-        core.currentCall?.terminate() ?: core.terminateAllCalls()
-    }
+    fun endCall() = core.currentCall?.terminate() ?: core.terminateAllCalls()
 
     fun relayActivation() {
         isEnteringCode.value = true
@@ -150,6 +109,11 @@ class CallViewModel @Inject constructor(
         }
 
         core.currentCall?.update(params)
+    }
+
+    fun shouldRetryCall(retry: Boolean, device: Device) {
+        callError.value = false
+        if (retry) linphoneManager.callDevice(device)
     }
 
     private fun calculateCallDuration(): String = buildString {

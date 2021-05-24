@@ -3,6 +3,7 @@ package com.vikingelectronics.softphone.call
 import android.os.Parcelable
 import android.view.TextureView
 import androidx.activity.OnBackPressedCallback
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -29,35 +30,52 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.vikingelectronics.softphone.MainActivity
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.softphone.util.BasicCallState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
+import org.linphone.core.Call
 
 
 sealed class CallDirection(open val device: Device): Parcelable {
     @Parcelize class Incoming(override val device: Device): CallDirection(device)
     @Parcelize class Outgoing(override val device: Device): CallDirection(device)
+
+    companion object {
+        fun fromCall(call: Call, device: Device): CallDirection {
+            return when(call.dir) {
+                Call.Dir.Incoming -> Incoming(device)
+                Call.Dir.Outgoing -> Outgoing(device)
+            }
+        }
+    }
 }
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CallScreen(
     direction: CallDirection,
-    onCallEnd: () -> Unit
+    navBackStackEntry: NavBackStackEntry
 ) {
-    val viewModel: CallViewModel = hiltViewModel()
-    val callback = object: OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            viewModel.endCall()
-        }
-    }
+    val viewModel: CallViewModel = hiltViewModel(navBackStackEntry)
+
     (LocalContext.current as MainActivity).apply {
-        onBackPressedDispatcher.addCallback(LocalLifecycleOwner.current, callback)
+        onBackPressedDispatcher.addCallback(
+            LocalLifecycleOwner.current,
+            object: OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.endCall()
+                }
+            }
+        )
     }
 
-    val callState by viewModel.callState
+    val callState by viewModel.callState.collectAsState(initial = BasicCallState.Waiting)
     val isMuted by viewModel.isMuted
     val isEnteringCode by viewModel.isEnteringCode
+    val callError by viewModel.callError
 
     Box(
         modifier = Modifier
@@ -77,7 +95,6 @@ fun CallScreen(
         CallerIdDisplay(callState = viewModel.callState, viewModel.callDuration, direction.device)
 
         when(callState) {
-            is BasicCallState.Waiting -> viewModel.callInitiated(direction, onCallEnd)
             is BasicCallState.Incoming -> {
                 Row(
                     modifier = Modifier
@@ -88,7 +105,6 @@ fun CallScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = viewModel::answerCall) {
-
                         Text(text = "Answer")
                     }
                     Button(onClick = viewModel::declineCall) {
@@ -144,14 +160,16 @@ fun CallScreen(
                     }
                 }
             }
-            is BasicCallState.Failed -> CallFailedDialog {
-
-            }
-
             else -> {}
         }
+        
+        AnimatedVisibility(visible = callError) {
+            CallFailedDialog(direction.device) {
+                viewModel.shouldRetryCall(it, direction.device)
+            }
+        }
 
-        if (isEnteringCode) {
+        AnimatedVisibility(visible = isEnteringCode) {
             val focusRequester = FocusRequester()
             Box(
                 modifier = Modifier
@@ -180,23 +198,22 @@ fun CallScreen(
                 focusRequester.requestFocus()
                 onDispose{ }
             }
-
         }
     }
 }
 
 @Composable
 fun BoxScope.CallerIdDisplay(
-    callState: State<BasicCallState>,
+    callState: Flow<BasicCallState>,
     callDuration: State<String>,
     device: Device
 ) {
 
-    val state by callState
+    val state by callState.collectAsState(initial = BasicCallState.Waiting)
     val duration by callDuration
 
     when(state) {
-        is BasicCallState.Incoming, is BasicCallState.Outgoing -> {
+        BasicCallState.Incoming, BasicCallState.Outgoing -> {
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -218,7 +235,7 @@ fun BoxScope.CallerIdDisplay(
                 )
             }
         }
-        is BasicCallState.Connected -> {
+        BasicCallState.Connected -> {
             Column(
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -244,16 +261,27 @@ fun BoxScope.CallerIdDisplay(
 
 @Composable
 fun CallFailedDialog(
-    onDismiss: () -> Unit
+    device: Device,
+    shouldRetry: (Boolean) -> Unit,
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { },
         title = {
             Text(text = "Call Error")
         },
-        text = null,
-        buttons = {
+        text = {
+            Text(text = "There was an issue with connecting to ${device.name}. Retry?")
+        },
+        confirmButton = {
+            Button(onClick = { shouldRetry(true) }) {
+                Text(text = stringResource(R.string.retry))
+            }
 
+        },
+        dismissButton = {
+            Button(onClick = { shouldRetry(false) }) {
+                Text(text = stringResource(R.string.cancel))
+            }
         }
     )
 }

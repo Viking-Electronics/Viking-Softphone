@@ -3,12 +3,15 @@ package com.vikingelectronics.softphone
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -42,6 +45,7 @@ import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.schedules.SchedulesScreen
+import com.vikingelectronics.softphone.util.BasicCallState
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,30 +76,31 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
     @Inject override lateinit var scheduleManager: ScheduleManager
     override lateinit var navController: NavController
 
-    private val callListener = object: CoreListenerStub() {
-        override fun onCallStateChanged(
-            core: Core,
-            call: Call,
-            state: Call.State?,
-            message: String
-        ) {
-            super.onCallStateChanged(core, call, state, message)
-            when(state) {
-                Call.State.IncomingReceived -> {
-                    linphoneManager.setCallModeToRinging()
-                    userProvider.userComponentEntryPoint.deviceRepository()
-                        .getDeviceForIncomingCall(call)?.let {
-                        navController.setParcelableAndNavigate(
-                            Screen.Secondary.Call,
-                            CallDirection.Incoming(it)
-                        )
-                    }
-                }
-                else -> {}
-            }
-            state.timber(postfix = message)
-        }
-    }
+//    private val callListener = object: CoreListenerStub() {
+//        override fun onCallStateChanged(
+//            core: Core,
+//            call: Call,
+//            state: Call.State?,
+//            message: String
+//        ) {
+//            super.onCallStateChanged(core, call, state, message)
+//            when(state) {
+////                Call.State.OutgoingInit -> isOnCall = true
+//                Call.State.IncomingReceived -> {
+//                    linphoneManager.setCallModeToRinging()
+//                    userProvider.userComponentEntryPoint.deviceRepository()
+//                        .getDeviceForIncomingCall(call)?.let {
+//                        navController.setParcelableAndNavigate(
+//                            Screen.Secondary.Call,
+//                            CallDirection.Incoming(it)
+//                        )
+//                    }
+//                }
+//                else -> {}
+//            }
+//            state.timber(postfix = message)
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,22 +114,30 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
                         MainActivityComposable(
                             supportFragmentManager,
                             userProvider,
+                            linphoneManager
                         ) { navController ->
                             this@MainActivity.navController = navController
                         }
                     }
                 }
-                core.addListener(callListener)
+//                core.addListener(callListener)
             }
         }
+    }
+
+    override fun onDestroy() {
+        core.terminateAllCalls()
+        super.onDestroy()
     }
 }
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainActivityComposable(
     supportFragmentManager: FragmentManager,
     userProvider: UserProvider,
+    linphoneManager: LinphoneManager,
     emissionsActor: (NavController) -> Unit
 ) {
     var toolbarTitle by remember { mutableStateOf("") }
@@ -144,7 +157,8 @@ fun MainActivityComposable(
     )
 
     val isLoggedIn by userProvider.isLoggedIn.collectAsFlowState()
-    var isOnCall by remember { mutableStateOf(false) }
+    val callState by linphoneManager.callState.collectAsState()
+    val isOnCall by linphoneManager.isOnCall.collectAsState(false)
 
 
     val shouldShowStructuralUiElements by derivedStateOf {
@@ -161,47 +175,52 @@ fun MainActivityComposable(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val startDestination = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
+    fun startDestination(): String = if (isLoggedIn) Screen.Primary.DeviceList.route else Screen.Login.route
 
 
     Scaffold (
         scaffoldState = scaffoldState,
         topBar = {
-            if (shouldShowStructuralUiElements)
-             TopAppBar(
-                 title = { Text(text = toolbarTitle) },
-                 navigationIcon = {
-                     Button(onClick = {
-                         scope.launch {
-                             scaffoldState.drawerState.apply {
-                                 if (isOpen) close() else open()
-                             }
-                         }
-                     }) {
-                         Icon(
-                             imageVector = Icons.Default.Menu,
-                             contentDescription = "Drawer menu icon"
-                         )
-                     }
-                 },
-                 actions = if (shouldShowToolbarActions.value) toolbarActions else { {} }
-             )
+            AnimatedVisibility(visible = shouldShowStructuralUiElements) {
+                TopAppBar(
+                    title = { Text(text = toolbarTitle) },
+                    navigationIcon = {
+                        Button(onClick = {
+                            scope.launch {
+                                scaffoldState.drawerState.apply {
+                                    if (isOpen) close() else open()
+                                }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Drawer menu icon"
+                            )
+                        }
+                    },
+                    actions = if (shouldShowToolbarActions.value) toolbarActions else { {} }
+                )
+            }
         },
         bottomBar = {
-            if (shouldShowStructuralUiElements)
-            BottomNavigation {
-                bottomNavItems.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = screen.icon,
-                        label = { Text(text = stringResource(id = screen.displayResourceId)) },
-                        selected = screen.route == currentRoute,
-                        onClick = {
-                            navController.navigate(screen.route)  {
-//                                launchSingleTop = true
-//                                restoreState = true
+            AnimatedVisibility(visible = shouldShowStructuralUiElements) {
+                BottomNavigation {
+                    bottomNavItems.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = screen.icon,
+                            label = { Text(text = stringResource(id = screen.displayResourceId)) },
+                            selected = screen.route == currentRoute,
+                            onClick = {
+                                navController.navigate(screen.route)  {
+                                    popUpTo(startDestination()) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         },
@@ -235,7 +254,7 @@ fun MainActivityComposable(
     ){
         NavHost(
             navController = navController,
-            startDestination = startDestination,
+            startDestination = startDestination(),
             modifier = Modifier.padding(it)
         ) {
 
@@ -245,11 +264,7 @@ fun MainActivityComposable(
 
             composable(Screen.Secondary.Call.route) {
                 val callDirection: CallDirection = navController.getParcelableFromBackstack<CallDirection>(Screen.Secondary.Call).timber() ?: return@composable
-                CallScreen(callDirection) {
-                    navController.popBackStack()
-                    isOnCall = false
-                }
-                isOnCall = true
+                CallScreen(callDirection, it)
             }
 
             composable(Screen.Primary.DeviceList.route) {
@@ -340,6 +355,39 @@ fun MainActivityComposable(
             }
         }
     }
+
+    if (isOnCall) {
+        userProvider.userComponentEntryPoint.deviceRepository().getDeviceForIncomingCall()?.let {
+            val direction = CallDirection.fromCall(it.call, it.device)
+            navController.setParcelableAndNavigate(Screen.Secondary.Call, direction) {
+                launchSingleTop = true
+            }
+        }
+    } else navController.navigateUp()
+
+//    when(callState) {
+//        Call.State.IncomingReceived -> {
+//            userProvider.userComponentEntryPoint.deviceRepository()
+//                .getDeviceForIncomingCall()?.let {
+//                    navController.setParcelableAndNavigate(
+//                        Screen.Secondary.Call,
+//                        CallDirection.Incoming(it)
+//                    )
+//                }
+//        }
+//        Call.State.OutgoingInit -> {
+//            userProvider.userComponentEntryPoint.deviceRepository()
+//                .getDeviceForIncomingCall()?.let {
+//                    navController.setParcelableAndNavigate(
+//                        Screen.Secondary.Call,
+//                        CallDirection.Outgoing(it)
+//                    )
+//                }
+//        }
+//        Call.State.End -> {
+//            navController.popBackStack()
+//        }
+//    }
 
     emissionsActor(navController)
 }
