@@ -8,6 +8,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.vikingelectronics.softphone.accounts.SipAccount
 import com.vikingelectronics.softphone.accounts.User
+import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.devices.Device
@@ -34,6 +35,7 @@ class DeviceRepositoryImpl @Inject constructor(
    override val storage: FirebaseStorage,
    override val user: User,
    override val sipAccount: SipAccount,
+   val userProvider: UserProvider,
    val core: Core
 ): FirebaseRepository(), DeviceRepository {
 
@@ -61,7 +63,7 @@ class DeviceRepositoryImpl @Inject constructor(
             list.add(it.getLatestDeviceActivity())
         }
 
-        appendDeviceObjectsIfNecessary(index == null, list)
+        userProvider.rebindSipAccountWithDevicesIfNecessary(user, sipAccount, list)
 
         return PaginationHolder(list, null)
     }
@@ -88,10 +90,5 @@ class DeviceRepositoryImpl @Inject constructor(
         val call = core.currentCall ?: return null
         val device = sipAccount.deviceObjects.find { it.callAddress == call.remoteAddress.asString() } ?: return null
         return DeviceCall(device, call)
-    }
-
-    private fun appendDeviceObjectsIfNecessary(indexIsNull: Boolean, deviceList: List<Device>) {
-        if (!sipAccount.deviceObjectsAreInitialized()) sipAccount.deviceObjects = deviceList
-        if (indexIsNull) sipAccount.deviceObjects += deviceList
     }
 }

@@ -22,16 +22,10 @@ sealed class BasicCallState {
     object Connected: BasicCallState()
     object Ending: BasicCallState()
     object Failed: BasicCallState()
-    class Other(val state: Call.State): BasicCallState()
 
     companion object {
-        fun fromCallDirection(direction: CallDirection): BasicCallState {
-            return when(direction) {
-                is CallDirection.Incoming -> Incoming
-                is CallDirection.Outgoing -> Outgoing
-            }
-        }
-        fun fromCallState(state: Call.State): BasicCallState {
+
+        fun fromCallState(state: Call.State?): BasicCallState? {
             return when(state) {
                 Call.State.Idle -> Waiting
                 Call.State.IncomingReceived, Call.State.IncomingEarlyMedia -> Incoming
@@ -39,7 +33,7 @@ sealed class BasicCallState {
                 Call.State.Connected -> Connected
                 Call.State.Released, Call.State.End -> Ending
                 Call.State.Error -> Failed
-                else -> Other(state)
+                else -> null
             }
         }
     }
@@ -64,9 +58,7 @@ class LinphoneManager @Inject constructor(
             super.onCallStateChanged(core, call, state, message)
 
             GlobalScope.launch {
-                state?.let {
-                    callState.emit(BasicCallState.fromCallState(it))
-                }
+                BasicCallState.fromCallState(state)?.run { callState.emit(this) }
 
                 if (state == Call.State.IncomingReceived || state == Call.State.OutgoingInit)  {
                     setCallModeToRinging()
@@ -79,20 +71,6 @@ class LinphoneManager @Inject constructor(
                 }
             }
         }
-
-//        override fun onStateChanged(call: Call, state: Call.State?, message: String) {
-//            super.onStateChanged(call, state, message)
-
-//            if (state == Call.State.End) call.removeListener(this)
-//            callState.value = state
-//            if (state == Call.State.Connected) callState.value = BasicCallState.Connected
-//            if (state == Call.State.End) {
-//                timerJob.cancel()
-//                linphoneManager.setCallModeToNormal()
-//                viewModelScope.launch(Main) { onCallEnd() }
-//
-//            }
-//        }
     }
 
 

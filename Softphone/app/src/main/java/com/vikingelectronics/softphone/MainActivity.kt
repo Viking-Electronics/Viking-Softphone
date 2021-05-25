@@ -251,11 +251,11 @@ fun MainActivityComposable(
             }
         },
         drawerGesturesEnabled = shouldShowStructuralUiElements
-    ){
+    ){ paddingValues ->
         NavHost(
             navController = navController,
             startDestination = startDestination(),
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(paddingValues)
         ) {
 
             composable(Screen.Login.route) {
@@ -356,38 +356,16 @@ fun MainActivityComposable(
         }
     }
 
-    if (isOnCall) {
-        userProvider.userComponentEntryPoint.deviceRepository().getDeviceForIncomingCall()?.let {
+    when(callState) {
+        BasicCallState.Incoming, BasicCallState.Outgoing -> userProvider.userComponentEntryPoint.deviceRepository().getDeviceForIncomingCall()?.let {
             val direction = CallDirection.fromCall(it.call, it.device)
             navController.setParcelableAndNavigate(Screen.Secondary.Call, direction) {
                 launchSingleTop = true
             }
         }
-    } else navController.navigateUp()
-
-//    when(callState) {
-//        Call.State.IncomingReceived -> {
-//            userProvider.userComponentEntryPoint.deviceRepository()
-//                .getDeviceForIncomingCall()?.let {
-//                    navController.setParcelableAndNavigate(
-//                        Screen.Secondary.Call,
-//                        CallDirection.Incoming(it)
-//                    )
-//                }
-//        }
-//        Call.State.OutgoingInit -> {
-//            userProvider.userComponentEntryPoint.deviceRepository()
-//                .getDeviceForIncomingCall()?.let {
-//                    navController.setParcelableAndNavigate(
-//                        Screen.Secondary.Call,
-//                        CallDirection.Outgoing(it)
-//                    )
-//                }
-//        }
-//        Call.State.End -> {
-//            navController.popBackStack()
-//        }
-//    }
+        BasicCallState.Ending -> navController.navigateUp()
+        else -> {}
+    }
 
     emissionsActor(navController)
 }

@@ -58,5 +58,11 @@
     <string name="video_settings">Video Settings</string>
     <string name="audio_settings">Audio Settings</string>
     <string name="no_activity">No Activity</string>
+    <string name="answer">Answer</string>
+    <string name="decline">Decline</string>
+    <string name="cancel">Cancel</string>
+    <string name="unlock">Unlock</string>
+    <string name="hangUp">Hang up</string>
+    <string name="relayEntryTextfieldHint">Enter Relay Activation Code</string>
 
 </resources>

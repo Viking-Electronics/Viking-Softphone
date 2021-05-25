@@ -3,25 +3,17 @@ package com.vikingelectronics.softphone.accounts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.moshi.Moshi
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.tfcporciuncula.flow.NullableSerializer
 import com.vikingelectronics.softphone.dagger.UserComponent
 import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
+import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.nonSettable
 import com.vikingelectronics.softphone.extensions.timber
 import dagger.hilt.EntryPoints
-import dagger.hilt.android.scopes.ActivityScoped
-import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.linphone.core.*
-import org.w3c.dom.Document
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -99,5 +91,13 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
         userComponent = userComponentProvider.get().setUser(user).setSip(sipAccount).build()
 
         return true
+    }
+
+    fun rebindSipAccountWithDevicesIfNecessary(user: User, sipAccount: SipAccount, devices: List<Device>) {
+        if (sipAccount.deviceObjects.containsAll(devices)) return
+
+        val newSip = sipAccount.copy(deviceObjects = devices)
+
+        userComponent = userComponentProvider.get().setUser(user).setSip(newSip).build()
     }
 }

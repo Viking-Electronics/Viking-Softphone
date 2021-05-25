@@ -105,10 +105,10 @@ fun CallScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = viewModel::answerCall) {
-                        Text(text = "Answer")
+                        Text(text = stringResource(R.string.answer))
                     }
                     Button(onClick = viewModel::declineCall) {
-                        Text(text = "Decline")
+                        Text(text = stringResource(R.string.decline))
                     }
                 }
             }
@@ -121,7 +121,7 @@ fun CallScreen(
                         .fillMaxWidth()
                         .height(55.dp)
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
             }
             is BasicCallState.Connected -> {
@@ -138,14 +138,14 @@ fun CallScreen(
                             imageVector = Icons.Default.LockOpen,
                             contentDescription = "Unlock icon"
                         )
-                        Text(text = "Unlock")
+                        Text(text = stringResource(R.string.unlock))
                     }
                     Button(onClick = viewModel::endCall) {
                         Icon(
                             imageVector = Icons.Default.CallEnd,
                             contentDescription = "End Call icon"
                         )
-                        Text(text = "Hang up")
+                        Text(text = stringResource(R.string.hangUp))
                     }
                     Button(
                         onClick = viewModel::switchMute,
@@ -174,7 +174,7 @@ fun CallScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color(0xBBCCCCCC))
+                    .background(color = Color(0xBBCCCCCC)) //TODO: Convert to color res when we do theming
             ) {
                 TextField(
                     value = viewModel.relayCode,
@@ -183,7 +183,7 @@ fun CallScreen(
                         .align(Alignment.Center)
                         .focusRequester(focusRequester),
                     label = {
-                        Text(text = "Enter Relay Activation Code")
+                        Text(text = stringResource(R.string.relayEntryTextfieldHint))
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Phone,
