@@ -7,24 +7,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.invert
-import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.util.BasicCallState
 import com.vikingelectronics.softphone.util.LinphoneManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
-import kotlinx.datetime.until
 import org.linphone.core.*
-import java.util.*
 import javax.inject.Inject
 import kotlin.time.*
 
@@ -37,13 +30,16 @@ class CallViewModel @Inject constructor(
     private val linphoneManager: LinphoneManager
 ): ViewModel() {
 
-    private val timerJob: Job =
-        viewModelScope.launch(Main) {
+    private val newTimerJob: Job
+        get() = viewModelScope.launch(Main) {
             repeat(Int.MAX_VALUE) {
                 delay(1000)
                 callDuration.value = calculateCallDuration()
             }
         }
+
+    private var timerJob: Job? = null
+
 
 
     private val callInitTime = Clock.System.now()
@@ -52,7 +48,7 @@ class CallViewModel @Inject constructor(
 
     val callState: Flow<BasicCallState> = linphoneManager.callState.onEach {
         when(it) {
-            is BasicCallState.Ending -> timerJob.cancel("Call Ended")
+            is BasicCallState.Ending -> timerJob?.cancel("Call Ended")
             else -> {}
         }
     }
@@ -65,7 +61,8 @@ class CallViewModel @Inject constructor(
         private set
 
     init {
-        timerJob.start()
+        timerJob = newTimerJob
+        timerJob?.start()
     }
 
     fun textureViewInflated(textureView: TextureView) {
@@ -113,7 +110,16 @@ class CallViewModel @Inject constructor(
 
     fun shouldRetryCall(retry: Boolean, device: Device) {
         callError.value = false
-        if (retry) linphoneManager.callDevice(device)
+        if (retry) {
+            timerJob = newTimerJob
+            timerJob?.start()
+
+            linphoneManager.callDevice(device)
+        }
+    }
+
+    fun testFailure() {
+        callError.value = true
     }
 
     private fun calculateCallDuration(): String = buildString {
@@ -123,5 +129,4 @@ class CallViewModel @Inject constructor(
             append("$minutes:$modifiedSeconds")
         }
     }
-
 }

@@ -1,13 +1,10 @@
 package com.vikingelectronics.softphone.devices
 
-import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Photo
@@ -16,11 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentReference
 import com.vikingelectronics.softphone.R
@@ -46,7 +41,6 @@ data class Device(
 @Composable
 fun DeviceCard(
     device: Device,
-    navController: NavController,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: DeviceListViewModel = hiltViewModel()
@@ -90,7 +84,7 @@ fun DeviceCard(
             Text(text = device.latestActivityEntry?.description ?: "No activity entry available")
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { viewModel.goLive(device, navController) }
+                onClick = { viewModel.goLive(device) }
             ) {
                 Text("View live feed")
             }

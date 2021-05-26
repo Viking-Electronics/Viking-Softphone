@@ -17,8 +17,8 @@ class LoginRepository @Inject constructor(
      suspend fun attemptSipFetch(base: String): DocumentReference? {
          return try {
              val doc = sipCollectionRef.document(base)
-             val refData = doc.get().await().data
-             if (refData != null) doc else null
+             val exists = doc.get().await().exists()
+             if (exists) doc else null
          } catch (e: Exception) {
              null
          }

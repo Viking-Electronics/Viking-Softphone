@@ -8,15 +8,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.accounts.UserProvider
+import com.vikingelectronics.softphone.accounts.RepositoryProvider
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
-import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
-import dagger.hilt.EntryPoints
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -24,11 +22,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CapturesListViewModel @Inject constructor (
-    private val userProvider: UserProvider,
+    private val repositoryProvider: RepositoryProvider,
     private val permissionsManager: PermissionsManager,
 ): ViewModel() {
 
-    private val repository: CapturesRepository = userProvider.userComponentEntryPoint.capturesRepository()
+    private val repository: CapturesRepository
+        get() = repositoryProvider.capturesRepository
 
     private val localUris = mutableListOf<Uri>()
 

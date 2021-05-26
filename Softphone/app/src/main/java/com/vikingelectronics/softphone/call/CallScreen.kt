@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -157,6 +156,10 @@ fun CallScreen(
                             tint = tint,
                             contentDescription = "Mute icon"
                         )
+                    }
+
+                    Button(onClick = viewModel::testFailure) {
+                        Text(text = "Failure Test")
                     }
                 }
             }

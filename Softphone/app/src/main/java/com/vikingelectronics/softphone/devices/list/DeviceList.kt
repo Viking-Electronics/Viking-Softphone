@@ -31,7 +31,7 @@ fun DevicesList(
     val scope = rememberCoroutineScope()
 
     val lazyDevices = viewModel.devicesList.collectAsLazyPagingItems()
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(true) }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing),

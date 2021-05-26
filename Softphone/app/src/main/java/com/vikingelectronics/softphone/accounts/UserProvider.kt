@@ -11,12 +11,21 @@ import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.nonSettable
 import com.vikingelectronics.softphone.extensions.timber
+import com.vikingelectronics.softphone.networking.ActivityRepository
+import com.vikingelectronics.softphone.networking.CapturesRepository
+import com.vikingelectronics.softphone.networking.DeviceRepository
 import dagger.hilt.EntryPoints
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.linphone.core.*
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+
+interface RepositoryProvider {
+    val deviceRepository: DeviceRepository
+    val activityRepository: ActivityRepository
+    val capturesRepository: CapturesRepository
+}
 
 @Singleton
 class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,7 +35,7 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
     core: Core,
     private val userComponentProvider: Provider<UserComponent.Builder>,
     private val repository: LoginRepository
-) {
+): RepositoryProvider {
 
     private val registrationStateListener = object : CoreListenerStub() {
         override fun onAccountRegistrationStateChanged(
@@ -57,8 +66,15 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
         private set
 
     private var userComponent: UserComponent? = null
-    val userComponentEntryPoint: UserComponentEntryPoint
+    private val userComponentEntryPoint: UserComponentEntryPoint
         get() = EntryPoints.get(userComponent, UserComponentEntryPoint::class.java)
+
+    override val deviceRepository: DeviceRepository
+        get() = userComponentEntryPoint.deviceRepository()
+    override val activityRepository: ActivityRepository
+        get() = userComponentEntryPoint.activityRepository()
+    override val capturesRepository: CapturesRepository
+        get() = userComponentEntryPoint.capturesRepository()
 
 
     init {

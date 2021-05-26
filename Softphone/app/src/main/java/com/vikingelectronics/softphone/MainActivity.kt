@@ -76,32 +76,6 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
     @Inject override lateinit var scheduleManager: ScheduleManager
     override lateinit var navController: NavController
 
-//    private val callListener = object: CoreListenerStub() {
-//        override fun onCallStateChanged(
-//            core: Core,
-//            call: Call,
-//            state: Call.State?,
-//            message: String
-//        ) {
-//            super.onCallStateChanged(core, call, state, message)
-//            when(state) {
-////                Call.State.OutgoingInit -> isOnCall = true
-//                Call.State.IncomingReceived -> {
-//                    linphoneManager.setCallModeToRinging()
-//                    userProvider.userComponentEntryPoint.deviceRepository()
-//                        .getDeviceForIncomingCall(call)?.let {
-//                        navController.setParcelableAndNavigate(
-//                            Screen.Secondary.Call,
-//                            CallDirection.Incoming(it)
-//                        )
-//                    }
-//                }
-//                else -> {}
-//            }
-//            state.timber(postfix = message)
-//        }
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -120,7 +94,6 @@ class MainActivity: AppCompatActivity(), LegacyFragmentDependencyProvider {
                         }
                     }
                 }
-//                core.addListener(callListener)
             }
         }
     }
@@ -157,7 +130,7 @@ fun MainActivityComposable(
     )
 
     val isLoggedIn by userProvider.isLoggedIn.collectAsFlowState()
-    val callState by linphoneManager.callState.collectAsState()
+    val callState by linphoneManager.callState.collectAsState(BasicCallState.Waiting)
     val isOnCall by linphoneManager.isOnCall.collectAsState(false)
 
 
@@ -357,13 +330,13 @@ fun MainActivityComposable(
     }
 
     when(callState) {
-        BasicCallState.Incoming, BasicCallState.Outgoing -> userProvider.userComponentEntryPoint.deviceRepository().getDeviceForIncomingCall()?.let {
+        BasicCallState.Incoming, BasicCallState.Outgoing -> userProvider.deviceRepository.getDeviceForIncomingCall()?.let {
             val direction = CallDirection.fromCall(it.call, it.device)
             navController.setParcelableAndNavigate(Screen.Secondary.Call, direction) {
                 launchSingleTop = true
             }
-        }
-        BasicCallState.Ending -> navController.navigateUp()
+        } ?: TODO("Need an error state alert here")
+        is BasicCallState.Ending -> navController.navigateUp()
         else -> {}
     }
 

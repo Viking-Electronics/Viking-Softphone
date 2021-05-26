@@ -6,27 +6,21 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.vikingelectronics.softphone.accounts.UserProvider
+import com.vikingelectronics.softphone.accounts.RepositoryProvider
 import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
-import com.vikingelectronics.softphone.networking.ActivityRepository
-import com.vikingelectronics.softphone.networking.ActivityRepositoryImpl
-import dagger.hilt.EntryPoints
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class ActivityListViewModel @Inject constructor(
-    private val userProvider: UserProvider
+    private val repositoryProvider: RepositoryProvider
 ): ViewModel() {
-
-    private val repository: ActivityRepository = userProvider.userComponentEntryPoint.activityRepository()
 
     val activityEntries: Flow<PagingData<ActivityEntry>> = Pager(
         config = PagingConfig(10),
         initialKey = null,
-        pagingSourceFactory = { ActivityPagingSource(repository) }
+        pagingSourceFactory = { ActivityPagingSource(repositoryProvider.activityRepository) }
     ).flow.cachedIn(viewModelScope)
 
 

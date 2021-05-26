@@ -31,13 +31,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("30.0.3")
+    compileSdk = 30
+    buildToolsVersion = "30.0.3"
 
     defaultConfig {
         applicationId = "com.vikingelectronics.softphone"
-        minSdkVersion(24)
-        targetSdkVersion(30)
+        minSdk = 24
+        targetSdk = 30
         versionCode = 1
         versionName = "0.1"
 
@@ -133,7 +133,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha02")
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.media:media:1.3.1")
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha01")
+    implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
     implementation("androidx.paging:paging-runtime:3.0.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha09")
     implementation("androidx.security:security-crypto:1.1.0-alpha03")

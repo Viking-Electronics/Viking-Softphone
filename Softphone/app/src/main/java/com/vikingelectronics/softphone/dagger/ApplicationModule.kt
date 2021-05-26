@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
@@ -14,14 +13,15 @@ import com.pandulapeter.beagle.Beagle
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.tfcporciuncula.flow.FlowSharedPreferences
+import com.vikingelectronics.softphone.accounts.RepositoryProvider
+import com.vikingelectronics.softphone.accounts.UserProvider
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.*
 import org.linphone.core.*
-import java.util.*
 import javax.inject.Singleton
 
 @Module
@@ -97,4 +97,12 @@ object ApplicationModule {
         )
         return FlowSharedPreferences(preferences)
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface ApplicationBindings {
+    @Binds
+    @Singleton
+    fun bindRepositoryProvider(userProvider: UserProvider): RepositoryProvider
 }

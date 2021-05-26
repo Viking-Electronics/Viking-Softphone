@@ -6,15 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.accounts.UserProvider
+import com.vikingelectronics.softphone.accounts.RepositoryProvider
 import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.dagger.UserComponent
-import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.networking.DeviceRepository
 import com.vikingelectronics.softphone.networking.FirebaseRepository
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -22,10 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeviceDetailViewModel @Inject constructor(
-    private val userProvider: UserProvider
+    private val repositoryProvider: RepositoryProvider
 ): ViewModel() {
-
-    private val repository: DeviceRepository = userProvider.userComponentEntryPoint.deviceRepository()
 
     var activityList: List<ActivityEntry> by mutableStateOf(listOf())
         private set
@@ -37,7 +30,7 @@ class DeviceDetailViewModel @Inject constructor(
     fun getActivityFeedForDevice(device: Device) {
         viewModelScope.launch {
 
-            repository.getDeviceActivityList(device).collect {
+            repositoryProvider.deviceRepository.getDeviceActivityList(device).collect {
                 when(it) {
                     is FirebaseRepository.ListState.Success -> {
                         activityList += it.list
