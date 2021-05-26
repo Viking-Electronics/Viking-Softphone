@@ -75,7 +75,7 @@
     <string name="delete_text">Are you sure you want to delete your selection?</string>
 <!--    <string name="delete">Delete</string>-->
     <string name="retry">Retry</string>
-    <string name="cancel">Cancel</string>
+<!--    <string name="cancel">Cancel</string>-->
     <string name="accept">Accept</string>
     <string name="open">Open</string>
     <string name="continue_text">Continue</string>
@@ -88,7 +88,7 @@
     <string name="missed">Missed</string>
 <!--    <string name="settings">Settings</string>-->
     <string name="connect">Connection</string>
-    <string name="decline">Decline</string>
+<!--    <string name="decline">Decline</string>-->
     <string name="conference">Conference</string>
     <string name="link">Link</string>
     <string name="link_account_popup">Do you want to link the account %s with your phone number?</string>
