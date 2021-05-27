@@ -5,20 +5,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vikingelectronics.softphone.util.LinphoneManager
 import org.linphone.core.RegistrationState
 
 @Composable
 fun SipAccountDrawerHeader(
-    userProvider: UserProvider
+    userProvider: UserProvider,
+    linphoneManager: LinphoneManager,
 ) {
+    val registrationState by linphoneManager.sipRegistrationStatus.collectAsState()
+
     val creds = userProvider.storedSipCreds.get()
-    val color  = when(userProvider.sipRegistrationStatus) {
+    val color  = when(registrationState) {
         RegistrationState.Ok -> Color.Green
         RegistrationState.Progress -> Color.Yellow
         RegistrationState.Failed -> Color.Red

@@ -27,28 +27,14 @@ interface RepositoryProvider {
     val capturesRepository: CapturesRepository
 }
 
+@ExperimentalCoroutinesApi
 @Singleton
-class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
-@Inject constructor(
+class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
     preferences: FlowSharedPreferences,
     moshi: Moshi,
-    core: Core,
     private val userComponentProvider: Provider<UserComponent.Builder>,
     private val repository: LoginRepository
 ): RepositoryProvider {
-
-    private val registrationStateListener = object : CoreListenerStub() {
-        override fun onAccountRegistrationStateChanged(
-            core: Core,
-            account: Account,
-            state: RegistrationState?,
-            message: String
-        ) {
-            super.onAccountRegistrationStateChanged(core, account, state, message)
-            sipRegistrationStatus = state ?: RegistrationState.None
-            message.timber()
-        }
-    }
 
     private val credsAdapter = moshi.adapter(StoredSipCredsHolder::class.java)
     private val storedCredsSerializer = object: NullableSerializer<StoredSipCredsHolder> {
@@ -62,9 +48,6 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
     private val _storedSipCreds = preferences.getNullableObject("stored_sip_creds", storedCredsSerializer, null)
     val storedSipCreds = _storedSipCreds.nonSettable()
 
-    var sipRegistrationStatus by mutableStateOf(RegistrationState.None)
-        private set
-
     private var userComponent: UserComponent? = null
     private val userComponentEntryPoint: UserComponentEntryPoint
         get() = EntryPoints.get(userComponent, UserComponentEntryPoint::class.java)
@@ -75,11 +58,6 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
         get() = userComponentEntryPoint.activityRepository()
     override val capturesRepository: CapturesRepository
         get() = userComponentEntryPoint.capturesRepository()
-
-
-    init {
-        core.addListener(registrationStateListener)
-    }
 
 
     suspend fun checkStoredSipCreds() {
@@ -95,9 +73,8 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class)
             ?: repository.createUserAccount(holder.username)
         val user = repository.getAwaitObject<User>(userRef) ?: return false
 
-        val sipRef = repository.attemptSipFetch(holder.accountBase)
-            ?: repository.createSipAccount(userRef, holder.accountBase)
-        val sipAccount: SipAccount =  repository.getAwaitObject<SipAccount>(sipRef) ?: return false
+
+        val sipAccount: SipAccount = repository.fetchOrCreateSipAccount(userRef, holder.accountBase) ?: return false
 
         if (!user.sipAccountExists()) repository.associateSipAccount(user, userRef, sipRef)
 

@@ -14,25 +14,45 @@ class LoginRepository @Inject constructor(
     private val userCollectionRef = db.collection("users")
     private val sipCollectionRef = db.collection("sipAccounts")
 
-     suspend fun attemptSipFetch(base: String): DocumentReference? {
-         return try {
-             val doc = sipCollectionRef.document(base)
-             val exists = doc.get().await().exists()
-             if (exists) doc else null
-         } catch (e: Exception) {
-             null
-         }
+
+    suspend fun fetchOrCreateUserAccount(username: String, pushToken: String = ""): DocumentReference {
+
     }
 
-     suspend fun createSipAccount(userRef: DocumentReference, base: String): DocumentReference {
-        val sipData = mapOf(
-            "users" to listOf(userRef),
-        )
 
-         return sipCollectionRef.document(base).apply {
-             set(sipData).await()
-         }
+    suspend fun fetchOrCreateSipAccount(userRef: DocumentReference, base: String): SipAccount? {
+        val doc = sipCollectionRef.document(base)
+        val docExists = doc.get().await().exists()
+
+        if (!docExists) doc.apply {
+            val sipData = mapOf(
+                "users" to listOf(userRef),
+            )
+            set(sipData).await()
+        }
+
+        return getAwaitObject(doc)
     }
+
+//     suspend fun attemptSipFetch(base: String): DocumentReference? {
+//         return try {
+//             val doc = sipCollectionRef.document(base)
+//             val exists = doc.get().await().exists()
+//             if (exists) doc else null
+//         } catch (e: Exception) {
+//             null
+//         }
+//    }
+//
+//     suspend fun createSipAccount(userRef: DocumentReference, base: String): DocumentReference {
+//        val sipData = mapOf(
+//            "users" to listOf(userRef),
+//        )
+//
+//         return sipCollectionRef.document(base).apply {
+//             set(sipData).await()
+//         }
+//    }
 
      suspend fun attemptUserFetch(username: String): DocumentReference? {
         return try {
@@ -47,10 +67,10 @@ class LoginRepository @Inject constructor(
         }
     }
 
-     suspend fun createUserAccount(username: String): DocumentReference {
+     suspend fun createUserAccount(username: String, pushToken: String = ""): DocumentReference {
         val userData = mapOf(
             "username" to username,
-            "pushToken" to ""
+            "pushToken" to pushToken
         )
 
         return userCollectionRef.add(userData).await()

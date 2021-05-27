@@ -48,11 +48,10 @@ fun DevicesList(
             contentPadding = PaddingValues(16.dp)
         ) {
             items(lazyDevices) { device ->
-                device ?: return@items
+                device ?: return@items //TODO: empty state
 
                 DeviceCard(
                     device = device,
-                    navController= navController,
                     modifier = Modifier.clickable {
                         navController.setParcelableAndNavigate(Screen.Secondary.DeviceDetail, device)
                     }

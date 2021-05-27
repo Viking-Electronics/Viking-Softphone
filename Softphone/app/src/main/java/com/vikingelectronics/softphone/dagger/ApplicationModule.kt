@@ -34,7 +34,7 @@ object ApplicationModule {
         this.loggingService.addListener { loggingService, tag, logLevel, message ->
             Beagle.log(message, tag)
         }
-        setDebugMode(true, "LinphoneDebug")
+        setDebugMode(false, "LinphoneDebug")
     }
 
     @Singleton

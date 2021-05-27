@@ -198,7 +198,7 @@ fun MainActivityComposable(
             }
         },
         drawerContent = {
-            SipAccountDrawerHeader(userProvider)
+            SipAccountDrawerHeader(userProvider, linphoneManager)
 
             drawerNavItems.forEach { screen ->
                 Divider()

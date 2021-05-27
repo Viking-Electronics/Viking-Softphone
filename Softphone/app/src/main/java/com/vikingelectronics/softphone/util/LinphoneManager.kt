@@ -2,6 +2,9 @@ package com.vikingelectronics.softphone.util
 
 import android.content.Context
 import android.media.AudioManager
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.vikingelectronics.softphone.call.CallDirection
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.*
@@ -45,9 +48,10 @@ class LinphoneManager @Inject constructor(
     val factory: Factory,
     val core: Core
 ) {
-
+    val sipRegistrationStatus = MutableStateFlow(RegistrationState.None)
     val callState = MutableStateFlow<BasicCallState>(BasicCallState.Waiting)
     val isOnCall = MutableStateFlow(false)
+
     private val coreCallListener = object: CoreListenerStub() {
         override fun onCallStateChanged(
             core: Core,
@@ -71,6 +75,19 @@ class LinphoneManager @Inject constructor(
                 }
             }
         }
+
+        override fun onAccountRegistrationStateChanged(
+            core: Core,
+            account: Account,
+            state: RegistrationState?,
+            message: String
+        ) {
+            super.onAccountRegistrationStateChanged(core, account, state, message)
+            GlobalScope.launch {
+                sipRegistrationStatus.emit(state ?: RegistrationState.None)
+            }
+            message.timber()
+        }
     }
 
 
@@ -81,6 +98,10 @@ class LinphoneManager @Inject constructor(
 
     init {
         core.addListener(coreCallListener)
+        if (core.currentCall != null) {
+            callState.value = BasicCallState.Incoming
+            isOnCall.value = true
+        }
     }
 
     fun login(
