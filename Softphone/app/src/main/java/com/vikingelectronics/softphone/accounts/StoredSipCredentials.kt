@@ -1,7 +1,7 @@
 package com.vikingelectronics.softphone.accounts
 
 
-data class StoredSipCredsHolder(
+data class StoredSipCredentials(
     val accountBase: String,
     val domain: String,
     val username: String,

@@ -7,7 +7,7 @@ import com.squareup.moshi.Moshi
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.QrReadResult
-import com.vikingelectronics.softphone.accounts.StoredSipCredsHolder
+import com.vikingelectronics.softphone.accounts.StoredSipCredentials
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
@@ -134,7 +134,7 @@ class LoginViewModel @Inject constructor(
             val account = linphoneManager.login(username, password, domain, transport, userId, displayName)
 
             loginSuccessful = if (account != null) {
-                userProvider.userAuthenticatedSuccessfully(StoredSipCredsHolder(usernameBase, domain, username, password))
+                userProvider.userAuthenticatedSuccessfully(StoredSipCredentials(usernameBase, domain, username, password))
             } else false
 
             toastId = if (loginSuccessful)  R.string.sip_registration_success else R.string.sip_registration_failure
