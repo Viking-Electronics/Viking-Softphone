@@ -10,23 +10,30 @@ data class Schedule(
     val allDay: Boolean = false,
     val enabled: Boolean = true
 ) {
-    private val dayNumberMap = mapOf(
-        1 to "Su",
-        2 to "M",
-        3 to "T",
-        4 to "W",
-        5 to "Th",
-        6 to "F",
-        7 to "Sa"
+
+    private data class NumberToDayString(val key: Int, val abbreviation: String, val fullDayString: String)
+    private val dayNumberMap = listOf(
+        NumberToDayString(1, "Su", "Sundays"),
+        NumberToDayString(2, "M", "Mondays"),
+        NumberToDayString(3, "Tu", "Tuesdays"),
+        NumberToDayString(4, "W", "Wednesdays"),
+        NumberToDayString(5, "Th", "Thursdays"),
+        NumberToDayString(6, "F", "Fridays"),
+        NumberToDayString(7, "Sa", "Saturdays")
     )
 
     fun activeDaysToString(): String = buildString {
-        when(activeDays.sorted()) {
-            EVERYDAY -> append("Everyday")
-            WEEKENDS -> append("Weekends")
-            WEEKDAYS -> append("Weekdays")
-            else -> activeDays.sorted().forEach {
-                append(dayNumberMap[it])
+        val sorted = activeDays.sorted()
+        when {
+            sorted == EVERYDAY -> append("Everyday")
+            sorted == WEEKENDS -> append("Weekends")
+            sorted == WEEKDAYS -> append("Weekdays")
+            activeDays.size < 3 -> sorted.forEach {
+                append(dayNumberMap[it - 1].fullDayString)
+                if (activeDays.last() != it) append(" and ")
+            }
+            else -> sorted.forEach {
+                append(dayNumberMap[it - 1].abbreviation)
                 if (activeDays.last() != it) append(" - ")
             }
         }
