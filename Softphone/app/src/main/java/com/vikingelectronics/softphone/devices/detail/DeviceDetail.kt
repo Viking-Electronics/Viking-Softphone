@@ -24,6 +24,8 @@ import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
 import com.vikingelectronics.softphone.devices.Device
 import com.google.accompanist.coil.rememberCoilPainter
+import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
+import com.vikingelectronics.softphone.navigation.Screen
 
 @Composable
 fun DeviceDetail(
@@ -99,8 +101,9 @@ fun DeviceDetail(
         items(viewModel.activityList) { entry ->
             ActivityEntryCard(
                 entry = entry,
-                navController
-            )
+            ) {
+                navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, entry)
+            }
         }
     }
 }

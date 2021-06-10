@@ -3,21 +3,18 @@ package com.vikingelectronics.softphone.activity
 import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentReference
-import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
-import com.vikingelectronics.softphone.navigation.Screen
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -33,23 +30,17 @@ data class ActivityEntry(
     var sourceDevice: DocumentReference? = null
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ActivityEntryCard (
     entry: ActivityEntry,
-    navController: NavController,
     selectedState: MutableState<Boolean> = mutableStateOf(false),
-    onLongClick: (() -> Unit)? = null
+    onClick: () -> Unit
 ) {
 
     Card(
+        onClick = onClick,
         elevation = 4.dp,
-        modifier = Modifier.combinedClickable(
-            onLongClick = onLongClick,
-            onClick = {
-                navController.setParcelableAndNavigate(Screen.Secondary.ActivityDetail, entry)
-            }
-        ),
         backgroundColor = if (selectedState.value) Color.Blue else Color.White,
     ) {
         Row (

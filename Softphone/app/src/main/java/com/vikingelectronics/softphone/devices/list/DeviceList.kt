@@ -1,12 +1,10 @@
 package com.vikingelectronics.softphone.devices.list
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.items
@@ -15,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.vikingelectronics.softphone.devices.DeviceCard
 import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
@@ -36,12 +33,7 @@ fun DevicesList(
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing),
         onRefresh = lazyDevices::refresh,
-        modifier = Modifier.fillMaxSize(),
-        swipeEnabled = true,
-        refreshTriggerDistance = 80.dp,
-        indicatorAlignment = Alignment.TopCenter,
-        indicatorPadding = PaddingValues(0.dp),
-        indicator = { s, trigger -> SwipeRefreshIndicator(s, trigger) }
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -50,12 +42,9 @@ fun DevicesList(
             items(lazyDevices) { device ->
                 device ?: return@items //TODO: empty state
 
-                DeviceCard(
-                    device = device,
-                    modifier = Modifier.clickable {
-                        navController.setParcelableAndNavigate(Screen.Secondary.DeviceDetail, device)
-                    }
-                )
+                DeviceCard(device = device) {
+                    navController.setParcelableAndNavigate(Screen.Secondary.DeviceDetail, device)
+                }
             }
         }
 

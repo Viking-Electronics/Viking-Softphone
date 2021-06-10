@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Photo
@@ -38,13 +39,16 @@ data class Device(
     val activityEntryRefs: List<DocumentReference> = listOf()
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DeviceCard(
     device: Device,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val viewModel: DeviceListViewModel = hiltViewModel()
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         backgroundColor = colorResource(id = R.color.light_grey_color),
         elevation = 4.dp
