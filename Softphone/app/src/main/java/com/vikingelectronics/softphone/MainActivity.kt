@@ -44,7 +44,7 @@ import com.vikingelectronics.softphone.legacy.*
 import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
-import com.vikingelectronics.softphone.schedules.SchedulesScreen
+import com.vikingelectronics.softphone.schedules.ui.SchedulesScreen
 import com.vikingelectronics.softphone.util.BasicCallState
 import com.vikingelectronics.softphone.util.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
@@ -158,13 +158,15 @@ fun MainActivityComposable(
                 TopAppBar(
                     title = { Text(text = toolbarTitle) },
                     navigationIcon = {
-                        Button(onClick = {
-                            scope.launch {
-                                scaffoldState.drawerState.apply {
-                                    if (isOpen) close() else open()
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    scaffoldState.drawerState.apply {
+                                        if (isOpen) close() else open()
+                                    }
                                 }
                             }
-                        }) {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Drawer menu icon"
@@ -185,9 +187,6 @@ fun MainActivityComposable(
                             selected = screen.route == currentRoute,
                             onClick = {
                                 navController.navigate(screen.route)  {
-                                    popUpTo(startDestination()) {
-                                        saveState = true
-                                    }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -247,7 +246,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.ActivityList.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.ActivityList.displayResourceId)
-                toolbarActions = ActivityList(navController = navController, shouldShowToolbarActions, scaffoldState.snackbarHostState)
+                toolbarActions = ActivityList(navController = navController, shouldShowToolbarActions)
             }
 
             composable(Screen.Primary.CaptureList.route) {
@@ -257,7 +256,7 @@ fun MainActivityComposable(
 
             composable(Screen.Primary.Schedules.route) {
                 toolbarTitle = stringResource(id = Screen.Primary.Schedules.displayResourceId)
-                toolbarActions = SchedulesScreen(supportFragmentManager)
+                toolbarActions = SchedulesScreen(it)
                 shouldShowToolbarActions.value = true
             }
 
