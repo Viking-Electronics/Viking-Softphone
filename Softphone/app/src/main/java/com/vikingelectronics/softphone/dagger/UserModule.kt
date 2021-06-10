@@ -3,6 +3,8 @@ package com.vikingelectronics.softphone.dagger
 import com.vikingelectronics.softphone.accounts.SipAccount
 import com.vikingelectronics.softphone.accounts.User
 import com.vikingelectronics.softphone.networking.*
+import com.vikingelectronics.softphone.schedules.SchedulesRepository
+import com.vikingelectronics.softphone.schedules.SchedulesRepositoryImpl
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
@@ -23,8 +25,8 @@ interface UserComponent {
 
     @DefineComponent.Builder
     interface Builder {
-        fun setUser(@BindsInstance user: User): UserComponent.Builder
-        fun setSip(@BindsInstance sipAccount: SipAccount): UserComponent.Builder
+        fun setUser(@BindsInstance user: User): Builder
+        fun setSip(@BindsInstance sipAccount: SipAccount): Builder
         fun build(): UserComponent
     }
 
@@ -32,13 +34,16 @@ interface UserComponent {
     @InstallIn(UserComponent::class)
     interface UserBindings {
         @Binds
-        abstract fun bindActivityRepo(repo: ActivityRepositoryImpl): ActivityRepository
+        fun bindActivityRepo(repo: ActivityRepositoryImpl): ActivityRepository
 
         @Binds
-        abstract fun bindDeviceRepo(repo: DeviceRepositoryImpl): DeviceRepository
+        fun bindDeviceRepo(repo: DeviceRepositoryImpl): DeviceRepository
 
         @Binds
-        abstract fun bindRecordsRepo(repo: CapturesRepositoryImpl): CapturesRepository
+        fun bindRecordsRepo(repo: CapturesRepositoryImpl): CapturesRepository
+
+        @Binds
+        fun bindSchedulesRepo(repo: SchedulesRepositoryImpl): SchedulesRepository
     }
 }
 
@@ -48,4 +53,5 @@ interface UserComponentEntryPoint {
     fun activityRepository(): ActivityRepository
     fun capturesRepository(): CapturesRepository
     fun deviceRepository(): DeviceRepository
+    fun schedulesRepository(): SchedulesRepository
 }

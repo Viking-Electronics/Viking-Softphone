@@ -10,6 +10,7 @@ import com.vikingelectronics.softphone.extensions.nonSettable
 import com.vikingelectronics.softphone.networking.ActivityRepository
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.networking.DeviceRepository
+import com.vikingelectronics.softphone.schedules.SchedulesRepository
 import dagger.hilt.EntryPoints
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -20,9 +21,10 @@ interface RepositoryProvider {
     val deviceRepository: DeviceRepository
     val activityRepository: ActivityRepository
     val capturesRepository: CapturesRepository
+    val schedulesRepository: SchedulesRepository
 }
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
     preferences: FlowSharedPreferences,
@@ -53,6 +55,8 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
         get() = userComponentEntryPoint.activityRepository()
     override val capturesRepository: CapturesRepository
         get() = userComponentEntryPoint.capturesRepository()
+    override val schedulesRepository: SchedulesRepository
+        get() = userComponentEntryPoint.schedulesRepository()
 
 
     suspend fun checkStoredSipCreds() {

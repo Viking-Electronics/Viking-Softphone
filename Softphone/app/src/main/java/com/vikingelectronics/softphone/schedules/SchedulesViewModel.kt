@@ -1,37 +1,79 @@
 package com.vikingelectronics.softphone.schedules
 
-import android.view.View
 import androidx.lifecycle.ViewModel
-import com.dpro.widgets.OnWeekdaysChangeListener
-import com.vikingelectronics.softphone.extensions.timber
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.vikingelectronics.softphone.accounts.RepositoryProvider
+import com.vikingelectronics.softphone.schedules.data.Schedule
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @HiltViewModel
 class SchedulesViewModel @Inject constructor(
+    repositoryProvider: RepositoryProvider
+): ViewModel() {
 
-): ViewModel(), OnWeekdaysChangeListener {
+    private val repository = repositoryProvider.schedulesRepository
 
     val isGloballySnoozed = MutableStateFlow(false)
-    val isInMultiselect = MutableStateFlow(false)
 
-    //    override fun onDaysSelectionChange(dayPickerView: DayPickerView?, selectedDays: BooleanArray?) {
-////        selectedDays.
-//    }
-    override fun onChange(view: View?, clickedDayOfWeek: Int, selectedDays: MutableList<Int>?) {
-        selectedDays.toString().timber()
+    val schedules: Flow<PagingData<Schedule>> = Pager(
+        config = PagingConfig(10),
+        initialKey = null,
+        pagingSourceFactory = { SchedulesPagingSource(repository) }
+    ).flow.cachedIn(viewModelScope)
+
+
+    fun saveSchedule(
+        schedule: Schedule,
+        onSuccess: (Unit) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.addNew(schedule).onSuccess(onSuccess).onFailure(onError)
+        }
+    }
+
+    fun updateSchedule(
+        updatedSchedule: Schedule,
+        onSuccess: (Unit) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.updateSchedule(updatedSchedule).onSuccess(onSuccess).onFailure(onError)
+        }
+    }
+
+    fun deleteSchedules(
+        schedules: List<Schedule>,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        viewModelScope.launch {
+            val errors = mutableListOf<Throwable>()
+            repository.delete(schedules).onEach {
+                it.exceptionOrNull()?.let { error -> errors.add(error) }
+            }.onCompletion {
+               if (errors.isEmpty()) onSuccess() else onError(errors[0])
+            }.collect()
+        }
     }
 
     fun globalSnoozeClicked(isChecked: Boolean) {
-        isGloballySnoozed.value = isChecked
+        isGloballySnoozed.tryEmit(isChecked)
     }
 
-    fun addSchedule() {
+    fun scheduleEnabledChanged(schedule: Schedule, shouldBeEnabled: Boolean) {
+        val updatedSchedule = schedule.copy(enabled = shouldBeEnabled)
 
-    }
-
-    fun deleteSelectedSchedules() {
-
+        viewModelScope.launch {
+            repository.updateSchedule(updatedSchedule)
+        }
     }
 }
