@@ -49,5 +49,7 @@ data class Schedule(
         val EVERYDAY = listOf(1, 2, 3, 4, 5, 6, 7)
         val WEEKENDS = listOf(1, 7)
         val WEEKDAYS = listOf(2, 3, 4, 5, 6)
+
+        val DEFAULT = Schedule()
     }
 }

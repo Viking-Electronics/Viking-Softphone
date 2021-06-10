@@ -33,26 +33,17 @@ sealed class ScheduleBuilderStep {
 
 @Composable
 fun MaterialDialog.ScheduleBuilderDialog(
-    scheduleForEdit: Schedule = Schedule(),
+    scheduleForEdit: Schedule = Schedule.DEFAULT,
     scheduleProduced: (Schedule) -> Unit
 ) {
+    val titleText =if (scheduleForEdit == Schedule.DEFAULT) "New Schedule" else "Edit Schedule"
     val schedule by remember { mutableStateOf(scheduleForEdit) }
 
-    var step by remember {
-        mutableStateOf<ScheduleBuilderStep>(ScheduleBuilderStep.DayPicker)
-    }
-    var selectedDays by remember {
-         mutableStateOf(schedule.activeDays )
-    }
-    var startTime by remember {
-        mutableStateOf(schedule.timeframe.startLocalTime())
-    }
-    var endTime by remember {
-        mutableStateOf(schedule.timeframe.endLocalTime())
-    }
-    var allDay by remember {
-        mutableStateOf(schedule.allDay)
-    }
+    var step by remember { mutableStateOf<ScheduleBuilderStep>(ScheduleBuilderStep.DayPicker) }
+    var selectedDays by remember { mutableStateOf(schedule.activeDays) }
+    var startTime by remember { mutableStateOf(schedule.timeframe.startLocalTime()) }
+    var endTime by remember { mutableStateOf(schedule.timeframe.endLocalTime()) }
+    var allDay by remember { mutableStateOf(schedule.allDay) }
 
     val dayListener = OnWeekdaysChangeListener { _, _, days ->
         selectedDays = days
@@ -68,8 +59,10 @@ fun MaterialDialog.ScheduleBuilderDialog(
         scheduleProduced(producedSchedule)
     }
 
+    if(selectedDays.isEmpty()) disablePositiveButton() else enablePositiveButton()
 
-    title("New Schedule")
+
+    title(titleText)
 
     when(step) {
         ScheduleBuilderStep.DayPicker -> {
