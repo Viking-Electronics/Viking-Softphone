@@ -44,14 +44,14 @@ class LocalCaptureDataSource @Inject constructor(
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     } else MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    private val imageQueryProjection = arrayOf(
+    private val imageQueryProjection: List<String> = mutableListOf(
         ImageMedia._ID,
         ImageMedia.DISPLAY_NAME,
         ImageMedia.MIME_TYPE,
         ImageMedia.SIZE,
         ImageMedia.DISPLAY_NAME
     ).apply {
-        if (Build.VERSION.SDK_INT >= 30) set(size + 1, ImageMedia.IS_FAVORITE)
+        if (Build.VERSION.SDK_INT >= 30) add(ImageMedia.IS_FAVORITE)
     }
     private val imageQuerySortOrder = "${ImageMedia.DATE_ADDED} DESC"
 
@@ -117,7 +117,7 @@ class LocalCaptureDataSource @Inject constructor(
     suspend fun fetchLocalCaptureTemplates(): Flow<LocalStorageCaptureTemplate> = callbackFlow {
         resolver.query(
             imagesCollection,
-            imageQueryProjection,
+            imageQueryProjection.toTypedArray(),
             null,
             null,
             imageQuerySortOrder)?.use { cursor ->
