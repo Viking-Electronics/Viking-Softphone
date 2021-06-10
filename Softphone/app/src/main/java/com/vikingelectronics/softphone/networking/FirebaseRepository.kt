@@ -3,7 +3,6 @@ package com.vikingelectronics.softphone.networking
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
@@ -13,6 +12,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+
+const val DEFAULT_FIREBASE_ID = "DeFaUlTiD"
 abstract class FirebaseRepository {
 
     data class PaginationHolder<T> (val entries: List<T>, val index: DocumentSnapshot?)
@@ -29,8 +30,11 @@ abstract class FirebaseRepository {
     internal abstract val user: User
     internal abstract val sipAccount: SipAccount
 
+    private val sipAccountRef by lazy { db.collection("sipAccounts").document(sipAccount.id) }
+
     internal val devicesCollectionRef by lazy { db.collection("devices") }
     internal val activityCollectionRef by lazy { db.collection("activity") }
+    internal val schedulesCollectionRef by lazy { sipAccountRef.collection("schedules") }
 
     val storageRef: StorageReference by lazy { storage.reference.child(sipAccount.id) }
 
@@ -50,7 +54,6 @@ abstract class FirebaseRepository {
     }
 
     inline fun <reified T> List<DocumentSnapshot>.iterateToObjectList(): List<T> {
-        map {  }
         val innerList = mutableListOf<T>()
         this.iterateToObject<T> {
             innerList.add(it)
@@ -64,13 +67,13 @@ abstract class FirebaseRepository {
 
     fun Task<StorageMetadata>.emitResult() = callbackFlow<Result<Boolean>> {
         addOnSuccessListener {
-            offer(Result.success(true))
+            trySend(Result.success(true))
         }
         addOnFailureListener {
-            offer(Result.failure(it.fillInStackTrace()))
+            trySend(Result.failure(it.fillInStackTrace()))
         }
         addOnCanceledListener {
-            offer(Result.success(false))
+            trySend(Result.success(false))
         }
         awaitClose()
     }

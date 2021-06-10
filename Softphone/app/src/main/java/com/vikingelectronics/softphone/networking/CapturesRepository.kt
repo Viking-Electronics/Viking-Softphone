@@ -77,9 +77,9 @@ class CapturesRepositoryImpl @Inject constructor(
 
     override suspend fun deleteCapture(capture: Capture): Flow<Result<Boolean>> = callbackFlow {
         capture.storageReference.delete().addOnSuccessListener {
-            offer(Result.success(true))
+            trySend(Result.success(true))
         }.addOnFailureListener {
-            offer(Result.failure<Boolean>(it))
+            trySend(Result.failure<Boolean>(it))
         }.addOnCompleteListener {
             close()
         }
