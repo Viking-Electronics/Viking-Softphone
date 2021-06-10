@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         applicationId = "com.vikingelectronics.softphone"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 30
         versionCode = 1
         versionName = "0.1"
@@ -74,14 +74,13 @@ android {
 
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0-beta07"
+        kotlinCompilerExtensionVersion = "1.0.0-beta08"
     }
 
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs += listOf(
-            "-Xopt-in=kotlin.RequiresOptIn"
-        )
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+
     }
     kapt {
         correctErrorTypes = true
@@ -117,16 +116,16 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation("androidx.core:core-ktx:1.5.0")
 
-    implementation("androidx.activity:activity-compose:1.3.0-alpha08")
-    implementation("androidx.compose.ui:ui:1.0.0-beta07")
-    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta07")
-    implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta07")
-    implementation("androidx.compose.foundation:foundation:1.0.0-beta07")
-    implementation("androidx.compose.material:material:1.0.0-beta07")
+    implementation("androidx.activity:activity-compose:1.3.0-beta01")
+    implementation("androidx.compose.ui:ui:1.0.0-beta08")
+    implementation("androidx.compose.ui:ui-tooling:1.0.0-beta08")
+    implementation("androidx.compose.ui:ui-viewbinding:1.0.0-beta08")
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta08")
+    implementation("androidx.compose.material:material:1.0.0-beta08")
     //This aar is large, if compile and install times get too long we can pull the icons we need
-    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta07")
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta07")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha05")
+    implementation("androidx.compose.material:material-icons-extended:1.0.0-beta08")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta08")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06")
 
     implementation("androidx.datastore:datastore-core:1.0.0-beta01")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
@@ -135,11 +134,12 @@ dependencies {
     implementation("androidx.media:media:1.3.1")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
     implementation("androidx.paging:paging-runtime:3.0.0")
-    implementation("androidx.paging:paging-compose:1.0.0-alpha09")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha10")
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
 
-    implementation("com.google.accompanist:accompanist-coil:0.10.0")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.10.0")
+    //If the app ever starts crashing for no apparent reason try updating these two libraries before you pull your hair out
+    implementation("com.google.accompanist:accompanist-coil:0.11.1")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.11.1")
     implementation("com.google.android.material:material:1.3.0")
 
     implementation("com.google.crypto.tink:tink-android") {
@@ -163,13 +163,13 @@ dependencies {
     implementation("com.karumi:dexter:6.2.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.4.1")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.4.2")
 
     implementation("joda-time:joda-time:2.10")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.1")
 
@@ -183,9 +183,8 @@ dependencies {
 //    testImplementation 'com.google.dagger:hilt-android-testing:<VERSION>'
 //    testAnnotationProcessor 'com.google.dagger:hilt-android-compiler:<VERSION>'
 
-    implementation("com.google.dagger:hilt-android:2.35.1")
-//    kapt("androidx.hilt:hilt-compiler:1.0.0-beta01")
-    kapt("com.google.dagger:hilt-compiler:2.35.1")
+    implementation("com.google.dagger:hilt-android:2.36")
+    kapt("com.google.dagger:hilt-compiler:2.36")
 
 
     testImplementation("junit:junit:4.+")
