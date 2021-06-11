@@ -74,7 +74,7 @@ fun SchedulesScreen(
 
     val toolbarActions: @Composable RowScope.() -> Unit = {
         Row(
-            Modifier.padding(end = 8.dp)
+            Modifier.padding(end = 16.dp)
         ) {
             Text(
                 text = "Snooze",

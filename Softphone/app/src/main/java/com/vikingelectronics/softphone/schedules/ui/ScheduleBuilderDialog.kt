@@ -57,6 +57,7 @@ fun MaterialDialog.ScheduleBuilderDialog(
         )
 
         scheduleProduced(producedSchedule)
+        hide()
     }
 
     if(selectedDays.isEmpty()) disablePositiveButton() else enablePositiveButton()
@@ -124,7 +125,6 @@ fun MaterialDialog.ScheduleBuilderDialog(
                         endTime = LocalTime.MAX
 
                         complete()
-                        hide()
                     }
                 )
             }
