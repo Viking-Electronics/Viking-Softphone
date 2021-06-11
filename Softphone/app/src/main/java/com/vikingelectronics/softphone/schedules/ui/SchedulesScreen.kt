@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
@@ -22,6 +23,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.extensions.rememberMaterialDialog
 import com.vikingelectronics.softphone.schedules.SchedulesViewModel
 import com.vikingelectronics.softphone.schedules.data.Schedule
@@ -148,7 +150,7 @@ fun SchedulesScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Add Schedule Button",
+                contentDescription = stringResource(R.string.addScheduleButtonContentDescription),
                 tint = Color.White
             )
         }

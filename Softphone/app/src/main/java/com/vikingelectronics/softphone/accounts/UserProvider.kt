@@ -1,5 +1,6 @@
 package com.vikingelectronics.softphone.accounts
 
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.Moshi
 import com.tfcporciuncula.flow.FlowSharedPreferences
 import com.tfcporciuncula.flow.NullableSerializer
@@ -13,6 +14,7 @@ import com.vikingelectronics.softphone.networking.DeviceRepository
 import com.vikingelectronics.softphone.schedules.SchedulesRepository
 import dagger.hilt.EntryPoints
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -30,7 +32,8 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
     preferences: FlowSharedPreferences,
     moshi: Moshi,
     private val userComponentProvider: Provider<UserComponent.Builder>,
-    private val repository: LoginRepository
+    private val repository: LoginRepository,
+    private val messaging: FirebaseMessaging
 ): RepositoryProvider {
 
     private val credsAdapter = moshi.adapter(StoredSipCredentials::class.java)
@@ -59,16 +62,18 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
         get() = userComponentEntryPoint.schedulesRepository()
 
 
-    suspend fun checkStoredSipCreds() {
+    suspend fun checkStoredSipCreds(): Boolean {
         _isLoggedIn.set(_storedSipCreds.isSet())
 
         val creds = _storedSipCreds.get()
-        if (_isLoggedIn.get() && creds != null) userAuthenticatedSuccessfully(creds)
-
+        return if (_isLoggedIn.get() && creds != null)
+            userAuthenticatedSuccessfully(creds)
+        else false
     }
 
     suspend fun userAuthenticatedSuccessfully(holder: StoredSipCredentials): Boolean {
-        val userRepresentation = repository.fetchOrCreateUserAccount(holder.username)
+        val pushToken = messaging.token.await()
+        val userRepresentation = repository.fetchOrCreateUserAccount(holder.username, pushToken)
         val user = userRepresentation.getObj() ?: return false
 
         val sipRepresentation = repository.fetchOrCreateSipAccount(userRepresentation.reference, holder.accountBase)
@@ -90,6 +95,13 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
         val newSip = sipAccount.copy(deviceObjects = devices)
 
         userComponent = buildComponent(user, newSip)
+    }
+
+    suspend fun updateUserPushToken(token: String) {
+        if (userComponent != null) {
+            val user = userComponentEntryPoint.user()
+            repository.updateUserPushToken(user, token)
+        }
     }
 
     private fun buildComponent(user: User, sipAccount: SipAccount): UserComponent

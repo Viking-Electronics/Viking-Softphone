@@ -54,4 +54,5 @@ interface UserComponentEntryPoint {
     fun capturesRepository(): CapturesRepository
     fun deviceRepository(): DeviceRepository
     fun schedulesRepository(): SchedulesRepository
+    fun user(): User
 }

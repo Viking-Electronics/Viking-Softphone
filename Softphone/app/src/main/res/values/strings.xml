@@ -64,5 +64,6 @@
     <string name="unlock">Unlock</string>
     <string name="hangUp">Hang up</string>
     <string name="relayEntryTextfieldHint">Enter Relay Activation Code</string>
+    <string name="addScheduleButtonContentDescription">Add Schedule Button</string>
 
 </resources>

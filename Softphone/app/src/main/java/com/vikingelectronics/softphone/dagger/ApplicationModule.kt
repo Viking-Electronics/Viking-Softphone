@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.pandulapeter.beagle.Beagle
@@ -21,6 +22,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.linphone.core.*
 import javax.inject.Singleton
 
@@ -80,8 +82,13 @@ object ApplicationModule {
 
     @Singleton
     @Provides
+    fun provideMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
+
+    @Singleton
+    @Provides
     fun provideMoshi(): Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Singleton
     @Provides
     fun provideFSP(@ApplicationContext context: Context): FlowSharedPreferences {

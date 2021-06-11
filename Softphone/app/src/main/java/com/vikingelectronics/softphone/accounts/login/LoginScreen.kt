@@ -61,7 +61,6 @@ fun LoginScreen(
         Button(
             onClick = viewModel::qrClicked,
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-//            elevation = ButtonElevation.elevation(enabled = false, interactionSource = ),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 16.dp)

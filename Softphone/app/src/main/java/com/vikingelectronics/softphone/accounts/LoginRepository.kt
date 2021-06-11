@@ -18,10 +18,10 @@ class LoginRepository @Inject constructor(
 
     suspend fun fetchOrCreateUserAccount(username: String, pushToken: String = ""): FirestoreObject<User> {
         val query = userCollectionRef.whereEqualTo("username", username).limit(1)
-        val resultSnapshot = query.get().await().documents[0]
-        val userExists = resultSnapshot.exists()
+        val querySnapshot = query.get().await()
+        val userExists = !querySnapshot.isEmpty && !querySnapshot.documents[0].exists()
 
-        val resultDoc = if (userExists) resultSnapshot.reference else {
+        val resultDoc = if (userExists) querySnapshot.documents[0].reference else {
             val userData = mapOf(
                 "username" to username,
                 "pushToken" to pushToken
@@ -30,7 +30,11 @@ class LoginRepository @Inject constructor(
             userCollectionRef.add(userData).await()
         }
 
-        return FirestoreObject(resultDoc, User::class.java)
+        return FirestoreObject(resultDoc, User::class.java).apply {
+            getObj()?.let {
+                if (it.pushToken != pushToken) updateUserPushToken(it, pushToken)
+            }
+        }
     }
 
 
@@ -60,4 +64,9 @@ class LoginRepository @Inject constructor(
 
          userRepresentation.reference.set(user).await()
      }
+
+    suspend fun updateUserPushToken(user: User, pushToken: String) {
+        val updatedUser = user.copy(pushToken = pushToken)
+        userCollectionRef.document(user.id).set(updatedUser).await()
+    }
 }
