@@ -2,6 +2,8 @@ package com.vikingelectronics.softphone.schedules.data
 
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 
 data class ScheduleTimeframe(
     val startHours: Int = 0,
@@ -20,6 +22,8 @@ data class ScheduleTimeframe(
     fun endLocalTime(): LocalTime = LocalTime.of(endHours, endMinutes)
     fun startTwelveHourFormat(): String = startLocalTime().format(TwelveHourTimeFormatter)
     fun endTwelveHourFormat(): String = endLocalTime().format(TwelveHourTimeFormatter)
+
+    fun isAllDay(): Boolean = startLocalTime() == LocalTime.MIN && endLocalTime() == LocalTime.MAX.truncatedTo(ChronoUnit.MINUTES)
 
     companion object {
         val TwelveHourTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")

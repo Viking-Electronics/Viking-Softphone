@@ -36,7 +36,7 @@ fun MaterialDialog.ScheduleBuilderDialog(
     scheduleForEdit: Schedule = Schedule.DEFAULT,
     scheduleProduced: (Schedule) -> Unit
 ) {
-    val titleText =if (scheduleForEdit == Schedule.DEFAULT) "New Schedule" else "Edit Schedule"
+    val titleText = if (scheduleForEdit == Schedule.DEFAULT) "New Schedule" else "Edit Schedule"
     val schedule by remember { mutableStateOf(scheduleForEdit) }
 
     var step by remember { mutableStateOf<ScheduleBuilderStep>(ScheduleBuilderStep.DayPicker) }
@@ -124,6 +124,7 @@ fun MaterialDialog.ScheduleBuilderDialog(
                         endTime = LocalTime.MAX
 
                         complete()
+                        hide()
                     }
                 )
             }

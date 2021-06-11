@@ -40,6 +40,10 @@ data class Schedule(
 
     }
     fun timeframeToDisplayString(): String = buildString {
+        if (timeframe.isAllDay()) {
+            append("All Day")
+            return@buildString
+        }
         append(timeframe.startTwelveHourFormat())
         append(" - ")
         append(timeframe.endTwelveHourFormat())
