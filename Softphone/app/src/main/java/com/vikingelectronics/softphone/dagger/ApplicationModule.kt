@@ -1,5 +1,6 @@
 package com.vikingelectronics.softphone.dagger
 
+import android.app.NotificationManager
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -83,6 +84,11 @@ object ApplicationModule {
     @Singleton
     @Provides
     fun provideMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager
+        = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     @Singleton
     @Provides

@@ -8,6 +8,7 @@ import com.vikingelectronics.softphone.dagger.UserComponent
 import com.vikingelectronics.softphone.dagger.UserComponentEntryPoint
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.extensions.nonSettable
+import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.networking.ActivityRepository
 import com.vikingelectronics.softphone.networking.CapturesRepository
 import com.vikingelectronics.softphone.networking.DeviceRepository
@@ -72,7 +73,7 @@ class UserProvider @OptIn(ExperimentalCoroutinesApi::class) @Inject constructor(
     }
 
     suspend fun userAuthenticatedSuccessfully(holder: StoredSipCredentials): Boolean {
-        val pushToken = messaging.token.await()
+        val pushToken = messaging.token.await().timber("pushToken")
         val userRepresentation = repository.fetchOrCreateUserAccount(holder.username, pushToken)
         val user = userRepresentation.getObj() ?: return false
 

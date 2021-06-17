@@ -329,12 +329,13 @@ fun MainActivityComposable(
     }
 
     when(callState) {
-        BasicCallState.Incoming, BasicCallState.Outgoing -> userProvider.deviceRepository.getDeviceForIncomingCall()?.let {
-            val direction = CallDirection.fromCall(it.call, it.device)
-            navController.setParcelableAndNavigate(Screen.Secondary.Call, direction) {
-                launchSingleTop = true
-            }
-        } ?: TODO("Need an error state alert here")
+        BasicCallState.Incoming, BasicCallState.Outgoing ->
+            userProvider.deviceRepository.getDeviceForIncomingCall()?.let {
+                val direction = CallDirection.fromCall(it.call, it.device)
+                navController.setParcelableAndNavigate(Screen.Secondary.Call, direction) {
+                    launchSingleTop = true
+                }
+            } ?: TODO("Need an error state alert here")
         is BasicCallState.Ending -> navController.navigateUp()
         else -> {}
     }

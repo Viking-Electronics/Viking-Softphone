@@ -10,6 +10,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -30,7 +32,8 @@
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,13 +43,16 @@
 
         </activity>
 
-        <receiver
-            android:name=".call.IncomingCallReceiver"
-            android:label="Sip call receiver"/>
+        <activity
+            android:name=".call.CallActivity"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
+            android:showOnLockScreen="true"/>
 
         <service
             android:name=".notifications.MessagingService"
-            android:exported="false">
+            android:exported="false"
+            android:foregroundServiceType="phoneCall">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>

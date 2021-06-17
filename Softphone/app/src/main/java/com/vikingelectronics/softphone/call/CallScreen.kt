@@ -1,8 +1,10 @@
 package com.vikingelectronics.softphone.call
 
+import android.app.Activity
 import android.os.Parcelable
 import android.view.TextureView
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -30,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
-import com.vikingelectronics.softphone.MainActivity
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.devices.Device
 import com.vikingelectronics.softphone.util.BasicCallState
@@ -56,11 +57,11 @@ sealed class CallDirection(open val device: Device): Parcelable {
 @Composable
 fun CallScreen(
     direction: CallDirection,
-    navBackStackEntry: NavBackStackEntry
+    navBackStackEntry: NavBackStackEntry? = null
 ) {
-    val viewModel: CallViewModel = hiltViewModel(navBackStackEntry)
+    val viewModel: CallViewModel = navBackStackEntry?.let { hiltViewModel(it) } ?: hiltViewModel()
 
-    (LocalContext.current as MainActivity).apply {
+    (LocalContext.current as AppCompatActivity).apply {
         onBackPressedDispatcher.addCallback(
             LocalLifecycleOwner.current,
             object: OnBackPressedCallback(true) {

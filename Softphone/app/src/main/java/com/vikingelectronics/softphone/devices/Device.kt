@@ -23,20 +23,20 @@ import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.activity.ActivityEntry
 import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
 import com.google.accompanist.coil.rememberCoilPainter
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 data class Device(
     @DocumentId val id: String = "",
     val name: String = "",
     val callAddress: String = "",
-    val allActivityEntries: List<ActivityEntry>? = null
 ): Parcelable {
     @IgnoredOnParcel
+    @Transient
     var latestActivityEntry: ActivityEntry? = null
-    @IgnoredOnParcel
-    val activityEntryRefs: List<DocumentReference> = listOf()
 }
 
 @OptIn(ExperimentalMaterialApi::class)

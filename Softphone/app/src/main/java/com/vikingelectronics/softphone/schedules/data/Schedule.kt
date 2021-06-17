@@ -30,7 +30,7 @@ data class Schedule(
             sorted == WEEKDAYS -> append("Weekdays")
             activeDays.size < 3 -> sorted.forEach {
                 append(dayNumberMap[it - 1].fullDayString)
-                if (activeDays.last() != it) append(" and ")
+                if (activeDays.last() != it) append(", ")
             }
             else -> sorted.forEach {
                 append(dayNumberMap[it - 1].abbreviation)
