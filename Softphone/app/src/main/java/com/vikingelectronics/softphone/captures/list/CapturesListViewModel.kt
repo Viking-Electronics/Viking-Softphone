@@ -9,10 +9,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.accounts.RepositoryProvider
-import com.vikingelectronics.softphone.networking.CapturesRepository
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.captures.CapturesRepository
+import com.vikingelectronics.shared.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
-import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel

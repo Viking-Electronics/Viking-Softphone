@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.shared.linphone.LinphoneManager
 import org.linphone.core.RegistrationState
 
 @Composable
@@ -21,7 +21,7 @@ fun SipAccountDrawerHeader(
     userProvider: UserProvider,
     linphoneManager: LinphoneManager,
 ) {
-    val registrationState by linphoneManager.sipRegistrationStatus.collectAsState()
+    val registrationState by linphoneManager.sipRegistrationStatus.collectAsState(RegistrationState.None)
 
     val creds = userProvider.storedSipCreds.get()
     val color  = when(registrationState) {

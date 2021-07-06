@@ -1,15 +1,11 @@
 package com.vikingelectronics.softphone.call
 
-import android.app.Activity
-import android.app.KeyguardManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.devices.Device
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

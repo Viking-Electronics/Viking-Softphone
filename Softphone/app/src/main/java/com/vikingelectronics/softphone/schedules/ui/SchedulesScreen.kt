@@ -26,7 +26,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.extensions.rememberMaterialDialog
 import com.vikingelectronics.softphone.schedules.SchedulesViewModel
-import com.vikingelectronics.softphone.schedules.data.Schedule
+import com.vikingelectronics.shared.schedules.Schedule
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)

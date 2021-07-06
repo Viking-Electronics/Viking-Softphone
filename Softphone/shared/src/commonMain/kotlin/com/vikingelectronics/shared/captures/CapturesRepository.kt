@@ -1,4 +1,4 @@
-package com.vikingelectronics.softphone.networking
+package com.vikingelectronics.shared.captures
 
 import android.content.Context
 import android.net.Uri
@@ -8,9 +8,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
-import com.vikingelectronics.softphone.accounts.SipAccount
-import com.vikingelectronics.softphone.accounts.User
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.storage.LocalCaptureDataSource

@@ -4,9 +4,6 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
@@ -71,11 +68,6 @@ object ApplicationModule {
         start()
     }
 
-    @Singleton
-    @Provides
-    fun provideFirestore(): FirebaseFirestore = Firebase.firestore.apply {
-        firestoreSettings { isPersistenceEnabled = true }
-    }
 
     @Singleton
     @Provides

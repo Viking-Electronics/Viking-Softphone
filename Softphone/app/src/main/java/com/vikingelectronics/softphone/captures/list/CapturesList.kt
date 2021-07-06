@@ -20,7 +20,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.captures.Capture
 import com.vikingelectronics.softphone.captures.CaptureCard
 import kotlinx.coroutines.launch
 

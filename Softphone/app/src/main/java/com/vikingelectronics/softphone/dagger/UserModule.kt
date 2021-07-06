@@ -1,7 +1,11 @@
 package com.vikingelectronics.softphone.dagger
 
-import com.vikingelectronics.softphone.accounts.SipAccount
-import com.vikingelectronics.softphone.accounts.User
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
+import com.vikingelectronics.shared.activity.ActivityRepository
+import com.vikingelectronics.shared.activity.ActivityRepositoryImpl
+import com.vikingelectronics.shared.captures.CapturesRepository
+import com.vikingelectronics.shared.captures.CapturesRepositoryImpl
 import com.vikingelectronics.softphone.networking.*
 import com.vikingelectronics.softphone.schedules.SchedulesRepository
 import com.vikingelectronics.softphone.schedules.SchedulesRepositoryImpl

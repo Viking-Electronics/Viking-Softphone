@@ -2,7 +2,7 @@ package com.vikingelectronics.softphone.captures.detail
 
 
 import androidx.compose.runtime.Composable
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.captures.Capture
 
 @Composable
 fun RecordDetail(

@@ -15,7 +15,7 @@ import com.squareup.moshi.Moshi
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.call.CallActivity
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.devices.Device
 import com.vikingelectronics.softphone.extensions.timber
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope

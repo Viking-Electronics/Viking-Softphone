@@ -16,7 +16,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.ActivityEntryCard
 import com.vikingelectronics.softphone.extensions.setParcelableAndNavigate
 import com.vikingelectronics.softphone.navigation.Screen

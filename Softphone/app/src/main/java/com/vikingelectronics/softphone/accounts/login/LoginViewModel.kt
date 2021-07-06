@@ -9,7 +9,7 @@ import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.QrReadResult
 import com.vikingelectronics.softphone.accounts.StoredSipCredentials
 import com.vikingelectronics.softphone.extensions.timber
-import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.shared.linphone.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

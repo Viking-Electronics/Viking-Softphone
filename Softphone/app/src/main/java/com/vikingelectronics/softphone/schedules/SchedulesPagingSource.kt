@@ -3,7 +3,7 @@ package com.vikingelectronics.softphone.schedules
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
-import com.vikingelectronics.softphone.schedules.data.Schedule
+import com.vikingelectronics.shared.schedules.Schedule
 
 class SchedulesPagingSource(
     private val repository: SchedulesRepository

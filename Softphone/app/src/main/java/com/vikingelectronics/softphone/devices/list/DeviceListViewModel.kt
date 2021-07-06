@@ -7,8 +7,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.accounts.RepositoryProvider
-import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.shared.devices.Device
+import com.vikingelectronics.shared.linphone.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

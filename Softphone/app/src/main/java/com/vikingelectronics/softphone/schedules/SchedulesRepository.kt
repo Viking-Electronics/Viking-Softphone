@@ -3,13 +3,13 @@ package com.vikingelectronics.softphone.schedules
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.vikingelectronics.softphone.accounts.SipAccount
-import com.vikingelectronics.softphone.accounts.User
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
 import com.vikingelectronics.softphone.dagger.UserScope
 import com.vikingelectronics.softphone.extensions.emitUnitResult
 import com.vikingelectronics.softphone.extensions.unitResult
 import com.vikingelectronics.softphone.networking.FirebaseRepository
-import com.vikingelectronics.softphone.schedules.data.Schedule
+import com.vikingelectronics.shared.schedules.Schedule
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject

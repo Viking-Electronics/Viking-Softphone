@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.accounts.RepositoryProvider
-import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.activity.ActivityEntry
+import com.vikingelectronics.shared.devices.Device
 import com.vikingelectronics.softphone.networking.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect

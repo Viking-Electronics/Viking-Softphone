@@ -1,6 +1,5 @@
 package com.vikingelectronics.softphone.call
 
-import android.app.Activity
 import android.os.Parcelable
 import android.view.TextureView
 import androidx.activity.OnBackPressedCallback
@@ -33,8 +32,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.util.BasicCallState
+import com.vikingelectronics.shared.devices.Device
+import com.vikingelectronics.shared.linphone.BasicCallState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 import org.linphone.core.Call

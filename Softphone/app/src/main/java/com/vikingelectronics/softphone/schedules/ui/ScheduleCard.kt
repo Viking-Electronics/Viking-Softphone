@@ -17,7 +17,7 @@ import androidx.navigation.NavBackStackEntry
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.extensions.rememberMaterialDialog
 import com.vikingelectronics.softphone.schedules.SchedulesViewModel
-import com.vikingelectronics.softphone.schedules.data.Schedule
+import com.vikingelectronics.shared.schedules.Schedule
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -29,7 +29,7 @@ fun ScheduleCard(
     onDeleteConfirmed: (Schedule) -> Unit,
 ) {
 
-    val viewModel: SchedulesViewModel = hiltViewModel(backStackEntry = backStackEntry)
+    val viewModel: SchedulesViewModel = hiltViewModel(backStackEntry)
 
     var isActive by remember { mutableStateOf(schedule.enabled) }
     var moreMenuExpanded by remember { mutableStateOf(false) }

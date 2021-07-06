@@ -11,7 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.coil.rememberCoilPainter
-import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityEntry
 
 @Composable
 fun ActivityDetail(
@@ -27,7 +27,7 @@ fun ActivityDetail(
     ) {
         
         Text(
-            text = entry.timestamp.toDate().toString(),
+            text = entry.timestamp.toString(),
             style = MaterialTheme.typography.h5
         )
         

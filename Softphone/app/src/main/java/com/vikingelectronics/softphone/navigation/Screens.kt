@@ -11,9 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.captures.Capture
-import com.vikingelectronics.softphone.devices.Device
 
 
 sealed class Screen(

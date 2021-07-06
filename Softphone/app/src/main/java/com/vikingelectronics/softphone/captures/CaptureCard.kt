@@ -1,16 +1,10 @@
 package com.vikingelectronics.softphone.captures
 
-import android.content.Context
-import android.net.Uri
-import android.os.Parcelable
-import android.text.format.DateUtils
-import android.text.format.Formatter
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -29,49 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.storage.StorageReference
+import com.google.accompanist.coil.rememberCoilPainter
+import com.vikingelectronics.shared.captures.Capture
 import com.vikingelectronics.softphone.R
 import com.vikingelectronics.softphone.captures.list.CapturesListViewModel
-import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class Capture (
-    val name: String,
-    val uri: Uri,
-    val creationTimeMillis: Long,
-    val sizeInBytes: Long,
-    val type: String,
-): Parcelable {
-    @IgnoredOnParcel
-    var isStoredLocally: Boolean by mutableStateOf(false)
-    @IgnoredOnParcel
-    var isFavorite: Boolean by mutableStateOf(false)
-    @IgnoredOnParcel
-    var downloadProgress: Float by mutableStateOf(0f)
-
-    @IgnoredOnParcel
-    lateinit var storageReference: StorageReference
-    @IgnoredOnParcel
-    var sourceRef: DocumentReference? = null
-
-    fun sizeConverted(context: Context): String = Formatter.formatFileSize(context, sizeInBytes)
-
-
-    //TODO: convert to string res
-    val timeConverted: String by lazy {
-        val now: Long = Clock.System.now().toEpochMilliseconds()
-
-         "Captured ${DateUtils.getRelativeTimeSpanString(creationTimeMillis, now, 1000L)}"
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun CaptureCard (
     capture: Capture,
@@ -93,17 +52,11 @@ fun CaptureCard (
     ).value
 
     Card (
+        onClick = {},
         elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
-            .combinedClickable(
-                enabled = !shouldShowDownloadProgress,
-                onClick = {
-
-                },
-                onLongClick = longClick
-            ),
+            .height(100.dp),
         backgroundColor = if (selectedState.value) Color.Blue else Color.White
     ) {
         Box (
@@ -157,7 +110,7 @@ fun CaptureCard (
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
-                        text = capture.timeConverted
+                        text = "Capture.timeConverted need to do"//capture.timeConverted
                     )
                     Text(
                         text = capture.sizeConverted(LocalContext.current)
@@ -261,7 +214,7 @@ fun DeleteConfirmationDialog(
             Text(text = stringResource(R.string.cap_delete_dialog_title))
         },
         text = {
-           Text(text = stringResource(R.string.cap_delete_dialog_text))
+            Text(text = stringResource(R.string.cap_delete_dialog_text))
         },
         confirmButton = {
             Button(onClick = {

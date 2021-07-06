@@ -6,8 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.google.firebase.storage.StorageReference
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.captures.Capture
 import com.vikingelectronics.softphone.captures.LocalStorageCaptureTemplate
 import com.vikingelectronics.softphone.extensions.timber
 import com.vikingelectronics.softphone.extensions.toInt
@@ -16,7 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject

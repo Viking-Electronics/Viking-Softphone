@@ -1,19 +1,17 @@
 package com.vikingelectronics.softphone.networking
 
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.vikingelectronics.softphone.accounts.SipAccount
-import com.vikingelectronics.softphone.accounts.User
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
 import com.vikingelectronics.softphone.accounts.UserProvider
-import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityEntry
 import com.vikingelectronics.softphone.dagger.UserScope
-import com.vikingelectronics.softphone.devices.Device
-import com.vikingelectronics.softphone.extensions.timber
-import dagger.hilt.android.scopes.ViewModelScoped
+import com.vikingelectronics.shared.devices.Device
+import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.linphone.core.Call
@@ -31,12 +29,12 @@ interface DeviceRepository {
 
 @UserScope
 class DeviceRepositoryImpl @Inject constructor(
-   override val db: FirebaseFirestore,
-   override val storage: FirebaseStorage,
-   override val user: User,
-   override val sipAccount: SipAccount,
-   val userProvider: UserProvider,
-   val core: Core
+    override val db: FirebaseFirestore,
+    override val storage: FirebaseStorage,
+    override val user: User,
+    override val sipAccount: SipAccount,
+    val userProvider: UserProvider,
+    val core: Core
 ): FirebaseRepository(), DeviceRepository {
 
     private suspend fun Device.getLatestDeviceActivity(): Device {
@@ -58,6 +56,7 @@ class DeviceRepositoryImpl @Inject constructor(
 
     override suspend fun getDevices(index: DocumentSnapshot?): PaginationHolder<Device> {
         val list = mutableListOf<Device>()
+
 
         sipAccount.devices.iterateToObject<Device> {
             list.add(it.getLatestDeviceActivity())

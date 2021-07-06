@@ -1,10 +1,8 @@
-package com.vikingelectronics.softphone.schedules.data
+package com.vikingelectronics.shared.schedules
 
-import com.google.firebase.firestore.DocumentId
-import com.vikingelectronics.softphone.networking.DEFAULT_FIREBASE_ID
 
 data class Schedule(
-    @DocumentId val id: String = DEFAULT_FIREBASE_ID,
+    val id: String = "",
     val activeDays: List<Int> = listOf(),
     val timeframe: ScheduleTimeframe = ScheduleTimeframe(),
     val allDay: Boolean = false,

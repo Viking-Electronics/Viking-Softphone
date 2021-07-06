@@ -11,7 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,15 +25,15 @@ import androidx.navigation.compose.*
 import com.vikingelectronics.softphone.accounts.UserProvider
 import com.vikingelectronics.softphone.accounts.SipAccountDrawerHeader
 import com.vikingelectronics.softphone.accounts.login.LoginScreen
-import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityEntry
 import com.vikingelectronics.softphone.activity.detail.ActivityDetail
 import com.vikingelectronics.softphone.activity.list.ActivityList
 import com.vikingelectronics.softphone.call.CallDirection
 import com.vikingelectronics.softphone.call.CallScreen
-import com.vikingelectronics.softphone.captures.Capture
+import com.vikingelectronics.shared.captures.Capture
 import com.vikingelectronics.softphone.captures.list.CapturesList
 import com.vikingelectronics.softphone.databinding.FragmentContainerBinding
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.devices.Device
 import com.vikingelectronics.softphone.devices.detail.DeviceDetail
 import com.vikingelectronics.softphone.devices.list.DevicesList
 import com.vikingelectronics.softphone.extensions.getParcelableFromBackstack
@@ -45,8 +44,8 @@ import com.vikingelectronics.softphone.legacy.schedules.ScheduleManager
 import com.vikingelectronics.softphone.legacy.settings.*
 import com.vikingelectronics.softphone.navigation.Screen
 import com.vikingelectronics.softphone.schedules.ui.SchedulesScreen
-import com.vikingelectronics.softphone.util.BasicCallState
-import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.shared.linphone.BasicCallState
+import com.vikingelectronics.shared.linphone.LinphoneManager
 import com.vikingelectronics.softphone.util.PermissionsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers.Main
@@ -311,7 +310,9 @@ fun MainActivityComposable(
 
             composable(
                 Screen.Secondary.ActivityDetail.route,
-                arguments = listOf(navArgument("activity") { type = NavType.ParcelableType(ActivityEntry::class.java) })
+                arguments = listOf(navArgument("activity") {
+                    type = NavType.ParcelableType(ActivityEntry::class.java)
+                })
             ) {
                 val activity: ActivityEntry = navController.getParcelableFromBackstack(Screen.Secondary.ActivityDetail) ?: return@composable
                 toolbarTitle = activity.sourceName

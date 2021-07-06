@@ -6,8 +6,8 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
-import com.vikingelectronics.softphone.accounts.SipAccount
-import com.vikingelectronics.softphone.accounts.User
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await

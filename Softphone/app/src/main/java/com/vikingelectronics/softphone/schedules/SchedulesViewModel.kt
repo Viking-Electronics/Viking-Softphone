@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.accounts.RepositoryProvider
-import com.vikingelectronics.softphone.schedules.data.Schedule
+import com.vikingelectronics.shared.schedules.Schedule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

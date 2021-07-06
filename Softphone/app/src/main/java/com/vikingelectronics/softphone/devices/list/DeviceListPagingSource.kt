@@ -2,9 +2,8 @@ package com.vikingelectronics.softphone.devices.list
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.devices.Device
 import com.vikingelectronics.softphone.networking.DeviceRepository
 
 class DeviceListPagingSource(

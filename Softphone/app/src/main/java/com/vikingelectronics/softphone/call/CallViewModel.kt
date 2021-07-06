@@ -7,10 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vikingelectronics.softphone.devices.Device
+import com.vikingelectronics.shared.devices.Device
 import com.vikingelectronics.softphone.extensions.invert
-import com.vikingelectronics.softphone.util.BasicCallState
-import com.vikingelectronics.softphone.util.LinphoneManager
+import com.vikingelectronics.shared.linphone.BasicCallState
+import com.vikingelectronics.shared.linphone.LinphoneManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main

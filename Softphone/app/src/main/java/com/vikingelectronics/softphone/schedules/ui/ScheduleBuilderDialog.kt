@@ -6,8 +6,8 @@ import com.dpro.widgets.OnWeekdaysChangeListener
 import com.dpro.widgets.WeekdaysPicker
 import com.vanpra.composematerialdialogs.*
 import com.vanpra.composematerialdialogs.datetime.timepicker.timepicker
-import com.vikingelectronics.softphone.schedules.data.Schedule
-import com.vikingelectronics.softphone.schedules.data.ScheduleTimeframe
+import com.vikingelectronics.shared.schedules.Schedule
+import com.vikingelectronics.shared.schedules.ScheduleTimeframe
 import java.time.LocalTime
 
 sealed class ScheduleBuilderStep {

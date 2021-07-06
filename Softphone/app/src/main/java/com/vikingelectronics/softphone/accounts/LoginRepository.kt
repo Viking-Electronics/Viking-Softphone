@@ -2,12 +2,11 @@ package com.vikingelectronics.softphone.accounts
 
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.vikingelectronics.softphone.dagger.UserComponent
+import com.vikingelectronics.shared.accounts.SipAccount
+import com.vikingelectronics.shared.accounts.User
 import com.vikingelectronics.softphone.data.FirestoreObject
-import com.vikingelectronics.softphone.extensions.timber
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Provider
 
 class LoginRepository @Inject constructor(
     db: FirebaseFirestore
@@ -60,7 +59,7 @@ class LoginRepository @Inject constructor(
      ) {
          if (user.sipAccountExists()) return
 
-         user.sipAccount = sipRepresentation.reference
+//         user.sipAccount = sipRepresentation.reference
 
          userRepresentation.reference.set(user).await()
      }

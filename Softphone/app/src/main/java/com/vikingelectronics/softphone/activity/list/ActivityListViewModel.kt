@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vikingelectronics.softphone.accounts.RepositoryProvider
-import com.vikingelectronics.softphone.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject

@@ -3,8 +3,8 @@ package com.vikingelectronics.softphone.captures.list
 import android.net.Uri
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.vikingelectronics.softphone.captures.Capture
-import com.vikingelectronics.softphone.networking.CapturesRepository
+import com.vikingelectronics.shared.captures.Capture
+import com.vikingelectronics.shared.captures.CapturesRepository
 
 class CapturePagingSource(
     private val repository: CapturesRepository,

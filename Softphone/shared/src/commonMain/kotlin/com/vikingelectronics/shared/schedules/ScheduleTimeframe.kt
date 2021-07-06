@@ -1,9 +1,8 @@
-package com.vikingelectronics.softphone.schedules.data
+package com.vikingelectronics.shared.schedules
 
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 
 data class ScheduleTimeframe(
     val startHours: Int = 0,
@@ -13,7 +12,7 @@ data class ScheduleTimeframe(
 ) {
 
     constructor(start: LocalTime, end: LocalTime)
-        : this(start.hour, start.minute, end.hour, end.minute)
+        : this(start.getHour(), start.getMinute(), end.getHour(), end.getMinute())
 
     constructor() : this(LocalTime.now(), LocalTime.now().plusHours(1))
 

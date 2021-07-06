@@ -3,8 +3,8 @@ package com.vikingelectronics.softphone.activity.list
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.firebase.firestore.DocumentSnapshot
-import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.networking.ActivityRepository
+import com.vikingelectronics.shared.activity.ActivityEntry
+import com.vikingelectronics.shared.activity.ActivityRepository
 
 class ActivityPagingSource (
     private val activityRepository: ActivityRepository

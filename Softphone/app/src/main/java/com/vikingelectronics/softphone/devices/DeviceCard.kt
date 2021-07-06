@@ -1,6 +1,5 @@
 package com.vikingelectronics.softphone.devices
 
-import android.os.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -17,27 +16,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.firestore.DocumentId
-import com.google.firebase.firestore.DocumentReference
-import com.vikingelectronics.softphone.R
-import com.vikingelectronics.softphone.activity.ActivityEntry
-import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
 import com.google.accompanist.coil.rememberCoilPainter
-import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-@JsonClass(generateAdapter = true)
-data class Device(
-    @DocumentId val id: String = "",
-    val name: String = "",
-    val callAddress: String = "",
-): Parcelable {
-    @IgnoredOnParcel
-    @Transient
-    var latestActivityEntry: ActivityEntry? = null
-}
+import com.vikingelectronics.shared.devices.Device
+import com.vikingelectronics.softphone.R
+import com.vikingelectronics.softphone.devices.list.DeviceListViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
